@@ -1,0 +1,26 @@
+###################### mybatis-plus默认配置 #######################
+mybatis-plus:
+  mapperLocations: classpath*:**/mapping/*.xml
+  globalConfig:
+    banner: false # banner
+    workerId: 0 # 雪花机器ID
+    datacenterId: 0 # 雪花数据中心ID
+    refresh: true # 自动刷新Mapper对应的XML文件
+    # metaObjectHandler: com.lan.iti.core.data.mp.metadata.ITIMetaObjectHandler # 自定义数据填充器
+    dbConfig:
+      idType: ID_WORKER # 主键类型 AUTO:数据库ID自增 NONE:未定义 INPUT:用户输入 ID_WORKER:id_worker UUID:uuid ID_WORKER_STR:id_worker字符串表
+      tableUnderline: true # 表名、是否使用下划线命名，默认数据库表使用下划线命名
+      logicDeleteValue: 1 # # 逻辑删除全局值（1表示已删除，这也是Mybatis Plus的默认配置）
+      logicNotDeleteValue: 0 # 逻辑未删除全局值（0表示未删除，这也是Mybatis Plus的默认配置）
+      # 字段验证策略 NOT_NULL:非NULL判断 IGNORED:忽略判断 NOT_EMPTY:非空判断 NEVER:不加入SQL
+      insertStrategy: NOT_NULL # 插入时
+      updateStrategy: NOT_NULL # 更新时
+      whereStrategy: IGNORE # 字段在加入where条件时
+  configuration:
+    mapUnderscoreToCamelCase: true # 下划线转驼峰
+    cacheEnabled: true # 配置的缓存的全局开关
+    lazyLoadingEnabled: true # 懒加载
+    aggressiveLazyLoading: true # 懒加载的对象可能被任何懒属性全部加载,否则，每个属性都按需加载。需要和 lazyLoadingEnabled 一起使用
+    multipleResultSetsEnabled: true # 延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    autoMappingBehavior: true # 自动映射策略 NONE:不启用自动映射 PARTIAL:只对非嵌套的resultMap进行自动映射 FULL:对所有的resultMap都进行自动映射
+    logImpl: SLF4J # org.apache.ibatis.logging.slf4j.Slf4jImpl # 打印sql语句,调试用

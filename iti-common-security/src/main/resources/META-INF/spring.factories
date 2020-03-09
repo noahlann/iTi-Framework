@@ -1,0 +1,4 @@
+# AutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.cloud.openfeign.ITIHystrixFeignTargeterConfiguration,\
+org.lan.iti.common.security.feign.recoder.UserInfoRecoder
