@@ -42,30 +42,16 @@
     <description>iTi 核心公共模块</description>
 
     <properties>
-        <!-- version -->
-        <iti-common.version>1.0.0</iti-common.version>
-        <java.version>1.8</java.version>
-        <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
-        <spring-cloud.version>Hoxton.SR2</spring-cloud.version>
-        <spring-cloud-alibaba.version>2.2.0.RELEASE</spring-cloud-alibaba.version>
-        <spring-platform.version>Cairo-SR8</spring-platform.version>
-        <jasypt.version>2.1.1</jasypt.version>
-        <hutool.version>5.1.4</hutool.version>
-        <ttl.version>2.11.2</ttl.version>
-        <spring-boot-admin.version>2.2.2</spring-boot-admin.version>
-        <swagger.core.version>1.5.22</swagger.core.version>
-        <mybatis-plus.version>3.3.0</mybatis-plus.version>
-        <security.oauth.version>2.3.6.RELEASE</security.oauth.version>
-        <minio.version>6.0.11</minio.version>
-        <swagger.fox.version>2.9.2</swagger.fox.version>
-        <knife4j.version>2.0.1</knife4j.version>
         <!-- configuration -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- version -->
+        <java.version>1.8</java.version>
     </properties>
 
     <modules>
+        <module>iti-common-bom</module>
         <module>iti-common-core</module>
         <module>iti-common-feign</module>
         <module>iti-common-gateway</module>
@@ -79,53 +65,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- iti-common-bom -->
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
+                <groupId>org.lan</groupId>
+                <artifactId>iti-common-bom</artifactId>
+                <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.spring.platform</groupId>
-                <artifactId>platform-bom</artifactId>
-                <version>${spring-platform.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!--spring cloud alibaba-->
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>${spring-cloud-alibaba.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!--稳定版本，替代spring security bom内置-->
-            <dependency>
-                <groupId>org.springframework.security.oauth</groupId>
-                <artifactId>spring-security-oauth2</artifactId>
-                <version>${security.oauth.version}</version>
-            </dependency>
-            <!--web 模块-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>${spring-boot.version}</version>
-                <exclusions>
-                    <!--排除tomcat依赖-->
-                    <exclusion>
-                        <artifactId>spring-boot-starter-tomcat</artifactId>
-                        <groupId>org.springframework.boot</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -141,7 +87,6 @@
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>${jasypt.version}</version>
         </dependency>
         <!--监控-->
         <dependency>
@@ -158,13 +103,16 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
-            <version>3.0.1</version>
         </dependency>
         <!--测试依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
         </dependency>
     </dependencies>
 

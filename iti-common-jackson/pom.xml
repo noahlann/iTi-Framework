@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.lan</groupId>
             <artifactId>iti-common-core</artifactId>
-            <version>${iti-common.version}</version>
         </dependency>
     </dependencies>
 

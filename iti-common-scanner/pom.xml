@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.lan</groupId>
             <artifactId>iti-common-core</artifactId>
-            <version>${iti-common.version}</version>
         </dependency>
         <!--spring-web-->
         <dependency>
@@ -47,7 +46,6 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>${swagger.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <!--feign模块 -->

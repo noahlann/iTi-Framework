@@ -32,7 +32,7 @@ import java.util.Map;
  * @date 2020-02-27
  * @url https://noahlan.com
  */
-interface ITIUserDetailsService extends UserDetailsService {
+public interface ITIUserDetailsService extends UserDetailsService {
 
     /**
      * 根据 唯一标识与类型 查询 UserDetails

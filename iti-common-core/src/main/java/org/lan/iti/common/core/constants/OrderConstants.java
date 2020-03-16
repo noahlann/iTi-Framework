@@ -30,30 +30,30 @@ public final class OrderConstants {
     /**
      * ExceptionHandler的Aop顺序
      */
-    public static final Integer ITI_EXCEPTION_HANDLER_ORDER = 200;
+    public static final int ITI_EXCEPTION_HANDLER_ORDER = 200;
 
     /**
      * 临时保存RequestData的aop
      */
-    public static final Integer REQUEST_DATA_AOP_SORT = 500;
+    public static final int REQUEST_DATA_AOP_SORT = 500;
 
     /**
      * 参数校验为空的aop
      */
-    public static final Integer PARAM_VALIDATE_AOP_SORT = 510;
+    public static final int PARAM_VALIDATE_AOP_SORT = 510;
 
     /**
      * 控制器调用链的aop
      */
-    public static final Integer CHAIN_ON_CONTROLLER_SORT = 600;
+    public static final int CHAIN_ON_CONTROLLER_SORT = 600;
 
     /**
      * provider的调用链aop
      */
-    public static final Integer CHAIN_ON_PROVIDER_SORT = 610;
+    public static final int CHAIN_ON_PROVIDER_SORT = 610;
 
     /**
      * consumer的调用链aop
      */
-    public static final Integer CHAIN_ON_CONSUMMER_SORT = 620;
+    public static final int CHAIN_ON_CONSUMMER_SORT = 620;
 }

@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @Slf4j
 @RestControllerAdvice
-//@Order(OrderConstants.ITI_EXCEPTION_HANDLER_ORDER)
+@Order(OrderConstants.ITI_EXCEPTION_HANDLER_ORDER)
 public class ITIExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
