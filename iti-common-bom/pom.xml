@@ -39,12 +39,13 @@
         <ttl.version>2.11.2</ttl.version>
         <spring-boot-admin.version>2.2.2</spring-boot-admin.version>
         <swagger.core.version>1.5.22</swagger.core.version>
-        <mybatis-plus.version>3.3.0</mybatis-plus.version>
+        <mybatis-plus.version>3.3.1</mybatis-plus.version>
         <minio.version>6.0.11</minio.version>
         <swagger.fox.version>2.9.2</swagger.fox.version>
         <knife4j.version>2.0.1</knife4j.version>
         <hikari.version>3.4.2</hikari.version>
         <findbugs.version>3.0.1</findbugs.version>
+        <snakeyml.version>1.26</snakeyml.version>
     </properties>
 
     <dependencyManagement>
@@ -120,6 +121,11 @@
             </dependency>
             <dependency>
                 <groupId>org.lan</groupId>
+                <artifactId>iti-common-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.lan</groupId>
                 <artifactId>iti-common-minio</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -143,23 +149,32 @@
                 <artifactId>iti-common-swagger</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!--mybatis plus extension,包含了mybatis plus core-->
+            <!-- mybatis plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-extension</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
-            <!--mybatis plus boot starter -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
-            <!--mybatis plus-->
+            <!-- snake yml -->
             <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus</artifactId>
-                <version>${mybatis-plus.version}</version>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyml.version}</version>
             </dependency>
             <!--hutool-->
             <dependency>

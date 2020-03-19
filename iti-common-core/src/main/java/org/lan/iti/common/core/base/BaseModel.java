@@ -39,6 +39,8 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public abstract class BaseModel<T extends BaseModel<T>> extends Model<T> {
+    private static final long serialVersionUID = -8727073493362896056L;
+
     /**
      * 创建时间
      */

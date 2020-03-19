@@ -56,6 +56,7 @@
         <module>iti-common-feign</module>
         <module>iti-common-gateway</module>
         <module>iti-common-jackson</module>
+        <module>iti-common-generator</module>
         <module>iti-common-minio</module>
         <module>iti-common-swagger</module>
         <module>iti-common-scanner</module>

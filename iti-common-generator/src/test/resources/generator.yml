@@ -1,0 +1,154 @@
+# 全局配置
+globalConfig:
+  # 生成文件的输出目录
+  outputDir: D://
+  # 是否覆盖已有文件
+  fileOverride: true
+  # 是否打开输出目录
+  open: false
+  # 是否在xml中添加二级缓存配置
+  enableCache: false
+  # 开发人员
+  author: NorthLan
+  # 开启 Kotlin 模式
+  kotlin: false
+  # 开启 swagger2 模式
+  swagger2: true
+  # 开启 ActiveRecord 模式
+  activeRecord: false
+  # 开启 xml中 BaseResultMap
+  baseResultMap: false
+  # 时间类型对应策略 [ONLY_DATE: java.util.date SQL_PACK: java.sql TIME_PACK: java.time]
+  dateType: TIME_PACK
+  # 开启 xml中 baseColumnList
+  baseColumnList: true
+  # 各层文件名称方式，例如： %sAction 生成 UserAction 可使用%s作为占位符
+  entityName: "%sEntity"
+  mapperName: "%sMapper"
+  xmlName: "%sMapper"
+  serviceName: "%sService"
+  serviceImplName: "%sServiceImpl"
+  controllerName: "%sController"
+  # 指定生成的主键的ID类型 [AUTO:数据库ID自增 NONE:未设置主键类型 INPUT:用户输入ID ASSIGN_ID:分配ID ASSIGN_UUID:分配UUID ]
+  idType: ASSIGN_ID #
+
+# 数据源配置
+dataSourceConfig:
+  # 数据库类型,不填写将根据driverName或url自动推断
+  # MYSQL MARIADB ORACLE ORACLE_12C DB2 H2 HSQL SQLITE POSTGRE_SQL SQL_SERVER2005 SQL_SERVER DM XU_GU KINGBASE_ES PHOENIX OTHER
+  dbType: POSTGRE_SQL
+  # 数据库连接驱动
+  driverName: org.postgresql.Driver
+  # url
+  url: jdbc:postgresql://localhost:5432/postgres
+  # pg/oracle等数据库的schema支持
+  schemaName: public
+  username: postgres
+  password: postgres
+
+# 包配置
+packageConfig:
+  # 父包名。如果为空，将下面子包名必须写全部， 否则就只需写子包名
+  parent: com.gxzc
+  # 父包模块名
+  #moduleName: xxx-xxx-api
+  # Entity包名
+  #entity: entity
+  # Service包名
+  #service: service
+  # Service Impl包名
+  #serviceImpl: service.impl
+  # Mapper包名
+  #mapper: mapper
+  # Mapper XML包名
+  xml: mapper
+  # Controller包名
+  #controller: controller
+
+# 全局策略配置
+strategyConfig:
+  # 是否大写命名
+  isCapitalMode: false
+  # 是否跳过视图
+  skipView: true
+  # 数据库表映射到实体的命名策略
+  naming: underline_to_camel
+  # 数据库表字段映射到实体的命名策略, 未指定按照 naming 执行
+  # columnNaming: underline_to_camel
+  # 表前缀列表
+  #tablePrefix:
+  #  - test
+  #  - set
+
+  # 字段前缀列表
+  #fieldPrefix:
+  #  - test
+  #  - set
+
+  # 自定义继承的Entity类全称，带包名
+  superEntityClass: org.lan.iti.common.core.base.BaseModel
+  # 自定义基础的Entity类，公共字段
+  superEntityColumns:
+    - createBy
+    - createTime
+    - updateBy
+    - updateTime
+  # 自定义继承的Mapper类全称，带包名
+  superMapperClass: org.lan.iti.common.core.base.BaseMapper
+  # 自定义继承的Service类全称，带包名
+  superServiceClass: org.lan.iti.common.core.base.BaseService
+  # 自定义继承的ServiceImpl类全称，带包名
+  # superServiceImplClass:
+  # 自定义继承的Controller类全称，带包名
+  # superControllerClass:
+
+  # 需要包含的表名（与exclude二选一配置）
+  #include:
+  #  - table1
+  #  - table2
+
+  # 需要排除的表名（与include二选一配置）
+  #exclude:
+  #  - table1
+  #  - table2
+  # 实体是否生成 serialVersionUID
+  entitySerialVersionUID: true
+  #【实体】是否生成字段常量（默认 false）
+  entityColumnConstant: false
+  # 【实体】是否为构建者模型（默认 false）
+  entityBuilderModel: true
+  # 【实体】是否为lombok模型（默认 false）
+  entityLombokModel: true
+  # Boolean类型字段是否移除is前缀（默认 false）
+  entityBooleanColumnRemoveIsPrefix: true
+  # 生成的控制器 true:添加@RestController注解 false:添加@Controller注解
+  restControllerStyle: true
+  # controller接口 驼峰转连字符 /managerUserActionHistory -> /manager-user-action-history
+  controllerMappingHyphenStyle: true
+  # 是否生成实体时，生成字段注解
+  entityTableFieldAnnotationEnable: true
+  # 乐观锁属性名称
+  versionFieldName: version
+  # 逻辑删除属性名称
+  logicDeleteFieldName: del_flag
+  # 表填充字段列表
+  # tableFillList:
+  # 启用sql过滤
+  enableSqlFilter: true
+  # 包含表名(like)
+  #likeTable:
+  # 不包含表名
+  #notLikeTable:
+
+# 模板配置,配置各项模板路径,为空代表不生成此类型实体,注释掉则代表使用默认配置
+templateConfig:
+  #entity:
+  #entityKt:
+  #service:
+  #serviceImpl:
+  #mapper:
+  #xml:
+  controller:
+
+# 引擎选择
+templateEngineType: FREEMARKER # BEETL VELOCITY
