@@ -20,6 +20,11 @@ package org.lan.iti.common.security.social.provider;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import org.lan.iti.common.security.social.SocialAuthenticationToken;
+import org.lan.iti.common.security.social.connect.ConnectionFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 社交身份鉴权服务
@@ -30,9 +35,22 @@ import lombok.AllArgsConstructor;
  */
 public interface SocialAuthenticationService<S> {
     /**
-     * @return {@link ConnectionCardinality} for connections to this provider
+     * @return {@link ConnectionCardinality} 此提供商的Connection关系
      */
     ConnectionCardinality getConnectionCardinality();
+
+    /**
+     * @return 用于认证的 {@link ConnectionFactory}
+     */
+    ConnectionFactory<S> getConnectionFactory();
+
+    /**
+     * 获取 AuthToken
+     * @param request 当前 {@link HttpServletRequest}
+     * @param response 当前 {@link HttpServletResponse}
+     * @return 未授权的Token或null
+     */
+    SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response);
 
     /**
      * Connection关系

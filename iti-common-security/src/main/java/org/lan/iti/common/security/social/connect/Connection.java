@@ -32,99 +32,100 @@ import java.io.Serializable;
  */
 public interface Connection<A> extends Serializable {
     /**
-     * The key identifying this connection.
-     * @return A composite key that consists of the "providerId" plus "providerUserId"; for example, "facebook" and "125660".
+     * Key
+     *
+     * @return 一个由providerId（例如"wechat"）加上providerUserId（例如"125660"）组成的组合键
      */
     ConnectionKey getKey();
 
     /**
-     * A display name or label for this connection.
-     * Should be suitable for display on a UI and distinguish this connection from others with the same provider.
-     * Generally the full name or screen name of the connected provider user e.g. "Keith Donald" or "@kdonald".
-     * May be null if this information is not public or not provided.
-     * The value of this property may change if the user updates his or her profile.
-     * @return the displayable name for the connection
+     * 此连接的显示名称或标签
+     * 应该适合在UI上显示，并将此连接与具有相同提供程序的其他连接区分开
+     * 通常是所连接的提供者用户的全名或屏幕名称，例如"张三"或"@zs"
+     * 如果此信息不是公开的或未提供，则可以为null
+     * 如果用户更新其个人资料，则此属性的值可能会更改。
+     *
      * @see #sync()
      */
     String getDisplayName();
 
     /**
-     * The public URL of the connected user's profile at the provider's site.
-     * A client application may use this value along with the displayName to generate a link to the user's profile on the provider's system.
-     * May be null if this information is not public or not provided.
-     * The value of this property may change if the user updates his or her profile.
+     * 提供者站点上已连接用户的个人资料的公共URL。
+     * 客户端应用程序可以将此值与displayName一起使用，以生成指向提供商系统上用户个人资料的链接。
+     * 如果此信息不是公开的或未提供，则可以为null。
+     * 如果用户更新其个人资料，则此属性的值可能会更改。
+     *
      * @return the public URL for the connected user
      * @see #sync()
      */
     String getProfileUrl();
 
     /**
-     * A link to a image that visualizes this connection.
-     * Should visually distinguish this connection from others with the same provider.
-     * Generally the small/thumbnail version of the connected provider user's profile picture.
-     * May be null if this information is not public or not provided.
-     * The value of this property may change if the user updates his or her profile.
-     * @return a String containing the URL to the connection image
+     * 链接到可视化此连接的图像
+     * 应该在视觉上将这种连接与相同提供商的其他连接区分开
+     * 通常，所连接的提供者用户的个人资料图片的小/缩略图版本
+     * 如果此信息不是公开的或未提供，则可以为null
+     * 如果用户更新其个人资料，则此属性的值可能会更改
+     *
      * @see #sync()
      */
     String getImageUrl();
 
     /**
-     * Sync's this connection object with the current state of the external user's profile.
-     * Triggers locally cached profile fields to update if they have changed on the provider's system.
+     * 将此连接对象与外部用户的配置文件的当前状态同步
+     * 触发本地缓存的配置文件字段以在提供者的系统上发生更改时进行更新
      */
     void sync();
 
     /**
-     * Test this connection.
-     * If false, indicates calls to the {@link #getApi() api} will fail.
-     * Used to proactively test authorization credentials such as an API access token before invoking the service API.
-     * @return true if the connection is valid
+     * 测试此连接
+     * 如果为false，则表示对{@link #getApi() api}的调用将失败
+     * 用于在调用服务API之前主动测试授权凭证，例如API访问令牌
+     *
+     * @return 如果连接有效，则为true
      */
     boolean test();
 
     /**
-     * Returns true if this connection has expired.
-     * An expired connection cannot be used; calls to {@link #test()} return false, and any service API invocations fail.
-     * If expired, you may call {@link #refresh()} to renew the connection.
-     * Not supported by all Connection implementations; always returns false if not supported.
-     * @return true if the connection has expired
+     * 如果此连接已过期，则返回true
+     * 无法使用过期的连接；对{@link #test()}的调用返回false,并且任何服务API调用都会失败
+     * 如果已过期，则可以调用{@link #refresh()}来更新连接
+     * 并非所有Connection实现都支持；如果不受支持，则始终返回false
+     *
+     * @return 如果连接已过期，则为true
      */
     boolean hasExpired();
 
     /**
-     * Refresh this connection.
-     * Used to renew an expired connection.
-     * If the refresh operation is successful, {@link #hasExpired()} returns false.
-     * Not supported by all connection implementations; if not supported, this method is a no-op.
+     * 刷新此连接
+     * 用于续订过期的连接
+     * 如果刷新操作成功，则{@link #hasExpired()}返回false
+     * 并非所有连接实现都支持；如果不支持，则此方法为无操作
      */
     void refresh();
 
-    /**
-     * Fetch a normalized model of the user's profile on the provider system.
-     * Capable of exposing the user's name, email, and username.
-     * What is actually exposed depends on the provider and scope of this connection.
-     * @return a normalized user profile associated with this connection.
-     */
-    UserProfile fetchUserProfile();
+    // TODO fetchUserProfile
 
     /**
-     * Update the user's status on the provider's system.
-     * This method is a no-op if a status concept is not supported by the service provider.
-     * @param message the status message
+     * 在提供者的系统上更新用户的状态
+     * 如果服务提供商不支持状态概念，则此方法禁止操作
+     *
+     * @param message 状态消息
      */
     void updateStatus(String message);
 
     /**
-     * A Java binding to the service provider's native API.
-     * @return the provider-specific API binding
+     * 与服务提供商的API
+     *
+     * @return 提供者特定的API
      */
     A getApi();
 
     /**
-     * Creates a data transfer object that can be used to persist the state of this connection.
-     * Used to support the transfer of connection state between layers of the application, such as to the database layer.
-     * @return a data transfer object containing details about the connection.
+     * 创建一个数据传输对象，该对象可用于保留此连接的状态
+     * 用于支持在应用程序各层之间（例如到数据库层）之间的连接状态传输
+     *
+     * @return 包含有关连接的详细信息的数据传输对象
      */
     ConnectionData createData();
 }

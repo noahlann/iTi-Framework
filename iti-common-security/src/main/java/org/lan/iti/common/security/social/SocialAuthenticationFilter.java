@@ -1,30 +1,35 @@
 /*
+ * Copyright (c) [2019-2020] [NorthLan](lan6995@gmail.com)
  *
- *  * Copyright (c) [2019-2020] [NorthLan](lan6995@gmail.com)
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.lan.iti.common.security.social;
 
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.Formatter;
+import org.lan.iti.common.security.model.ITIUser;
+import org.lan.iti.common.security.social.connect.UsersConnectionService;
 import org.lan.iti.common.security.social.exception.SocialAuthenticationException;
+import org.lan.iti.common.security.social.provider.SocialAuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.util.Assert;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,11 +51,18 @@ import java.util.Set;
 public class SocialAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private static final String DEFAULT_FILTER_PROCESSES_URL = "/social";
 
+    private SocialAuthenticationServiceLocator authServiceLocator;
+    private UsersConnectionService usersConnectionService;
+
     private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
 
-    protected SocialAuthenticationFilter(AuthenticationManager authManager) {
+    protected SocialAuthenticationFilter(AuthenticationManager authManager,
+                                         UsersConnectionService usersConnectionService,
+                                         SocialAuthenticationServiceLocator socialAuthenticationServiceLocator) {
         super(DEFAULT_FILTER_PROCESSES_URL);
         setAuthenticationManager(authManager);
+        this.authServiceLocator = socialAuthenticationServiceLocator;
+        this.usersConnectionService = usersConnectionService;
         // TODO 一些依赖的东西
     }
 
@@ -60,23 +72,20 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             log.debug("登录请求被拒绝,登录失败!");
             throw new SocialAuthenticationException("Authentication failed because user rejected authorization.");
         }
-        Authentication authentication = null;
-        // TODO get providers
-        Set<String> providers = null;
+        Authentication authentication;
+        Set<String> providers = authServiceLocator.registeredAuthenticationProviderIds();
         String providerId = getRequestedProviderId(httpServletRequest);
         if (providerId != null && !providers.isEmpty() && providers.contains(providerId)) {
             // 服务提供商匹配
-            // TODO get service
+            SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(providerId);
+            authentication = attemptAuthService(authService, httpServletRequest, httpServletResponse);
+            if (authentication == null) {
+                throw new AuthenticationServiceException("authentication failed");
+            }
         } else {
             throw new SocialAuthenticationException(Formatter.format("服务提供商未能匹配. req: {}", providerId));
         }
-        return null;
-    }
-
-    @Override
-    public void setFilterProcessesUrl(String filterProcessesUrl) {
-        super.setFilterProcessesUrl(filterProcessesUrl);
-        this.filterProcessesUrl = filterProcessesUrl;
+        return authentication;
     }
 
     /**
@@ -94,6 +103,51 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
                 && !parameterKeys.contains("code")
                 && !parameterKeys.contains("scope");
     }
+
+    private Authentication attemptAuthService(final SocialAuthenticationService<?> authService,
+                                              final HttpServletRequest request,
+                                              final HttpServletResponse response) {
+        final SocialAuthenticationToken token = authService.getAuthToken(request, response);
+        if (token == null) {
+            return null;
+        }
+
+        Assert.notNull(token.getConnection(), "connection must not be null.");
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            // 未认证或未登录
+            return doAuthentication(authService, request, token);
+        } else {
+            // 已登录 TODO addConnection
+            return null;
+        }
+    }
+
+    private Authentication doAuthentication(SocialAuthenticationService<?> authService,
+                                            HttpServletRequest request,
+                                            SocialAuthenticationToken token) {
+        try {
+            if (!authService.getConnectionCardinality().isAuthenticatePossible()) {
+                return null;
+            }
+            token.setDetails(authenticationDetailsSource.buildDetails(request));
+            Authentication success = getAuthenticationManager().authenticate(token);
+            Assert.isInstanceOf(ITIUser.class, success.getPrincipal(), "unexpected principle type");
+            // TODO updateConnection
+            return success;
+        } catch (BadCredentialsException e) {
+            // TODO signUp
+            throw e;
+        }
+    }
+
+    @Override
+    public void setFilterProcessesUrl(String filterProcessesUrl) {
+        super.setFilterProcessesUrl(filterProcessesUrl);
+        this.filterProcessesUrl = filterProcessesUrl;
+    }
+
 
     /**
      * 获取ProviderId
