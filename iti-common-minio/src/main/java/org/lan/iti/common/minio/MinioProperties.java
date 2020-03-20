@@ -18,7 +18,6 @@ package org.lan.iti.common.minio;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * minio 配置信息
@@ -28,7 +27,6 @@ import org.springframework.context.annotation.Configuration;
  * @url https://noahlan.com
  */
 @Data
-@Configuration
 @ConfigurationProperties(prefix = "minio")
 public class MinioProperties {
     /**

@@ -16,8 +16,10 @@
 
 package org.lan.iti.generator;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
+import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.INameConvert;
 import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 
 /**
  * mybatis-plus 代码生成器
@@ -134,17 +137,38 @@ public class MPGenerator {
         }
 
         autoGenerator = new AutoGenerator();
+        // 设置outputDir 支持直接填写模块名
+        setOutputDir(properties.getGlobalConfig());
         autoGenerator.setGlobalConfig(properties.getGlobalConfig());
         autoGenerator.setDataSource(properties.getDataSourceConfig());
         autoGenerator.setPackageInfo(properties.getPackageConfig());
         autoGenerator.setStrategy(properties.getStrategyConfig());
         autoGenerator.setTemplate(properties.getTemplateConfig());
-        // TODO InjectionConfig
         MPGeneratorProperties.TemplateEngineType engineType = properties.getTemplateEngineType();
         if (!isEngineAvailable(engineType)) {
             log.error("当前选择模板引擎: {} 不存在，请检查项目依赖配置是否正确引入相关模板引擎包.", engineType.name());
             throw new RuntimeException("当前选择模板引擎不存在, 请检查项目依赖配置是否正确引入相关模板引擎包");
         }
         autoGenerator.setTemplateEngine(buildEngine(engineType.getTemplateClass()));
+    }
+
+    private void setOutputDir(GlobalConfig globalConfig) {
+        String currentDir = System.getProperty("user.dir");
+        String newOutputDir = globalConfig.getOutputDir();
+//        if (!Paths.get(newOutputDir).isAbsolute()) {
+//            // 相对路径,从根目录相对,获取根目录信息
+//            currentDir = currentDir.substring(0, currentDir.lastIndexOf('\\'));
+//        }
+        if (StrUtil.isBlank(newOutputDir)) {
+            newOutputDir = currentDir + "/src/main";
+        } else {
+            newOutputDir = currentDir + "/" + newOutputDir + "/src/main";
+        }
+        if (globalConfig.isKotlin()) {
+            newOutputDir += "/kotlin";
+        } else {
+            newOutputDir += "/java";
+        }
+        globalConfig.setOutputDir(newOutputDir);
     }
 }

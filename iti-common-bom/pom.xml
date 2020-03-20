@@ -46,6 +46,10 @@
         <hikari.version>3.4.2</hikari.version>
         <findbugs.version>3.0.1</findbugs.version>
         <snakeyml.version>1.26</snakeyml.version>
+        <freemarker.version>2.3.30</freemarker.version>
+        <velocity.version>2.2</velocity.version>
+        <beetl.version>3.0.20.RELEASE</beetl.version>
+        <postgresql.version>42.2.11</postgresql.version>
     </properties>
 
     <dependencyManagement>
@@ -175,6 +179,30 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyml.version}</version>
+            </dependency>
+            <!-- freemarker -->
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemarker.version}</version>
+            </dependency>
+            <!-- velocity-engine-core -->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+            <!-- beetl -->
+            <dependency>
+                <groupId>com.ibeetl</groupId>
+                <artifactId>beetl</artifactId>
+                <version>${beetl.version}</version>
+            </dependency>
+            <!-- postgresql -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
             </dependency>
             <!--hutool-->
             <dependency>

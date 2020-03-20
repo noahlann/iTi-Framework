@@ -33,6 +33,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-common-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
         </dependency>

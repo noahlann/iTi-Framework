@@ -38,11 +38,6 @@
             <artifactId>swagger-annotations</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--mybatis plus-->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus</artifactId>
-        </dependency>
         <!--spring-tx-->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -85,10 +80,18 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--mybatis plus extension,包含了 mybatis plus core-->
+        <!-- mybatis plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-extension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
         <!--缓存依赖-->
         <dependency>

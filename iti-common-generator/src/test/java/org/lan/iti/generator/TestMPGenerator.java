@@ -16,8 +16,15 @@
 
 package org.lan.iti.generator;
 
-import com.baomidou.mybatisplus.generator.InjectionConfig;
-import org.junit.Test;
+
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.Test;
+import org.lan.iti.generator.util.Resources;
+
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author NorthLan
@@ -37,5 +44,30 @@ public class TestMPGenerator {
 //            }
 //        }).execute();
         System.out.println(2333);
+    }
+
+    @Test
+    @SneakyThrows
+    public void testPath(){
+        File file = new File("");
+        String ab = file.getAbsolutePath();
+        String ac = file.getCanonicalPath();
+        String p = file.getParent();
+
+        String d = System.getProperty("user.dir");
+        String e = System.getProperty("project.dir");
+
+        String f = getClass().getResource("").getPath();
+
+        Path path = Paths.get("");
+        Boolean a = path.isAbsolute();
+
+        String currentDir = System.getProperty("user.dir");
+        if (!Paths.get("").isAbsolute()) {
+            // 相对路径,从根目录相对,获取根目录信息
+            currentDir = currentDir.substring(0, currentDir.lastIndexOf('\\'));
+        }
+
+        System.out.println(23);
     }
 }

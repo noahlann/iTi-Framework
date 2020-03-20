@@ -32,6 +32,12 @@
     <description>代码生成工具</description>
 
     <dependencies>
+        <!-- core for provided -->
+        <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-common-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!-- mybatis-plus-generator -->
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -41,6 +47,15 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+        <!-- postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
     </dependencies>
 

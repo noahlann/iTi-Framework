@@ -1,7 +1,7 @@
 # 全局配置
 globalConfig:
   # 生成文件的输出目录
-  outputDir: D://
+  outputDir: ""
   # 是否覆盖已有文件
   fileOverride: true
   # 是否打开输出目录
@@ -36,22 +36,22 @@ globalConfig:
 dataSourceConfig:
   # 数据库类型,不填写将根据driverName或url自动推断
   # MYSQL MARIADB ORACLE ORACLE_12C DB2 H2 HSQL SQLITE POSTGRE_SQL SQL_SERVER2005 SQL_SERVER DM XU_GU KINGBASE_ES PHOENIX OTHER
-  dbType: POSTGRE_SQL
+  # dbType: POSTGRE_SQL
   # 数据库连接驱动
   driverName: org.postgresql.Driver
   # url
-  url: jdbc:postgresql://localhost:5432/postgres
+  url: jdbc:postgresql://192.168.1.88:5432/postgres
   # pg/oracle等数据库的schema支持
   schemaName: public
   username: postgres
-  password: postgres
+  password: gxzc222..
 
 # 包配置
 packageConfig:
   # 父包名。如果为空，将下面子包名必须写全部， 否则就只需写子包名
   parent: com.gxzc
   # 父包模块名
-  #moduleName: xxx-xxx-api
+  # moduleName: module
   # Entity包名
   #entity: entity
   # Service包名
@@ -61,7 +61,7 @@ packageConfig:
   # Mapper包名
   #mapper: mapper
   # Mapper XML包名
-  xml: mapper
+  # xml: mapper
   # Controller包名
   #controller: controller
 
@@ -98,13 +98,13 @@ strategyConfig:
   # 自定义继承的Service类全称，带包名
   superServiceClass: org.lan.iti.common.core.base.BaseService
   # 自定义继承的ServiceImpl类全称，带包名
-  # superServiceImplClass:
+  superServiceImplClass: org.lan.iti.common.core.base.BaseServiceImpl
   # 自定义继承的Controller类全称，带包名
   # superControllerClass:
 
   # 需要包含的表名（与exclude二选一配置）
-  #include:
-  #  - table1
+  include:
+    - app_mmse
   #  - table2
 
   # 需要排除的表名（与include二选一配置）
