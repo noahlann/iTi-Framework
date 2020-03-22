@@ -26,6 +26,8 @@ import org.lan.iti.common.data.tenant.ITITenantProperties;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,6 +41,7 @@ import java.util.Collections;
 @Configuration
 @MapperScan(basePackages = {"org.lan.iti.**.mapper", "com.gxzc.**.mapper"})
 @ConditionalOnClass(ITIMetaObjectHandler.class)
+@EnableConfigurationProperties(ITITenantProperties.class)
 @AllArgsConstructor
 public class MPAutoConfiguration {
 
@@ -49,6 +52,7 @@ public class MPAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "iti.tenant", name = "enabled", havingValue = "true")
     public ITITenantHandler itiTenantHandler() {
         return new ITITenantHandler(tenantProperties);
     }
@@ -57,9 +61,13 @@ public class MPAutoConfiguration {
     @ConditionalOnMissingBean
     public PaginationInterceptor paginationInterceptor() {
         PaginationInterceptor interceptor = new PaginationInterceptor();
-        TenantSqlParser tenantSqlParser = new TenantSqlParser();
-        tenantSqlParser.setTenantHandler(itiTenantHandler());
-        interceptor.setSqlParserList(Collections.singletonList(tenantSqlParser));
+
+        if (tenantProperties.isEnabled()) {
+            TenantSqlParser tenantSqlParser = new TenantSqlParser();
+            tenantSqlParser.setTenantHandler(itiTenantHandler());
+            interceptor.setSqlParserList(Collections.singletonList(tenantSqlParser));
+        }
+
         return interceptor;
     }
 }

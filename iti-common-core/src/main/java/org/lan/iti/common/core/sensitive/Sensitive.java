@@ -32,10 +32,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @JacksonAnnotationsInside
-@JsonSerialize
+@JsonSerialize(using = SensitiveSerializer.class)
 public @interface Sensitive {
     /**
-     * 脱敏数据类型, 非Customer时, 将忽略 refixNoMaskLen 和 suffixNoMaskLen 和 maskStr
+     * 脱敏数据类型, 非Customer时, 将忽略 prefixNoMaskLen 和 suffixNoMaskLen 和 maskStr
      */
     SensitiveTypeEnum type() default SensitiveTypeEnum.CUSTOMER;
 

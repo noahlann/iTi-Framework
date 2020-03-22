@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.lan.iti.common.core.sensitive.util.DesensitizedUtils;
 import org.springframework.util.Assert;
 
@@ -35,7 +35,7 @@ import java.io.IOException;
  * @date 2020-02-22
  * @url https://noahlan.com
  */
-@AllArgsConstructor
+@NoArgsConstructor
 public class SensitiveSerializer extends JsonSerializer<String> implements ContextualSerializer {
     private SensitiveTypeEnum type;
     private Integer prefixNoMaskLen;
@@ -104,7 +104,12 @@ public class SensitiveSerializer extends JsonSerializer<String> implements Conte
                     sensitive = property.getContextAnnotation(Sensitive.class);
                 }
                 if (sensitive != null) {
-                    return new SensitiveSerializer(sensitive.type(), sensitive.prefixNoMaskLen(), sensitive.suffixNoMaskLen(), sensitive.maskStr());
+                    SensitiveSerializer serializer = new SensitiveSerializer();
+                    serializer.type = sensitive.type();
+                    serializer.prefixNoMaskLen = sensitive.prefixNoMaskLen();
+                    serializer.suffixNoMaskLen = sensitive.suffixNoMaskLen();
+                    serializer.maskStr = sensitive.maskStr();
+                    return serializer;
                 }
             }
             return prov.findValueSerializer(property.getType(), property);

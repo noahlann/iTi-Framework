@@ -21,8 +21,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.lan.iti.common.core.exception.enums.IExceptionEnum;
 import org.lan.iti.common.core.enums.StatusEnum;
+import org.lan.iti.common.core.exception.enums.IExceptionEnum;
 
 import java.io.Serializable;
 
@@ -84,6 +84,14 @@ public class ApiResult<T> implements Serializable {
      */
     public static <T> ApiResult<T> ok() {
         return ok("成功", null);
+    }
+
+    /**
+     * 成功结果
+     * @param data 数据域
+     */
+    public static <T> ApiResult<T> ok(T data) {
+        return ok("成功", data);
     }
 
     /**

@@ -19,22 +19,26 @@ package org.lan.iti.common.data.tenant;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 多租户配置
+ *
  * @author NorthLan
  * @date 2020-02-24
  * @url https://noahlan.com
  */
 @Data
-@Configuration
 @RefreshScope
 @ConfigurationProperties(prefix = "iti.tenant")
 public class ITITenantProperties {
+    /**
+     * 是否启用
+     */
+    private boolean enabled = false;
+
     /**
      * 租户列名
      */

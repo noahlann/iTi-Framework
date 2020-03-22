@@ -70,20 +70,20 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
         if (detectRejection(httpServletRequest)) {
             log.debug("登录请求被拒绝,登录失败!");
-            throw new SocialAuthenticationException("Authentication failed because user rejected authorization.");
+            throw new SocialAuthenticationException("登录请求被拒绝,登录失败!");
         }
         Authentication authentication;
-        Set<String> providers = authServiceLocator.registeredAuthenticationProviderIds();
-        String providerId = getRequestedProviderId(httpServletRequest);
-        if (providerId != null && !providers.isEmpty() && providers.contains(providerId)) {
+        Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
+        String authProviderId = getRequestedProviderId(httpServletRequest);
+        if (authProviderId != null && !authProviders.isEmpty() && authProviders.contains(authProviderId)) {
             // 服务提供商匹配
-            SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(providerId);
+            SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
             authentication = attemptAuthService(authService, httpServletRequest, httpServletResponse);
             if (authentication == null) {
-                throw new AuthenticationServiceException("authentication failed");
+                throw new AuthenticationServiceException("认证失败");
             }
         } else {
-            throw new SocialAuthenticationException(Formatter.format("服务提供商未能匹配. req: {}", providerId));
+            throw new SocialAuthenticationException(Formatter.format("服务提供商未能匹配. req: {}", authProviderId));
         }
         return authentication;
     }
@@ -114,8 +114,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
         Assert.notNull(token.getConnection(), "connection must not be null.");
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
             // 未认证或未登录
             return doAuthentication(authService, request, token);
         } else {
@@ -147,7 +147,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
         super.setFilterProcessesUrl(filterProcessesUrl);
         this.filterProcessesUrl = filterProcessesUrl;
     }
-
 
     /**
      * 获取ProviderId
