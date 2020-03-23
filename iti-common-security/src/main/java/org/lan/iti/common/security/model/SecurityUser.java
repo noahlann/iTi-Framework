@@ -43,7 +43,13 @@ public class SecurityUser<T> implements Serializable {
     /**
      * 用户 ID
      */
-    private String uid;
+    private String userId;
+
+    private String providerId;
+
+    private String providerUserId;
+
+    private String domain;
 
     /**
      * 用户权限标识

@@ -50,6 +50,7 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Assert.isInstanceOf(SocialAuthenticationToken.class, authentication, "unsupported authentication type");
         Assert.isTrue(!authentication.isAuthenticated(), "already authenticated");
+        //
         SocialAuthenticationToken authToken = (SocialAuthenticationToken) authentication;
         String providerId = authToken.getProviderId();
         Connection<?> connection = authToken.getConnection();

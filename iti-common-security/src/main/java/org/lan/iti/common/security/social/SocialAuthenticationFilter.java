@@ -16,6 +16,7 @@
 
 package org.lan.iti.common.security.social;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.Formatter;
 import org.lan.iti.common.security.model.ITIUser;
@@ -68,45 +69,26 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
-        if (detectRejection(httpServletRequest)) {
-            log.debug("登录请求被拒绝,登录失败!");
-            throw new SocialAuthenticationException("登录请求被拒绝,登录失败!");
-        }
         Authentication authentication;
+        // 进行服务商匹配
         Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
         String authProviderId = getRequestedProviderId(httpServletRequest);
-        if (authProviderId != null && !authProviders.isEmpty() && authProviders.contains(authProviderId)) {
-            // 服务提供商匹配
-            SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
-            authentication = attemptAuthService(authService, httpServletRequest, httpServletResponse);
+        if (StrUtil.isNotBlank(authProviderId) && !authProviders.isEmpty() && authProviders.contains(authProviderId)) {
+            authentication = attemptAuthService(authProviderId, httpServletRequest, httpServletResponse);
             if (authentication == null) {
                 throw new AuthenticationServiceException("认证失败");
             }
         } else {
-            throw new SocialAuthenticationException(Formatter.format("服务提供商未能匹配. req: {}", authProviderId));
+            // TODO 加入提示逻辑
+            throw new SocialAuthenticationException(Formatter.format("鉴权中心未融合此方式登录功能. req: {}", authProviderId));
         }
         return authentication;
     }
 
-    /**
-     * 检测请求拒绝
-     *
-     * @param request 登录请求
-     */
-    protected boolean detectRejection(HttpServletRequest request) {
-        Set<?> parameterKeys = request.getParameterMap().keySet();
-        if ((parameterKeys.size() == 1) && (parameterKeys.contains("state"))) {
-            return false;
-        }
-        return parameterKeys.size() > 0
-                && !parameterKeys.contains("oauth_token")
-                && !parameterKeys.contains("code")
-                && !parameterKeys.contains("scope");
-    }
-
-    private Authentication attemptAuthService(final SocialAuthenticationService<?> authService,
+    private Authentication attemptAuthService(final String authProviderId,
                                               final HttpServletRequest request,
                                               final HttpServletResponse response) {
+        SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
         final SocialAuthenticationToken token = authService.getAuthToken(request, response);
         if (token == null) {
             return null;
@@ -116,11 +98,11 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            // 未认证或未登录
+            // 未认证，执行认证请求
             return doAuthentication(authService, request, token);
         } else {
-            // 已登录 TODO addConnection
-            return null;
+            // 已认证
+            return auth;
         }
     }
 
@@ -134,7 +116,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             token.setDetails(authenticationDetailsSource.buildDetails(request));
             Authentication success = getAuthenticationManager().authenticate(token);
             Assert.isInstanceOf(ITIUser.class, success.getPrincipal(), "unexpected principle type");
-            // TODO updateConnection
             return success;
         } catch (BadCredentialsException e) {
             // TODO signUp
@@ -151,7 +132,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
     /**
      * 获取ProviderId
      *
-     * @param request 请求
+     * @param request 当前请求
      * @return 从请求url中获取到的ProviderId
      */
     private String getRequestedProviderId(HttpServletRequest request) {

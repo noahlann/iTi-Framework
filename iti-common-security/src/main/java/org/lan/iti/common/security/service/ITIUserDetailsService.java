@@ -38,12 +38,12 @@ public interface ITIUserDetailsService extends UserDetailsService {
      * 根据 唯一标识与类型 查询 UserDetails
      *
      * @param principal   唯一标识 (手机号/微信openid/微博openid等)
-     * @param type        鉴权类型代码
+     * @param providerId        鉴权类型代码
      * @param credentials 身份信息（密码等）
      * @param extra       扩展信息
      * @return 用户鉴权模型
      */
-    UserDetails loadUser(String principal, String type, String credentials, Map<String, String> extra) throws UsernameNotFoundException;
+    UserDetails loadUser(String principal, String providerId, String credentials, Map<String, String> extra) throws UsernameNotFoundException;
 
     /**
      * 自动注册

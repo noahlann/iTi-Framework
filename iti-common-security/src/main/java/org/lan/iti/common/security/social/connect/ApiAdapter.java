@@ -29,15 +29,15 @@ import org.lan.iti.common.security.social.exception.ApiException;
  */
 public interface ApiAdapter<A> {
     /**
-     * Implements {@link org.springframework.social.connect.Connection#test()} for connections to the given API.
+     * Implements {@link Connection#test()} for connections to the given API.
      * @param api the API binding
      * @return true if the API is functional, false if not
      */
     boolean test(A api);
 
     /**
-     * Sets values for {@link ConnectionKey#getProviderUserId()}, {@link org.springframework.social.connect.Connection#getDisplayName()},
-     * {@link org.springframework.social.connect.Connection#getProfileUrl()}, and {@link org.springframework.social.connect.Connection#getImageUrl()} for connections to the given API.
+     * Sets values for {@link ConnectionKey#getProviderUserId()}, {@link Connection#getDisplayName()},
+     * {@link Connection#getProfileUrl()}, and {@link Connection#getImageUrl()} for connections to the given API.
      * @param api the API binding
      * @param values the connection values to set
      * @throws ApiException if there is a problem fetching connection information from the provider.
@@ -47,7 +47,7 @@ public interface ApiAdapter<A> {
     // TODO fetchUserProfile
 
     /**
-     * Implements {@link org.springframework.social.connect.Connection#updateStatus(String)} for connections to the given API.
+     * Implements {@link Connection#updateStatus(String)} for connections to the given API.
      * If the provider does not have a status concept calling this method should have no effect.
      * @param api the API binding
      * @param message the status message

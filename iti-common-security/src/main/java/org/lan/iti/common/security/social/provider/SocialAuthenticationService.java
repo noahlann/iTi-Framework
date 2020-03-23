@@ -18,8 +18,6 @@
 
 package org.lan.iti.common.security.social.provider;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import org.lan.iti.common.security.social.SocialAuthenticationToken;
 import org.lan.iti.common.security.social.connect.ConnectionFactory;
 
@@ -34,10 +32,6 @@ import javax.servlet.http.HttpServletResponse;
  * @url https://noahlan.com
  */
 public interface SocialAuthenticationService<S> {
-    /**
-     * @return {@link ConnectionCardinality} 此提供商的Connection关系
-     */
-    ConnectionCardinality getConnectionCardinality();
 
     /**
      * @return 用于认证的 {@link ConnectionFactory}
@@ -46,61 +40,10 @@ public interface SocialAuthenticationService<S> {
 
     /**
      * 获取 AuthToken
-     * @param request 当前 {@link HttpServletRequest}
+     *
+     * @param request  当前 {@link HttpServletRequest}
      * @param response 当前 {@link HttpServletResponse}
      * @return 未授权的Token或null
      */
     SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response);
-
-    /**
-     * Connection关系
-     */
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public enum ConnectionCardinality {
-        /**
-         * 一对一，每个userId仅一个连接的providerUserId，反之亦然
-         */
-        ONE_TO_ONE(false, false),
-
-        /**
-         * 一对多，一个userId可连接多个providerUserId，但是每个providerUserId只能连接一个userId
-         */
-        ONE_TO_MANY(false, true),
-
-        /**
-         * 多对一，每个userId只能有一个providerUserId，但是每个providerUserId可以有许多userId.
-         * 注：无法对用户进行鉴权
-         */
-        MANY_TO_ONE(true, false),
-
-        /**
-         * 多对多，无限制。无法验证用户
-         */
-        MANY_TO_MANY(true, true);
-
-        private final boolean multiUserId;
-        private final boolean multiProviderUserId;
-
-        /**
-         * 每个providerUserId允许多个userId。如果为true，则无法进行身份验证
-         *
-         * @return 如果每个提供者用户标识允许多个本地用户，则为true
-         */
-        public boolean isMultiUserId() {
-            return multiUserId;
-        }
-
-        /**
-         * 每个userId允许许多providerUserId
-         *
-         * @return 如果允许用户与提供商建立多个连接，则为true
-         */
-        public boolean isMultiProviderUserId() {
-            return multiProviderUserId;
-        }
-
-        public boolean isAuthenticatePossible() {
-            return !isMultiUserId();
-        }
-    }
 }

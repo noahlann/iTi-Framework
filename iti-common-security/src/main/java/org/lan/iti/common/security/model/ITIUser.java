@@ -41,17 +41,73 @@ public class ITIUser implements UserDetails {
      * 用户唯一ID
      */
     @Getter
-    private String uid;
+    private String userId;
 
     /**
-     * 用户名
+     * 提供商ID(mobile/wechat/qq/wechat-mini-app. etc..)
      */
-    private String username;
+    private String providerId;
+
+    /**
+     * 提供商用户ID(通常openId)
+     */
+    private String providerUserId;
+
+    /**
+     * 认证中心域,适用于区分多用户源,多认证中心域
+     */
+    @Getter
+    private String domain;
+
+    /**
+     * 唯一凭证(用户名)
+     */
+    private String principal;
 
     /**
      * 密码
      */
-    private String password;
+    private String secret;
+
+    /**
+     * 用于展示的名称，若为null或空字符串，则显示用户名
+     */
+    private String displayName;
+
+    /**
+     * 图像地址，一般为头像
+     */
+    @Getter
+    private String imageUrl;
+
+    /**
+     * 租户ID
+     */
+    @Getter
+    private String tenantId;
+
+    // region for social
+    /**
+     * access_token
+     */
+    private String accessToken;
+
+    /**
+     * refresh_token
+     */
+    private String refreshToken;
+
+    /**
+     * token的过期时间
+     */
+    private Long expireTime;
+    // endregion
+
+    /**
+     * 用户附加属性
+     */
+    @Getter
+    private Map<String, Object> attributes;
 
     /**
      * 用户权限
@@ -78,54 +134,6 @@ public class ITIUser implements UserDetails {
      */
     private boolean credentialsNonExpired;
 
-    /**
-     * 认证客户端ID
-     */
-    @Getter
-    private String clientId;
-
-    /**
-     * 认证中心域,适用于区分多用户源,多认证中心域
-     */
-    @Getter
-    private String domain;
-
-    /**
-     * 昵称
-     */
-    @Getter
-    private String nickName;
-
-    /**
-     * 头像
-     */
-    @Getter
-    private String avatar;
-
-    /**
-     * 账户Id
-     */
-    @Getter
-    private String accountId;
-
-    /***
-     * 账户类型
-     */
-    @Getter
-    private String accountType;
-
-    /**
-     * 用户附加属性
-     */
-    @Getter
-    private Map<String, Object> attributes;
-
-    /**
-     * 租户ID
-     */
-    @Getter
-    private String tenantId;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
@@ -133,12 +141,12 @@ public class ITIUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.password;
+        return this.secret;
     }
 
     @Override
     public String getUsername() {
-        return this.username;
+        return this.principal;
     }
 
     @Override

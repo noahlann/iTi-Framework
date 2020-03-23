@@ -46,15 +46,23 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object principle;
 
-    private final Connection<?> connection;
+    private final String credentials;
+
+//    private final Connection<?> connection;
 
     private final Map<String, String> providerAccountData;
 
-    public SocialAuthenticationToken(final Connection<?> connection, Map<String, String> providerAccountData) {
+    /**
+     * 用于认证的 token
+     *
+     * @param providerId          服务提供商ID
+     * @param credentials         凭证，用于一些需要凭证的登录
+     * @param providerAccountData 提供商账户信息
+     */
+    public SocialAuthenticationToken(final String providerId, final String credentials, Map<String, String> providerAccountData) {
         super(null);
-        Assert.notNull(connection, "connection must not be null");
+        Assert.notNull(providerId, "providerId must not be null");
         ConnectionData connectionData = connection.createData();
-        Assert.notNull(connectionData.getProviderId(), "providerId must not be null");
         if (connectionData.getExpireTime() != null && connectionData.getExpireTime() < SystemClock.now()) {
             throw new IllegalArgumentException("连接已过期");
         }
@@ -69,6 +77,14 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
         super.setAuthenticated(false);
     }
 
+    /**
+     * 认证成功的 token
+     *
+     * @param connection          连接信息
+     * @param details             principle
+     * @param providerAccountData 服务提供商账户信息
+     * @param authorities         权限信息
+     */
     public SocialAuthenticationToken(final Connection<?> connection, final Object details, final Map<String, String> providerAccountData, final Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         Assert.notNull(connection, "connection must not be null");
@@ -90,7 +106,7 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getCredentials() {
-        return null;
+        return credentials;
     }
 
     @Override

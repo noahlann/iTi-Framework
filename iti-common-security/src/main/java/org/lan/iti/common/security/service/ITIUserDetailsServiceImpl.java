@@ -43,9 +43,9 @@ public class ITIUserDetailsServiceImpl implements ITIUserDetailsService {
     private final UserBuilder userBuilder;
 
     @Override
-    public UserDetails loadUser(String principal, String type, String credentials, Map<String, String> extra) throws UsernameNotFoundException {
+    public UserDetails loadUser(String principal, String providerId, String credentials, Map<String, String> extra) throws UsernameNotFoundException {
         // TODO 更多逻辑判定
-        ApiResult<SecurityUser<?>> user = remoteUserService.getSecurityUser(principal, type);
+        ApiResult<SecurityUser<?>> user = remoteUserService.getSecurityUser(principal, providerId);
         return buildUserDetails(user);
     }
 
