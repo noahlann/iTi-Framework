@@ -65,11 +65,23 @@ public class ConnectionData implements Serializable {
      */
     private String imageUrl;
 
+    /**
+     * oauth2 access_token
+     */
     private String accessToken;
 
+    /**
+     * secret
+     */
     private String secret;
 
+    /**
+     * oauth2 refresh_token
+     */
     private String refreshToken;
 
+    /**
+     * oauth2 expire_in + loginTime
+     */
     private Long expireTime;
 }

@@ -27,7 +27,7 @@ import lombok.Getter;
  * @date 2020-03-19
  * @url https://noahlan.com
  */
-public class NotConnectedException extends ConnectionServiceException {
+public class NotConnectedException extends ConnectionRepositoryException {
     private static final long serialVersionUID = 5184825570124867701L;
 
     @Getter

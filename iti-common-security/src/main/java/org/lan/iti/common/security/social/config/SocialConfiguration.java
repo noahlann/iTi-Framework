@@ -19,7 +19,7 @@
 package org.lan.iti.common.security.social.config;
 
 import org.lan.iti.common.security.social.connect.ConnectionFactoryLocator;
-import org.lan.iti.common.security.social.connect.UsersConnectionService;
+import org.lan.iti.common.security.social.connect.UsersConnectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,17 +61,17 @@ public class SocialConfiguration {
     }
 
     @Bean
-    public UsersConnectionService usersConnectionService(ConnectionFactoryLocator connectionFactoryLocator) {
-        UsersConnectionService usersConnectionService = null;
+    public UsersConnectionRepository usersConnectionService(ConnectionFactoryLocator connectionFactoryLocator) {
+        UsersConnectionRepository usersConnectionRepository = null;
         for (SocialConfigurer socialConfigurer : socialConfigurers) {
-            UsersConnectionService ucsCandidate = socialConfigurer.getUsersConnectionRepository(connectionFactoryLocator);
+            UsersConnectionRepository ucsCandidate = socialConfigurer.getUsersConnectionRepository(connectionFactoryLocator);
             if (ucsCandidate != null) {
-                usersConnectionService = ucsCandidate;
+                usersConnectionRepository = ucsCandidate;
                 break;
             }
         }
-        Assert.notNull(usersConnectionService, "One configuration class must implement getUsersConnectionRepository from SocialConfigurer.");
-        return usersConnectionService;
+        Assert.notNull(usersConnectionRepository, "One configuration class must implement getUsersConnectionRepository from SocialConfigurer.");
+        return usersConnectionRepository;
     }
 
 //    @Bean

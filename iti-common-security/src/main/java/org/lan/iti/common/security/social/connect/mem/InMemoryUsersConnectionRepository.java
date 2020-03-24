@@ -29,14 +29,14 @@ import java.util.*;
  * @date 2020-03-19
  * @url https://noahlan.com
  */
-public class InMemoryUsersConnectionServiceImpl implements UsersConnectionService {
+public class InMemoryUsersConnectionRepository implements UsersConnectionRepository {
     private ConnectionFactoryLocator connectionFactoryLocator;
-    private Map<String, ConnectionService> connectionServices;
+    private Map<String, ConnectionRepository> connectionServices;
 
     @Setter
     private ConnectionSignUp connectionSignUp;
 
-    public InMemoryUsersConnectionServiceImpl(ConnectionFactoryLocator connectionFactoryLocator) {
+    public InMemoryUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
         this.connectionFactoryLocator = connectionFactoryLocator;
         this.connectionServices = new HashMap<>();
     }
@@ -44,8 +44,8 @@ public class InMemoryUsersConnectionServiceImpl implements UsersConnectionServic
     @Override
     public List<String> findUserIdsWithConnection(Connection<?> connection) {
         List<String> localUserIds = new ArrayList<>();
-        Set<Map.Entry<String, ConnectionService>> connectionServiceEntries = connectionServices.entrySet();
-        for (Map.Entry<String, ConnectionService> entry : connectionServiceEntries) {
+        Set<Map.Entry<String, ConnectionRepository>> connectionServiceEntries = connectionServices.entrySet();
+        for (Map.Entry<String, ConnectionRepository> entry : connectionServiceEntries) {
             try {
                 entry.getValue().getConnection(connection.getKey());
                 localUserIds.add(entry.getKey());
@@ -67,8 +67,8 @@ public class InMemoryUsersConnectionServiceImpl implements UsersConnectionServic
     @Override
     public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {
         List<String> localUserIds = new ArrayList<>();
-        Set<Map.Entry<String, ConnectionService>> connectionServiceEntries = connectionServices.entrySet();
-        for (Map.Entry<String, ConnectionService> entry : connectionServiceEntries) {
+        Set<Map.Entry<String, ConnectionRepository>> connectionServiceEntries = connectionServices.entrySet();
+        for (Map.Entry<String, ConnectionRepository> entry : connectionServiceEntries) {
             String localUserId = entry.getKey();
             List<Connection<?>> providerConnections = entry.getValue().findConnections(providerId);
             for (Connection<?> connection : providerConnections) {
@@ -81,9 +81,9 @@ public class InMemoryUsersConnectionServiceImpl implements UsersConnectionServic
     }
 
     @Override
-    public ConnectionService createConnectionService(String userId) {
+    public ConnectionRepository createConnectionService(String userId) {
         if (!connectionServices.containsKey(userId)) {
-            connectionServices.put(userId, new InMemoryConnectionServiceImpl(connectionFactoryLocator));
+            connectionServices.put(userId, new InMemoryConnectionRepository(connectionFactoryLocator));
         }
         return connectionServices.get(userId);
     }

@@ -21,7 +21,7 @@ package org.lan.iti.common.security.social.connect.mem;
 import org.lan.iti.common.security.social.connect.Connection;
 import org.lan.iti.common.security.social.connect.ConnectionFactoryLocator;
 import org.lan.iti.common.security.social.connect.ConnectionKey;
-import org.lan.iti.common.security.social.connect.ConnectionService;
+import org.lan.iti.common.security.social.connect.ConnectionRepository;
 import org.lan.iti.common.security.social.connect.exception.DuplicateConnectionException;
 import org.lan.iti.common.security.social.connect.exception.NoSuchConnectionException;
 import org.lan.iti.common.security.social.connect.exception.NotConnectedException;
@@ -41,12 +41,12 @@ import java.util.Map;
  * @date 2020-03-19
  * @url https://noahlan.com
  */
-public class InMemoryConnectionServiceImpl implements ConnectionService {
+public class InMemoryConnectionRepository implements ConnectionRepository {
     // <providerId, Connection<provider API>>
     private MultiValueMap<String, Connection<?>> connections;
     private ConnectionFactoryLocator connectionFactoryLocator;
 
-    public InMemoryConnectionServiceImpl(ConnectionFactoryLocator connectionFactoryLocator) {
+    public InMemoryConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
         this.connectionFactoryLocator = connectionFactoryLocator;
         this.connections = new LinkedMultiValueMap<>();
     }

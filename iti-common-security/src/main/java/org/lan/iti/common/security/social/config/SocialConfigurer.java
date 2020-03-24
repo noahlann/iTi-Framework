@@ -19,7 +19,7 @@
 package org.lan.iti.common.security.social.config;
 
 import org.lan.iti.common.security.social.connect.ConnectionFactoryLocator;
-import org.lan.iti.common.security.social.connect.UsersConnectionService;
+import org.lan.iti.common.security.social.connect.UsersConnectionRepository;
 import org.springframework.core.env.Environment;
 
 /**
@@ -31,5 +31,5 @@ public interface SocialConfigurer {
 
     void addConnectionFactories(ConnectionFactoryConfigurer connectionFactoryConfigurer, Environment environment);
 
-    UsersConnectionService getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator);
+    UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator);
 }

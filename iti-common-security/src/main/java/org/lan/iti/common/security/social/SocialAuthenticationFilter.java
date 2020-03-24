@@ -19,8 +19,8 @@ package org.lan.iti.common.security.social;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.Formatter;
-import org.lan.iti.common.security.model.ITIUser;
-import org.lan.iti.common.security.social.connect.UsersConnectionService;
+import org.lan.iti.common.security.model.ITIUserDetails;
+import org.lan.iti.common.security.social.connect.UsersConnectionRepository;
 import org.lan.iti.common.security.social.exception.SocialAuthenticationException;
 import org.lan.iti.common.security.social.provider.SocialAuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,17 +53,15 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
     private static final String DEFAULT_FILTER_PROCESSES_URL = "/social";
 
     private SocialAuthenticationServiceLocator authServiceLocator;
-    private UsersConnectionService usersConnectionService;
 
     private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
 
     protected SocialAuthenticationFilter(AuthenticationManager authManager,
-                                         UsersConnectionService usersConnectionService,
+                                         UsersConnectionRepository usersConnectionRepository,
                                          SocialAuthenticationServiceLocator socialAuthenticationServiceLocator) {
         super(DEFAULT_FILTER_PROCESSES_URL);
         setAuthenticationManager(authManager);
         this.authServiceLocator = socialAuthenticationServiceLocator;
-        this.usersConnectionService = usersConnectionService;
         // TODO 一些依赖的东西
     }
 
@@ -74,7 +72,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
         Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
         String authProviderId = getRequestedProviderId(httpServletRequest);
         if (StrUtil.isNotBlank(authProviderId) && !authProviders.isEmpty() && authProviders.contains(authProviderId)) {
-            authentication = attemptAuthService(authProviderId, httpServletRequest, httpServletResponse);
+            SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
+            authentication = attemptAuthService(authService, httpServletRequest, httpServletResponse);
             if (authentication == null) {
                 throw new AuthenticationServiceException("认证失败");
             }
@@ -85,10 +84,10 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
         return authentication;
     }
 
-    private Authentication attemptAuthService(final String authProviderId,
+    private Authentication attemptAuthService(final SocialAuthenticationService<?> authService,
                                               final HttpServletRequest request,
                                               final HttpServletResponse response) {
-        SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
+
         final SocialAuthenticationToken token = authService.getAuthToken(request, response);
         if (token == null) {
             return null;
@@ -110,15 +109,13 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
                                             HttpServletRequest request,
                                             SocialAuthenticationToken token) {
         try {
-            if (!authService.getConnectionCardinality().isAuthenticatePossible()) {
-                return null;
-            }
+            // TODO 判定绑定次数?
             token.setDetails(authenticationDetailsSource.buildDetails(request));
             Authentication success = getAuthenticationManager().authenticate(token);
-            Assert.isInstanceOf(ITIUser.class, success.getPrincipal(), "unexpected principle type");
+            Assert.isInstanceOf(ITIUserDetails.class, success.getPrincipal(), "unexpected principle type");
             return success;
         } catch (BadCredentialsException e) {
-            // TODO signUp
+            // TODO signUp 注册?
             throw e;
         }
     }

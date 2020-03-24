@@ -28,7 +28,7 @@ import org.lan.iti.common.security.social.connect.ConnectionKey;
  * @date 2020-03-19
  * @url https://noahlan.com
  */
-public class NoSuchConnectionException extends ConnectionServiceException {
+public class NoSuchConnectionException extends ConnectionRepositoryException {
     private static final long serialVersionUID = 7525201408273608114L;
 
     @Getter

@@ -21,7 +21,7 @@ package org.lan.iti.common.security.social;
 import lombok.AllArgsConstructor;
 import org.lan.iti.common.security.service.ITIUserDetailsService;
 import org.lan.iti.common.security.social.connect.Connection;
-import org.lan.iti.common.security.social.connect.UsersConnectionService;
+import org.lan.iti.common.security.social.connect.UsersConnectionRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -43,7 +43,7 @@ import java.util.List;
  */
 @AllArgsConstructor
 public class SocialAuthenticationProvider implements AuthenticationProvider {
-    private UsersConnectionService usersConnectionService;
+    private UsersConnectionRepository usersConnectionRepository;
     private ITIUserDetailsService userDetailsService;
 
     @Override
@@ -76,7 +76,7 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
     }
 
     protected String toUserId(Connection<?> connection) {
-        List<String> userIds = usersConnectionService.findUserIdsWithConnection(connection);
+        List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
         return (userIds.size() == 1) ? userIds.iterator().next() : null;
     }
 }

@@ -16,25 +16,24 @@
  *
  */
 
-package org.lan.iti.common.security.social.connect.exception;
+package org.lan.iti.common.security.social.connect;
 
-import org.lan.iti.common.security.social.exception.SocialException;
+import java.util.List;
+import java.util.Set;
 
 /**
- * 基础Connection接口服务异常
+ * 用户连接数据访问接口
+ * 用于管理用户到服务提供商的连接的全局存储
  *
  * @author NorthLan
  * @date 2020-03-19
  * @url https://noahlan.com
  */
-public abstract class ConnectionServiceException extends SocialException {
-    private static final long serialVersionUID = 1189864946982617239L;
+public interface UsersConnectionRepository {
 
-    public ConnectionServiceException(String message) {
-        super(message);
-    }
+    List<String> findUserIdsWithConnection(Connection<?> connection);
 
-    public ConnectionServiceException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds);
+
+    ConnectionRepository createConnectionService(String userId);
 }

@@ -34,7 +34,7 @@ import java.util.Map;
  */
 @Builder
 @Accessors(chain = true)
-public class ITIUser implements UserDetails {
+public class ITIUserDetails implements UserDetails {
     private static final long serialVersionUID = -2522947416797109973L;
 
     /**

@@ -16,7 +16,7 @@
 
 package org.lan.iti.common.security.service;
 
-import org.lan.iti.common.security.model.ITIUser;
+import org.lan.iti.common.security.model.ITIUserDetails;
 import org.lan.iti.common.security.model.SecurityUser;
 
 import java.util.Map;
@@ -35,12 +35,12 @@ public interface UserBuilder {
      *
      * @param user 框架定义SecurityUser
      */
-    ITIUser from(SecurityUser<?> user);
+    ITIUserDetails from(SecurityUser<?> user);
 
     /**
      * 从Authentication构建
      *
      * @param user Authentication的Map
      */
-    ITIUser from(Map<String, ?> user);
+    ITIUserDetails from(Map<String, ?> user);
 }

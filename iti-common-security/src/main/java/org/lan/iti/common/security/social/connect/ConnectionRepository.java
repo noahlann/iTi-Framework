@@ -28,7 +28,7 @@ import java.util.List;
  * @date 2020-03-19
  * @url https://noahlan.com
  */
-public interface ConnectionService {
+public interface ConnectionRepository {
 
     MultiValueMap<String, Connection<?>> findAllConnections();
 
