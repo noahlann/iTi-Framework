@@ -36,9 +36,9 @@ public interface ApiResultGenericRecoder {
     /**
      * 重编码实现支持情况
      *
-     * @param type Feign返回类型推断
+     * @param clazz ApiResult泛型实际类型
      */
-    boolean support(Type type);
+    boolean support(Class<?> clazz);
 
     /**
      * 重编码处理
@@ -47,7 +47,7 @@ public interface ApiResultGenericRecoder {
      * @param response Feign返回对象
      * @param type     Feign返回类型推断
      */
-    void process(ApiResult<?> result, Response response, Type type);
+    void process(ApiResult<?> result, Response response, Type type, Class<?> clazz);
 
     /**
      * 获取

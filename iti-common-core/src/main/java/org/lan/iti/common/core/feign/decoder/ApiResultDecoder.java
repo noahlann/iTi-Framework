@@ -45,12 +45,8 @@ public class ApiResultDecoder implements Decoder {
     public Object decode(Response response, Type type) throws IOException, DecodeException, FeignException {
         ApiResult<?> returnObject;
         if (isParameterizeApiResult(type)) {
-            // 获取ApiResult的泛型参数类型
-//            type = ResolvableType.forClassWithGenerics(ApiResult.class,
-//                    ResolvableType.forType(((ParameterizedType) type).getActualTypeArguments()[0])).getType();
-            type = ((ParameterizedType) type).getActualTypeArguments()[0];
-            Object decodedObject = this.decoder.decode(response, type);
-            returnObject = createApiResult(decodedObject, response);
+            // 实际传递数据为整个ApiResult->Json化的值
+            returnObject = (ApiResult<?>) this.decoder.decode(response, type);
         } else if (isApiResult(type)) {
             returnObject = createApiResult(null, response);
         } else {
@@ -58,10 +54,12 @@ public class ApiResultDecoder implements Decoder {
             return this.decoder.decode(response, type);
         }
         // 重编码
-        if (returnObject != null) {
+        if (returnObject != null && returnObject.getData() != null) {
             for (ApiResultGenericRecoder it : genericRecodes) {
-                if (it.support(type)) {
-                    it.process(returnObject, response, type);
+                Class<?> clazz = (Class<?>) ((ParameterizedType)
+                        ((ParameterizedType) type).getActualTypeArguments()[0]).getRawType();
+                if (it.support(clazz)) {
+                    it.process(returnObject, response, type, clazz);
                 }
             }
         }
