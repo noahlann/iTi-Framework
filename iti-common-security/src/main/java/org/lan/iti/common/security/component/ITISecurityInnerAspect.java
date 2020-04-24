@@ -17,7 +17,6 @@
 package org.lan.iti.common.security.component;
 
 import cn.hutool.core.util.StrUtil;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,7 +25,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.security.annotation.Inner;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,15 +40,20 @@ import javax.servlet.http.HttpServletRequest;
  * @url https://noahlan.com
  */
 @Slf4j
-@AllArgsConstructor
 @Aspect
-@Component
 public class ITISecurityInnerAspect {
-    private final HttpServletRequest request;
 
     @SneakyThrows
     @Around("@annotation(inner)")
     public Object around(ProceedingJoinPoint point, Inner inner) {
+        HttpServletRequest request = null;
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes instanceof ServletRequestAttributes) {
+            request = ((ServletRequestAttributes) attributes).getRequest();
+        }
+        if (request == null) {
+            return point.proceed();
+        }
         String header = request.getHeader(SecurityConstants.FROM);
         if (inner.value() && !StrUtil.equals(SecurityConstants.FROM_IN, header)) {
             log.warn("访问接口 {} 没有权限", point.getSignature().getName());
