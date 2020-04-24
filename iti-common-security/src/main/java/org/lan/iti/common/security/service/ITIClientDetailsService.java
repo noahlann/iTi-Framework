@@ -37,7 +37,7 @@ public class ITIClientDetailsService extends JdbcClientDetailsService {
     }
 
     @Override
-    @Cacheable(value = CacheConstants.CLIENT_DETAILS_KEY, key = "#clientId", unless = "#result == null")
+    @Cacheable(value = CacheConstants.CLIENT_DETAILS_KEY, key = "#p0", unless = "#result == null")
     public ClientDetails loadClientByClientId(String clientId) throws InvalidClientException {
         return super.loadClientByClientId(clientId);
     }

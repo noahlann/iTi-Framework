@@ -16,6 +16,7 @@
 
 package org.lan.iti.common.security.service;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -40,28 +41,32 @@ import java.util.Map;
 public class ITIUserDetailsServiceImpl implements ITIUserDetailsService {
     private final CacheManager cacheManager;
     private final RemoteUserService remoteUserService;
-    private final UserBuilder userBuilder;
+    private final UserDetailsBuilder userDetailsBuilder;
 
     @Override
-    public UserDetails loadUser(String principal, String providerId, String credentials, Map<String, String> extra) throws UsernameNotFoundException {
+    public UserDetails loadUser(String principle, String providerId, String domain, Map<String, String> extra) throws UsernameNotFoundException {
+        ApiResult<SecurityUser<?>> user;
+        if (StrUtil.equals(providerId, "sys")) {
+            user = remoteUserService.getSecurityUserByUsername(principle, domain);
+        } else {
+            user = remoteUserService.getSecurityUserById(principle, domain);
+        }
         // TODO 更多逻辑判定
-        ApiResult<SecurityUser<?>> user = remoteUserService.getSecurityUser(principal, providerId);
-        return buildUserDetails(user);
+        return buildUserDetails(user, providerId, domain);
     }
 
     @Override
-    public UserDetails register(String principal, String type, String credentials, Map<String, String> extra) {
-        // TODO 更多逻辑判定
-        ApiResult<SecurityUser<?>> user = remoteUserService.register(principal, type, credentials);
-        return buildUserDetails(user);
+    public UserDetails register(String principle, String providerId, String domain, String credentials, Map<String, String> extra) {
+        ApiResult<SecurityUser<?>> user = remoteUserService.register(principle, providerId, credentials);
+        return buildUserDetails(user, providerId, domain);
     }
 
     @SneakyThrows
-    private UserDetails buildUserDetails(ApiResult<SecurityUser<?>> result) {
+    private UserDetails buildUserDetails(ApiResult<SecurityUser<?>> result, String providerId, String domain) {
         SecurityUser<?> securityUser = result.getData();
         if (securityUser == null) {
             throw new UsernameNotFoundException("用户不存在");
         }
-        return userBuilder.from(securityUser);
+        return userDetailsBuilder.from(securityUser, providerId, domain);
     }
 }
