@@ -16,7 +16,6 @@
 
 package org.lan.iti.common.core.util;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -27,6 +26,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.web.context.ContextLoader;
 
 import java.util.Map;
 
@@ -41,15 +41,22 @@ import java.util.Map;
 @Lazy(false)
 @Slf4j
 public class SpringContextHolder implements DisposableBean, ApplicationContextAware {
-    @Getter
+
     private static ApplicationContext applicationContext;
+
+    public static ApplicationContext getApplicationContext() {
+        if (applicationContext == null) {
+            applicationContext = ContextLoader.getCurrentWebApplicationContext();
+        }
+        return applicationContext;
+    }
 
     /**
      * 根据类型获取Beans
      */
     public static <T> Map<String, T> getBeansOfType(Class<T> clazz) {
         assertApplicationContext();
-        return applicationContext.getBeansOfType(clazz);
+        return getApplicationContext().getBeansOfType(clazz);
     }
 
     /**
@@ -62,7 +69,7 @@ public class SpringContextHolder implements DisposableBean, ApplicationContextAw
     public static <T> T getBean(String beanName) {
         assertApplicationContext();
         try {
-            return (T) applicationContext.getBean(beanName);
+            return (T) getApplicationContext().getBean(beanName);
         } catch (BeansException e) {
             log.warn("获取Bean: [{}] 错误,请检查bean是否已注入到Spring容器中!", beanName);
             throw e;
@@ -92,7 +99,7 @@ public class SpringContextHolder implements DisposableBean, ApplicationContextAw
     public static <T> T getBean(Class<T> clazz) {
         assertApplicationContext();
         try {
-            return applicationContext.getBean(clazz);
+            return getApplicationContext().getBean(clazz);
         } catch (BeansException e) {
             log.warn("获取Bean: [{}] 错误,请检查bean是否已注入到Spring容器中!", clazz.getName());
             throw e;
@@ -119,14 +126,14 @@ public class SpringContextHolder implements DisposableBean, ApplicationContextAw
      * @param event Spring事件
      */
     public static void publishEvent(ApplicationEvent event) {
-        if (applicationContext == null) {
+        if (getApplicationContext() == null) {
             return;
         }
-        applicationContext.publishEvent(event);
+        getApplicationContext().publishEvent(event);
     }
 
     private static void assertApplicationContext() {
-        Assert.notNull(applicationContext, "applicationContext属性为null,请检查是否注入了SpringContextHolder");
+        Assert.notNull(getApplicationContext(), "applicationContext属性为null,请检查是否注入了SpringContextHolder");
     }
 
     @Override
