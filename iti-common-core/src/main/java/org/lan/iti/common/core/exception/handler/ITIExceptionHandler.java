@@ -18,10 +18,10 @@ package org.lan.iti.common.core.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.lan.iti.common.model.response.ApiResult;
+import org.lan.iti.common.core.constants.OrderConstants;
 import org.lan.iti.common.core.exception.ServiceException;
 import org.lan.iti.common.core.exception.enums.ITICoreExceptionEnum;
-import org.lan.iti.common.core.constants.OrderConstants;
+import org.lan.iti.common.model.response.ApiResult;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,11 @@ public class ITIExceptionHandler {
     @ExceptionHandler(ServiceException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<?> handleServiceException(ServiceException e) {
-        log.error("服务具体异常：", e);
+        if (log.isDebugEnabled()) {
+            log.error("服务具体异常：", e);
+        } else {
+            log.error("服务具体异常：{}", e.getMessage());
+        }
         return ApiResult.error(e.getCode(), e.getMessage(), e.getBody());
     }
 
@@ -55,7 +59,7 @@ public class ITIExceptionHandler {
     public ApiResult<?> handleBodyValidException(MethodArgumentNotValidException e) {
         val fieldErrors = e.getBindingResult().getFieldErrors();
         val msg = fieldErrors.get(0).getDefaultMessage();
-        log.error("参数绑定异常,ex = {}", msg);
+        log.error("参数绑定异常,{} {}", e.getParameter().getMember().getName(), msg);
         return ApiResult.error(ITICoreExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode(), msg);
     }
 
