@@ -55,7 +55,7 @@ public @interface EnableITIFeignClients {
      *
      * @return the array of 'basePackages'.
      */
-    String[] basePackages() default {"org.lan.iti"};
+    String[] basePackages() default {"org.lan.iti", "com.gxzc"};
 
     /**
      * Type-safe alternative to {@link #basePackages()} for specifying the packages to
