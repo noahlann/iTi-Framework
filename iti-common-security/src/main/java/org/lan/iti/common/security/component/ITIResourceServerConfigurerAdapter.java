@@ -17,7 +17,7 @@
 package org.lan.iti.common.security.component;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.security.service.UserBuilder;
+import org.lan.iti.common.security.service.UserDetailsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
@@ -40,6 +40,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @Slf4j
 public class ITIResourceServerConfigurerAdapter extends ResourceServerConfigurerAdapter {
+
     @Autowired
     private ResourceAuthExceptionEntryPoint resourceAuthExceptionEntryPoint;
 
@@ -53,11 +54,11 @@ public class ITIResourceServerConfigurerAdapter extends ResourceServerConfigurer
     private RestTemplate lbRestTemplate;
 
     @Autowired
-    private UserBuilder userBuilder;
+    private UserDetailsBuilder userDetailsBuilder;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        // 允许使用iframe 嵌套，避免swagger-ui 不被加载的问题
+        // 允许使用iframe 嵌套，避免 swagger-ui 不被加载的问题
         http.headers().frameOptions().disable();
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.authorizeRequests();
         permitAllUrlProperties.getIgnoreUrls()
@@ -69,7 +70,7 @@ public class ITIResourceServerConfigurerAdapter extends ResourceServerConfigurer
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
-        UserAuthenticationConverter userAuthenticationConverter = new ITIUserAuthenticationConverter(userBuilder);
+        UserAuthenticationConverter userAuthenticationConverter = new ITIUserAuthenticationConverter(userDetailsBuilder);
         accessTokenConverter.setUserTokenConverter(userAuthenticationConverter);
 
         remoteTokenServices.setRestTemplate(lbRestTemplate);
