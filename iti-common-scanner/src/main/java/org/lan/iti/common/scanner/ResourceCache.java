@@ -22,10 +22,7 @@ import org.lan.iti.common.scanner.exception.ScannerException;
 import org.lan.iti.common.scanner.model.ResourceDefinition;
 import org.springframework.lang.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -35,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2020-03-06
  * @url https://noahlan.com
  */
-public final class ApiResourceHolder {
+public final class ResourceCache {
     /**
      * 以资源编码为标识的存放
      * code:resource
@@ -49,16 +46,13 @@ public final class ApiResourceHolder {
     private static final Map<String, Map<String, ResourceDefinition>> RESOURCE_DEFINITION_MAP_CTR = new ConcurrentHashMap<>();
 
     /**
-     * 以url为标识存放
-     * url:resource
+     * 注册本服务资源
+     *
+     * @param resource 资源
      */
-    private static final Map<String, ResourceDefinition> RESOURCE_DEFINITION_MAP_URL = new ConcurrentHashMap<>();
-
-    /**
-     * 编码与中文名称的动态字典
-     * controllerCode:controllerName
-     */
-    private static final Map<String, String> DICT_NAME_CODE = new ConcurrentHashMap<>();
+    public static void register(ResourceDefinition resource) {
+        register(Collections.singletonList(resource));
+    }
 
     /**
      * 注册本服务资源
@@ -67,7 +61,6 @@ public final class ApiResourceHolder {
      */
     public static void register(List<ResourceDefinition> resources) {
         resources.forEach(it -> {
-            // TODO 检查每个资源情况？ code url name
             ResourceDefinition existsResource = getResource(it.getCode());
             if (existsResource != null) {
                 // 扫描到重复资源(指代code重复)
@@ -76,20 +69,16 @@ public final class ApiResourceHolder {
             }
             // code-base
             RESOURCE_DEFINITION_MAP.put(it.getCode(), it);
-            // url-base
-            RESOURCE_DEFINITION_MAP_URL.put(it.getUrl(), it);
             // ctr-base
-            String underLineCtrCode = StrUtil.toUnderlineCase(it.getCtrCode());
+            String underLineCtrCode = StrUtil.toUnderlineCase(it.getModuleCode());
             Map<String, ResourceDefinition> ctrResources = RESOURCE_DEFINITION_MAP_CTR.get(underLineCtrCode);
             if (ctrResources == null) {
                 ctrResources = new HashMap<>();
                 ctrResources.put(it.getCode(), it);
                 RESOURCE_DEFINITION_MAP_CTR.put(underLineCtrCode, ctrResources);
             } else {
-                ctrResources.put(underLineCtrCode, it);
+                ctrResources.put(it.getCode(), it);
             }
-            // dict
-            bindDict(it.getCode(), it.getName());
         });
     }
 
@@ -137,26 +126,6 @@ public final class ApiResourceHolder {
     }
 
     /**
-     * 获取资源名称
-     *
-     * @param code 资源编码
-     * @return 资源名称
-     */
-    public static String getResourceName(String code) {
-        return DICT_NAME_CODE.getOrDefault(code, "");
-    }
-
-    /**
-     * 绑定字典
-     *
-     * @param code 资源编码
-     * @param name 资源名称
-     */
-    public static void bindDict(String code, String name) {
-        DICT_NAME_CODE.putIfAbsent(code, name);
-    }
-
-    /**
      * 获取模块化资源
      *
      * @return 模块化的资源，结构：[controllerCode - [apiCode-resource]]
@@ -177,15 +146,5 @@ public final class ApiResourceHolder {
             return null;
         }
         return resourceDefinition.getUrl();
-    }
-
-    /**
-     * 通过url获取资源声明
-     *
-     * @param url url
-     */
-    @Nullable
-    public static ResourceDefinition getResourceByUrl(String url) {
-        return RESOURCE_DEFINITION_MAP_URL.get(url);
     }
 }

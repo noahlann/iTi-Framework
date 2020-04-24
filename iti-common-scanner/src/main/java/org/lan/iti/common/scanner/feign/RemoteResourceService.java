@@ -35,13 +35,13 @@ import java.util.Map;
 public interface RemoteResourceService {
 
     /**
-     * 报告业务服务的资源到指定服务，当applicationCode重复时会进行更新
+     * 报告业务服务的资源到指定服务
      *
-     * @param applicationCode 服务代码(通常为spring.application.name)
-     * @param resources       资源,表达为 [controllerCode - [apiCode-resource]]
+     * @param serviceName 服务代码(通常为spring.application.name)
+     * @param resources   资源,表达为 [controllerCode - [apiCode-resource]]
      */
-    @PutMapping("/resources/report")
+    @PutMapping(value = "/resources/report")
     @Headers(SecurityConstants.HEADER_FROM_IN)
-    void reportResources(@RequestParam String applicationCode,
+    void reportResources(@RequestParam("serviceName") String serviceName,
                          @RequestBody Map<String, Map<String, ResourceDefinition>> resources);
 }

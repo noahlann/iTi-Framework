@@ -16,11 +16,9 @@
 
 package org.lan.iti.common.scanner.model;
 
-import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.ApiModel;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -31,43 +29,32 @@ import java.io.Serializable;
  * @date 2020-02-20
  * @url https://noahlan.com
  */
-@Getter
+@Data
+@Accessors(chain = true)
 @ApiModel("资源模型")
-@Builder(access = AccessLevel.PRIVATE)
 public class ResourceDefinition implements Serializable {
     private static final long serialVersionUID = 3321768686717275759L;
 
     /**
-     * 资源所属应用 标识
+     * 所属服务标识
      * spring.application.name
      */
-    private String applicationName;
+    private String serviceCode;
 
     /**
-     * 资源所属应用名
+     * 所属服务名
      */
     private String serviceName;
 
     /**
-     * 控制器 代码
-     * controller code
+     * 模块代码
      */
-    private String ctrCode;
+    private String moduleCode;
 
     /**
-     * 控制器  名
+     * 模块名
      */
-    private String ctrName;
-
-    /**
-     * controller 类名
-     */
-    private String className;
-
-    /**
-     * 方法名
-     */
-    private String methodName;
+    private String moduleName;
 
     /**
      * 资源标识
@@ -89,57 +76,10 @@ public class ResourceDefinition implements Serializable {
     /**
      * 资源请求方式
      */
-    @Builder.Default
     private String httpMethod = "GET";
-
-    /**
-     * 是否需要鉴权
-     */
-    @Builder.Default
-    private Boolean requiredPermission = false;
 
     /**
      * 初始化资源的机器IP
      */
     private String ipAddress;
-
-    @Builder.Default
-    private final String codeSeparator = "$";
-
-    public static ResourceDefinition create(String codeSeparator,
-                                            String applicationName,
-                                            String serviceName,
-                                            String ctrCode,
-                                            String ctrName,
-                                            String className,
-                                            String methodName,
-                                            String code,
-                                            String name,
-                                            String url,
-                                            String httpMethod,
-                                            String ipAddress,
-                                            boolean requiredPermission) {
-        ResourceDefinitionBuilder builder = ResourceDefinition.builder()
-                .codeSeparator(codeSeparator)
-                .applicationName(applicationName)
-                .serviceName(serviceName)
-                .ctrCode(ctrCode)
-                .ctrName(ctrName)
-                .className(className)
-                .methodName(methodName)
-                .name(name)
-                .url(url)
-                .httpMethod(httpMethod)
-                .ipAddress(ipAddress)
-                .requiredPermission(requiredPermission);
-        // code 构造
-        String resCode;
-        if (StrUtil.isNotBlank(methodName) && StrUtil.isNotBlank(code)) {
-            resCode = StrUtil.join(codeSeparator, applicationName, ctrCode, code);
-        } else {
-            resCode = StrUtil.join(codeSeparator, applicationName, ctrCode);
-        }
-        builder.code(resCode);
-        return builder.build();
-    }
 }

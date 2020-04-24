@@ -39,7 +39,12 @@ public class ScannerProperties {
     /**
      * 资源代码 连接符
      */
-    private String separator = "$";
+    private String delimiter = "$";
+
+    /**
+     * 控制器后缀
+     */
+    private String ctrSuffix = "Controller";
 
     /**
      * 资源报告
@@ -53,10 +58,5 @@ public class ScannerProperties {
          * 是否启用资源报告服务
          */
         private boolean enabled = false;
-
-        /**
-         * 资源报告名称
-         */
-        private String name;
     }
 }

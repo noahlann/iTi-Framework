@@ -16,8 +16,6 @@
 
 package org.lan.iti.common.core.util;
 
-import lombok.experimental.UtilityClass;
-
 /**
  * 字符串 工具类
  *
@@ -25,7 +23,6 @@ import lombok.experimental.UtilityClass;
  * @date 2020-02-24
  * @url https://noahlan.com
  */
-@UtilityClass
 public class StringUtils {
 
     /**
@@ -33,7 +30,32 @@ public class StringUtils {
      *
      * @param str 待输入字符串
      */
-    public boolean isNullOrUndefined(String str) {
+    public static boolean isNullOrUndefined(String str) {
         return str == null || "null".equalsIgnoreCase(str) || "undefined".equalsIgnoreCase(str);
+    }
+
+    public static String valueOf(Object o) {
+        if (o == null) {
+            return null;
+        }
+        return String.valueOf(o);
+    }
+
+    /**
+     * 计算字符串中重复字符数量
+     *
+     * @param charSequence 目标字符串
+     * @param repeated     重复字符
+     * @return 重复次数
+     */
+    public static int repeatCount(CharSequence charSequence, char repeated) {
+        int repeat = 0;
+        for (int i = 0; i < charSequence.length(); ++i) {
+            char c = charSequence.charAt(i);
+            if (c == repeated) {
+                ++repeat;
+            }
+        }
+        return repeat;
     }
 }

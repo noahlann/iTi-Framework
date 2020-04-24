@@ -16,6 +16,8 @@
 
 package org.lan.iti.common.scanner.exception;
 
+import org.lan.iti.common.core.util.Formatter;
+
 /**
  * Scanner异常封装
  *
@@ -27,7 +29,7 @@ public class ScannerException extends RuntimeException {
     private static final long serialVersionUID = 6464070975032226886L;
 
     public ScannerException(String format, Object... args) {
-        super(String.format(format, args));
+        super(Formatter.format(format, args));
     }
 
     public ScannerException(String message, Throwable cause) {

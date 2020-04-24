@@ -31,6 +31,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface ITIApi {
+
     /**
      * 资源/模块 名称(必填项)
      * {@link ITIApi#name()}
@@ -41,25 +42,26 @@ public @interface ITIApi {
     /**
      * 资源/模块 名称(必填项)
      * <p>
-     * 位于方法上: 资源名
-     * 位于Controller类上: 模块名
+     * 作用于类:   表示模块名称
+     * 作用于方法: 表示资源名称
+     * </p>
      */
     @AliasFor("value")
     String name() default "";
 
     /**
-     * <pre>
      * 资源编码唯一标识.
-     *
+     * <p>
      * 说明:
-     *      1.可不填写此注解属性.
-     *      2.若不填写,则默认生成的编码标识为: 控制器类名称 + 分隔符 + 方法名称.
-     *      3.若编码存在重复则系统启动异常
+     * 不填写:
+     * 编码: 服务名&控制器类名前缀&方法名
+     * 控制器编码: 服务名&控制器类名前缀
+     * 填写:
+     * 编码: 服务名&控制器类名前缀&code
+     * 控制器编码: 服务名&code
+     * <p>
+     * 注: 若编码存在重复则系统启动异常
+     * </p>
      */
     String code() default "";
-
-    /**
-     * 是否需要鉴权
-     */
-    boolean requiredPermission() default true;
 }
