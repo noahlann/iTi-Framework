@@ -19,6 +19,7 @@ package org.lan.iti.common.jackson.config;
 import cn.hutool.core.date.DatePattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.lan.iti.common.jackson.module.ITIJavaTimeModule;
+import org.lan.iti.common.jackson.module.ITILongModule;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -47,7 +48,7 @@ public class JacksonConfig {
             builder.locale(Locale.CHINA);
             builder.timeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
             builder.simpleDateFormat(DatePattern.NORM_DATETIME_PATTERN);
-            builder.modules(new ITIJavaTimeModule());
+            builder.modules(new ITIJavaTimeModule(), new ITILongModule());
         };
     }
 }
