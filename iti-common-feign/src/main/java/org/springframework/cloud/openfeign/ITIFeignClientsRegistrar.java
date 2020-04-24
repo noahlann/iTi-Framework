@@ -17,13 +17,17 @@
 package org.springframework.cloud.openfeign;
 
 import lombok.Getter;
-import org.lan.iti.common.feign.ITIFeignAutoConfiguration;
+import org.lan.iti.common.feign.config.ITIFeignAutoConfiguration;
+import org.lan.iti.common.feign.properties.Client;
+import org.lan.iti.common.feign.properties.ITIFeignProperties;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -31,7 +35,9 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -40,7 +46,8 @@ import java.util.Map;
 /**
  * feign 自动配置功能
  * <p>
- * 支持META-INF(spring.factories)自动导入
+ * 1. 支持META-INF(spring.factories)自动导入
+ * 2. 支持配置文件(*.properties/*.yml)自动导入
  * </p>
  *
  * @author NorthLan
@@ -56,15 +63,17 @@ public class ITIFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-        registerFeignClients(registry);
+        // register
+        registerClientsByFactories(registry);
+        registerClientsByProperties(registry);
     }
 
     @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
+    public void setBeanClassLoader(@NonNull ClassLoader classLoader) {
         this.beanClassLoader = classLoader;
     }
 
-    private void registerFeignClients(BeanDefinitionRegistry registry) {
+    private void registerClientsByFactories(BeanDefinitionRegistry registry) {
         List<String> feignClients = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
         // 如果 spring.factories 里为空
         if (feignClients.isEmpty()) {
@@ -130,6 +139,55 @@ public class ITIFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
         }
     }
 
+    private void registerClientsByProperties(BeanDefinitionRegistry registry) {
+        ITIFeignProperties properties = Binder.get(environment)
+                .bind(ITIFeignProperties.PREFIX, Bindable.of(ITIFeignProperties.class))
+                .orElse(null);
+        if (properties == null) {
+            return;
+        }
+        List<Client> clients = properties.getClients();
+        if (CollectionUtils.isEmpty(clients)) {
+            return;
+        }
+        for (Client client : clients) {
+            if (client.getClazz() == null) {
+                continue;
+            }
+            String className = client.getClazz().getName();
+            if (registry.containsBeanDefinition(className)) {
+                continue;
+            }
+
+            registerClientConfiguration(registry, getClientName(client), client.getConfiguration());
+            //
+            validate(client.getFallback(), client.getFallbackFactory());
+            BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(FeignClientFactoryBean.class);
+            definition.addPropertyValue("url", getUrl(client));
+            definition.addPropertyValue("path", getPath(client));
+            String name = getName(client);
+            definition.addPropertyValue("name", name);
+            String contextId = getContextId(client);
+            definition.addPropertyValue("contextId", contextId);
+
+            definition.addPropertyValue("type", className);
+            definition.addPropertyValue("decode404", client.isDecode404());
+            definition.addPropertyValue("fallback", client.getFallback());
+            definition.addPropertyValue("fallbackFactory", client.getFallbackFactory());
+            definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+
+            AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
+            String alias = contextId + "FeignClient";
+            // has a default, won't be null
+            beanDefinition.setPrimary(client.isPrimary());
+            if (StringUtils.hasText(client.getQualifier())) {
+                alias = client.getQualifier();
+            }
+            BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, new String[]{alias});
+            BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+        }
+    }
+
     /**
      * Return the class used by {@link SpringFactoriesLoader} to load configuration
      * candidates.
@@ -147,6 +205,12 @@ public class ITIFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
         FeignClientsRegistrar.validateFallbackFactory(annotation.getClass("fallbackFactory"));
     }
 
+    private void validate(Class<?> fallback, Class<?> fallbackFactory) {
+        // This blows up if an aliased property is overspecified
+        FeignClientsRegistrar.validateFallback(fallback);
+        FeignClientsRegistrar.validateFallbackFactory(fallbackFactory);
+    }
+
     private String getName(Map<String, Object> attributes) {
         String name = (String) attributes.get("serviceId");
         if (!StringUtils.hasText(name)) {
@@ -159,6 +223,11 @@ public class ITIFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
         return FeignClientsRegistrar.getName(name);
     }
 
+    private String getName(Client client) {
+        String name = client.getName();
+        return FeignClientsRegistrar.getName(name);
+    }
+
     private String getContextId(Map<String, Object> attributes) {
         String contextId = (String) attributes.get("contextId");
         if (!StringUtils.hasText(contextId)) {
@@ -167,6 +236,14 @@ public class ITIFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 
         contextId = resolve(contextId);
         return FeignClientsRegistrar.getName(contextId);
+    }
+
+    private String getContextId(Client client) {
+        String contextId = client.getContextId();
+        if (!StringUtils.hasText(contextId)) {
+            return getName(client);
+        }
+        return contextId;
     }
 
     private String resolve(String value) {
@@ -181,9 +258,17 @@ public class ITIFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
         return FeignClientsRegistrar.getUrl(url);
     }
 
+    private String getUrl(Client client) {
+        return FeignClientsRegistrar.getUrl(client.getUrl());
+    }
+
     private String getPath(Map<String, Object> attributes) {
         String path = resolve((String) attributes.get("path"));
         return FeignClientsRegistrar.getPath(path);
+    }
+
+    private String getPath(Client client) {
+        return FeignClientsRegistrar.getUrl(client.getPath());
     }
 
     @Nullable
@@ -216,8 +301,18 @@ public class ITIFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
         if (StringUtils.hasText(value)) {
             return value;
         }
-
         throw new IllegalStateException("Either 'name' or 'value' must be provided in @" + FeignClient.class.getSimpleName());
+    }
+
+    private String getClientName(Client client) {
+        String value = client.getContextId();
+        if (!StringUtils.hasText(value)) {
+            value = client.getName();
+        }
+        if (StringUtils.hasText(value)) {
+            return value;
+        }
+        throw new IllegalStateException("'name' must be provided in properties");
     }
 
     private void registerClientConfiguration(BeanDefinitionRegistry registry, Object name, Object configuration) {
@@ -228,7 +323,7 @@ public class ITIFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
     }
 
     @Override
-    public void setEnvironment(Environment environment) {
+    public void setEnvironment(@NonNull Environment environment) {
         this.environment = environment;
     }
 }

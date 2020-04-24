@@ -1,31 +1,39 @@
 /*
- * Copyright (c) [2019-2020] [NorthLan](lan6995@gmail.com)
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright (c) [2019-2020] [NorthLan](lan6995@gmail.com)
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
-package org.lan.iti.common.feign;
+package org.lan.iti.common.feign.config;
 
+import feign.Contract;
 import feign.Feign;
 import feign.codec.Decoder;
 import feign.optionals.OptionalDecoder;
 import lombok.AllArgsConstructor;
 import org.lan.iti.common.core.feign.decoder.ApiResultDecoder;
 import org.lan.iti.common.core.feign.decoder.ApiResultGenericRecoder;
+import org.lan.iti.common.feign.properties.ITIFeignProperties;
+import org.lan.iti.common.feign.spring.ITIFeignContract;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.openfeign.AnnotatedParameterProcessor;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.ITIFeignClientsRegistrar;
 import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
@@ -33,6 +41,7 @@ import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.ConversionService;
 
 import java.util.List;
 
@@ -48,8 +57,12 @@ import java.util.List;
 @Import(ITIFeignClientsRegistrar.class)
 @AutoConfigureAfter(EnableFeignClients.class)
 @AllArgsConstructor
+@EnableConfigurationProperties(ITIFeignProperties.class)
 public class ITIFeignAutoConfiguration {
     private final ObjectFactory<HttpMessageConverters> messageConverters;
+
+    @Autowired(required = false)
+    private List<AnnotatedParameterProcessor> parameterProcessors;
 
     /**
      * 配置自定义的 Decoder
@@ -62,7 +75,14 @@ public class ITIFeignAutoConfiguration {
     @Bean
     public Decoder feignDecoder(List<ApiResultGenericRecoder> genericRecodes) {
         return new OptionalDecoder(
-                new ResponseEntityDecoder(
-                        new ApiResultDecoder(new SpringDecoder(this.messageConverters), genericRecodes)));
+                new ResponseEntityDecoder(new ApiResultDecoder(new SpringDecoder(this.messageConverters), genericRecodes)));
+    }
+
+    /**
+     * 自定义解析器
+     */
+    @Bean
+    public Contract feignContract(ConversionService feignConversionService) {
+        return new ITIFeignContract(this.parameterProcessors, feignConversionService);
     }
 }
