@@ -17,7 +17,7 @@
 package org.lan.iti.common.security.annotation;
 
 import org.lan.iti.common.security.component.ITISecurityBeanDefinitionRegistrar;
-import org.lan.iti.common.security.component.autoconfigure.ITIResourceServerAutoConfiguration;
+import org.lan.iti.common.security.config.ITIResourceServerAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;

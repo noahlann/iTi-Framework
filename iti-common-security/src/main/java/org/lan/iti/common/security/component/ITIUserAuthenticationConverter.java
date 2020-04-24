@@ -16,13 +16,14 @@
 
 package org.lan.iti.common.security.component;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.ITIConstants;
 import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.security.exception.ITIAuth2Exception;
-import org.lan.iti.common.security.service.UserBuilder;
+import org.lan.iti.common.security.service.UserDetailsBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,7 +56,7 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
     /**
      * 用户构建器
      */
-    private final UserBuilder userBuilder;
+    private final UserDetailsBuilder userDetailsBuilder;
 
     @Override
     public Map<String, ?> convertUserAuthentication(Authentication userAuthentication) {
@@ -70,9 +71,10 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
     @Override
     public Authentication extractAuthentication(Map<String, ?> map) {
         if (map.containsKey(USERNAME)) {
-            validateTenantId(map);
-            Collection<? extends GrantedAuthority> authorities = getAuthorities(map);
-            return new UsernamePasswordAuthenticationToken(userBuilder.from(map), N_A, authorities);
+            Map<String, ?> userMap = MapUtil.get(map, SecurityConstants.DETAILS_USER_DETAILS, Map.class);
+            Collection<? extends GrantedAuthority> authorities = getAuthorities(userMap);
+            validateTenantId(userMap);
+            return new UsernamePasswordAuthenticationToken(userDetailsBuilder.from(userMap, authorities), N_A, authorities);
         }
         return null;
     }
@@ -94,7 +96,7 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
      */
     private void validateTenantId(Map<String, ?> map) {
         String headerValue = getCurrentTenantId();
-        Integer userValue = (Integer) map.get(SecurityConstants.DETAILS_TENANT_ID);
+        Integer userValue = MapUtil.getInt(map, SecurityConstants.DETAILS_TENANT_ID);
         if (StrUtil.isNotBlank(headerValue) && !userValue.toString().equals(headerValue)) {
             log.warn("请求头中的租户ID({})和用户的租户ID({})不一致", headerValue, userValue);
             // TODO 不要提示租户ID不对，可能被穷举

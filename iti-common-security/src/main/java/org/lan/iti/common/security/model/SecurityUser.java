@@ -17,7 +17,9 @@
 package org.lan.iti.common.security.model;
 
 import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
@@ -32,6 +34,8 @@ import java.util.Collection;
  * @url https://noahlan.com
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SecurityUser<T> implements Serializable {
     private static final long serialVersionUID = 3904799015848436768L;
 
@@ -44,12 +48,6 @@ public class SecurityUser<T> implements Serializable {
      * 用户 ID
      */
     private String userId;
-
-    private String providerId;
-
-    private String providerUserId;
-
-    private String domain;
 
     /**
      * 用户权限标识

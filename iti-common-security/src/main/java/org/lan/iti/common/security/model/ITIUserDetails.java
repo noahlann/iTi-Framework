@@ -16,9 +16,10 @@
 
 package org.lan.iti.common.security.model;
 
-import lombok.Builder;
-import lombok.Getter;
+import cn.hutool.core.util.StrUtil;
+import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -34,18 +35,26 @@ import java.util.Map;
  */
 @Builder
 @Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class ITIUserDetails implements UserDetails {
     private static final long serialVersionUID = -2522947416797109973L;
 
     /**
      * 用户唯一ID
      */
-    @Getter
     private String userId;
+
+    /**
+     * 认证域,适用于区分多用户源,多认证中心域
+     */
+    private String domain;
 
     /**
      * 提供商ID(mobile/wechat/qq/wechat-mini-app. etc..)
      */
+    @NonNull
     private String providerId;
 
     /**
@@ -54,20 +63,16 @@ public class ITIUserDetails implements UserDetails {
     private String providerUserId;
 
     /**
-     * 认证中心域,适用于区分多用户源,多认证中心域
-     */
-    @Getter
-    private String domain;
-
-    /**
      * 唯一凭证(用户名)
      */
-    private String principal;
+    @Getter(AccessLevel.NONE)
+    private String username;
 
     /**
      * 密码
      */
-    private String secret;
+    @Getter(AccessLevel.NONE)
+    private String password;
 
     /**
      * 用于展示的名称，若为null或空字符串，则显示用户名
@@ -77,61 +82,46 @@ public class ITIUserDetails implements UserDetails {
     /**
      * 图像地址，一般为头像
      */
-    @Getter
     private String imageUrl;
 
     /**
      * 租户ID
      */
-    @Getter
     private String tenantId;
-
-    // region for social
-    /**
-     * access_token
-     */
-    private String accessToken;
-
-    /**
-     * refresh_token
-     */
-    private String refreshToken;
-
-    /**
-     * token的过期时间
-     */
-    private Long expireTime;
-    // endregion
 
     /**
      * 用户附加属性
      */
-    @Getter
     private Map<String, Object> attributes;
 
     /**
      * 用户权限
      */
+    @Getter(AccessLevel.NONE)
     private Collection<? extends GrantedAuthority> authorities;
 
     /**
      * 是否已锁定
      */
+    @Getter(AccessLevel.NONE)
     private boolean accountNonLocked;
 
     /**
      * 是否已过期
      */
+    @Getter(AccessLevel.NONE)
     private boolean accountNonExpired;
 
     /**
      * 是否启用
      */
+    @Getter(AccessLevel.NONE)
     private boolean enabled;
 
     /**
      * 密码是否已过期
      */
+    @Getter(AccessLevel.NONE)
     private boolean credentialsNonExpired;
 
     @Override
@@ -141,12 +131,21 @@ public class ITIUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.secret;
+        return this.password;
+    }
+
+    /**
+     * 加密
+     */
+    public void encryptSecret() {
+        if (StrUtil.isNotBlank(this.password)) {
+            this.password = "Password: [PROTECTED]";
+        }
     }
 
     @Override
     public String getUsername() {
-        return this.principal;
+        return this.username;
     }
 
     @Override
