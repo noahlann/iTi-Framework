@@ -17,7 +17,9 @@
 package org.lan.iti.common.core.base;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.lan.iti.common.core.util.IFunction;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 
@@ -33,6 +35,23 @@ import java.util.Collection;
  * @url https://noahlan.com
  */
 public interface BaseService<T> extends IService<T> {
+
+    /**
+     * 调用自定义XML中指定的SQL-ID的SQL
+     * 批量修改插入-默认批次1000条/次
+     *
+     * @param entityList 实体对象集合
+     * @param getter     sqlId对应的Mapper类的方法getter(Lambda)
+     * @return 是否有任何更新或插入
+     */
+    @Transactional(rollbackFor = Exception.class)
+    default <I> Boolean saveOrUpdateBatch(Collection<T> entityList, IFunction<I, ?> getter) {
+        String mappedName = getter.getImplFieldName();
+        if (!StringUtils.hasText(mappedName)) {
+            throw new IllegalArgumentException("getter传入错误,请检查代码");
+        }
+        return saveOrUpdateBatch(entityList, mappedName, 1000);
+    }
 
     /**
      * 调用自定义XML中指定的SQL-ID的SQL
