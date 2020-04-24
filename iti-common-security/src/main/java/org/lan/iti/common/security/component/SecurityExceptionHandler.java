@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
+ * 安全异常拦截处理器
+ *
  * @author NorthLan
  * @date 2020-03-03
  * @url https://noahlan.com

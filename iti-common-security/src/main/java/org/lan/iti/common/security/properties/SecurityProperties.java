@@ -34,4 +34,9 @@ public class SecurityProperties {
      * 自动注册登录
      */
     private boolean autoRegistration = true;
+
+    /**
+     * 基于 oAuth2 客户端信息
+     */
+    private OAuth2ClientDetailsProperties client = new OAuth2ClientDetailsProperties();
 }

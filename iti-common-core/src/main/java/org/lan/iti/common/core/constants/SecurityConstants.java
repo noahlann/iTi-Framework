@@ -87,12 +87,7 @@ public final class SecurityConstants {
     /**
      * 社交获取token接口URL
      */
-    public static final String MOBILE_TOKEN_URL = "/mobile/token";
-
-    /**
-     * 社交获取token接口URL
-     */
-    public static final String SOCIAL_TOKEN_URL = "/social/token";
+    public static final String SOCIAL_TOKEN_URL = "/social/**";
 
     /**
      * oauth获取token接口URL
@@ -139,28 +134,6 @@ public final class SecurityConstants {
     public static final String OSC_USER_INFO_URL = "https://www.oschina.net/action/openapi/user?access_token=%s&dataType=json";
 
     /**
-     * sys_oauth_client_details 表的字段，不包括client_id、client_secret
-     */
-    public static final String CLIENT_FIELDS = "client_id, CONCAT('{noop}',client_secret) as client_secret, resource_ids, scope, " +
-            "authorized_grant_types, web_server_redirect_uri, authorities, access_token_validity, " +
-            "refresh_token_validity, additional_information, autoapprove";
-
-    /**
-     * JdbcClientDetailsService 查询语句
-     */
-    public static final String BASE_FIND_STATEMENT = "select " + CLIENT_FIELDS + " from sys_oauth_client_details";
-
-    /**
-     * 默认的查询语句
-     */
-    public static final String DEFAULT_FIND_STATEMENT = BASE_FIND_STATEMENT + " order by client_id";
-
-    /**
-     * 按条件client_id 查询
-     */
-    public static final String DEFAULT_SELECT_STATEMENT = BASE_FIND_STATEMENT + " where client_id = ?";
-
-    /**
      * 资源服务器默认bean名称
      */
     public static final String RESOURCE_SERVER_CONFIGURER = "resourceServerConfigurerAdapter";
@@ -180,6 +153,11 @@ public final class SecurityConstants {
      * 租户ID 字段
      */
     public static final String DETAILS_TENANT_ID = "tenant_id";
+
+    /**
+     * 用户信息
+     */
+    public static final String DETAILS_USER_DETAILS = "user_details";
 
     /**
      * 协议字段
