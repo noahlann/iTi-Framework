@@ -37,6 +37,11 @@
             <groupId>org.lan</groupId>
             <artifactId>iti-common-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-common-feign</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!--spring-web-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
