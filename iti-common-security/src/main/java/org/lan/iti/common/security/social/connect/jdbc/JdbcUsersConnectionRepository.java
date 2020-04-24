@@ -18,47 +18,64 @@
 
 package org.lan.iti.common.security.social.connect.jdbc;
 
-import lombok.AllArgsConstructor;
+import cn.hutool.core.util.StrUtil;
+import lombok.Setter;
 import org.lan.iti.common.security.social.connect.*;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
+import javax.sql.DataSource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
+ * 多用户连接仓库
+ *
  * @author NorthLan
  * @date 2020-03-24
  * @url https://noahlan.com
  */
-@AllArgsConstructor
-public class JdbcUsersConnectionRepository implements UsersConnectionRepository {
-    private final JdbcTemplate jdbcTemplate;
+@SuppressWarnings("ConstantConditions")
+public class JdbcUsersConnectionRepository extends JdbcDaoSupport implements UsersConnectionRepository {
+    public static final String DEFAULT_CONNECTION_SCHEMA = "public";
+    public static final String DEFAULT_CONNECTION_TABLE_NAME = "user_connection";
 
     private final ConnectionFactoryLocator connectionFactoryLocator;
-
     private final TextEncryptor textEncryptor;
 
-    private final String tablePrefix = "";
+    @Setter
+    private String schema;
+
+    @Setter
+    private String tableName;
+
+    @Setter
+    private ConnectionSignUp connectionSignUp;
+
+    public JdbcUsersConnectionRepository(DataSource dataSource,
+                                         ConnectionFactoryLocator connectionFactoryLocator,
+                                         TextEncryptor textEncryptor) {
+        setDataSource(dataSource);
+        this.connectionFactoryLocator = connectionFactoryLocator;
+        this.textEncryptor = textEncryptor;
+        // default values
+        this.schema = DEFAULT_CONNECTION_SCHEMA;
+        this.tableName = DEFAULT_CONNECTION_TABLE_NAME;
+    }
 
     @Override
     public List<String> findUserIdsWithConnection(Connection<?> connection) {
         ConnectionKey key = connection.getKey();
-        List<String> localUserIds = jdbcTemplate.queryForList("select userId from " + tablePrefix + "UserConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
+        List<String> localUserIds = getJdbcTemplate().queryForList("select user_id from " + getTableName() + " where provider_id = ? and provider_user_id = ?",
+                String.class, key.getProviderId(), key.getProviderUserId());
 //        if (localUserIds.size() == 0 && connectionSignUp != null) {
 //            String newUserId = connectionSignUp.execute(connection);
-//            if (newUserId != null)
-//            {
+//            if (newUserId != null) {
 //                createConnectionRepository(newUserId).addConnection(connection);
-//                return Arrays.asList(newUserId);
+//                return Collections.singletonList(newUserId);
 //            }
 //        }
         return localUserIds;
@@ -69,20 +86,35 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("providerId", providerId);
         parameters.addValue("providerUserIds", providerUserIds);
-        final Set<String> localUserIds = new HashSet<String>();
-        return new NamedParameterJdbcTemplate(jdbcTemplate).query("select userId from " + tablePrefix + "UserConnection where providerId = :providerId and providerUserId in (:providerUserIds)", parameters,
-                new ResultSetExtractor<Set<String>>() {
-                    public Set<String> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                        while (rs.next()) {
-                            localUserIds.add(rs.getString("userId"));
-                        }
-                        return localUserIds;
-                    }
-                });
+        final Set<String> localUserIds = new HashSet<>();
+        return new NamedParameterJdbcTemplate(getJdbcTemplate())
+                .query("select user_id from " + getTableName() + " where provider_id = :providerId and provider_user_id in (:providerUserIds)"
+                        , parameters,
+                        rs -> {
+                            while (rs.next()) {
+                                localUserIds.add(rs.getString("user_id"));
+                            }
+                            return localUserIds;
+                        });
     }
 
     @Override
-    public ConnectionRepository createConnectionService(String userId) {
-        return null;
+    public ConnectionRepository createConnectionRepository(ConnectionUserKey userKey) {
+        if (userKey == null) {
+            throw new IllegalArgumentException("userKey cannot be null");
+        }
+        if (StrUtil.isBlank(userKey.getUserId())) {
+            throw new IllegalArgumentException("userId cannot be null or blank");
+        }
+        if (StrUtil.isBlank(userKey.getDomain())) {
+            throw new IllegalArgumentException("domain cannot be null or blank");
+        }
+        return new JdbcConnectionRepository(userKey, getJdbcTemplate(), connectionFactoryLocator, textEncryptor, schema, tableName);
     }
+
+    // region internal helpers
+    private String getTableName() {
+        return schema + tableName;
+    }
+    // endregion
 }

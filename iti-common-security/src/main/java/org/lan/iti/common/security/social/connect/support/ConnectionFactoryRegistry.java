@@ -49,7 +49,7 @@ public class ConnectionFactoryRegistry implements ConnectionFactoryLocator {
             throw new IllegalArgumentException("A ConnectionFactory for provider '" + connectionFactory.getProviderId() + "' has already been registered");
         }
         Class<?> apiType = GenericTypeResolver.resolveTypeArgument(connectionFactory.getClass(), ConnectionFactory.class);
-        if (apiTypeIndex.containsKey(apiType)) {
+        if (apiType != null && apiTypeIndex.containsKey(apiType)) {
             throw new IllegalArgumentException("A ConnectionFactory for API [" + apiType.getName() + "] has already been registered");
         }
         connectionFactories.put(connectionFactory.getProviderId(), connectionFactory);

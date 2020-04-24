@@ -35,5 +35,5 @@ public interface UsersConnectionRepository {
 
     Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds);
 
-    ConnectionRepository createConnectionService(String userId);
+    ConnectionRepository createConnectionRepository(ConnectionUserKey userKey);
 }

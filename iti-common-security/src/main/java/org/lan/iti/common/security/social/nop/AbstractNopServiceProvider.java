@@ -16,33 +16,16 @@
  *
  */
 
-package org.lan.iti.common.security.social.config;
-
-import org.lan.iti.common.security.social.connect.ConnectionFactory;
-import org.lan.iti.common.security.social.connect.support.ConnectionFactoryRegistry;
-import org.lan.iti.common.security.social.security.provider.SocialAuthenticationWrapper;
+package org.lan.iti.common.security.social.nop;
 
 /**
- * 用于注册连接工厂的策略接口
+ * Nop 服务提供商基类
  *
  * @author NorthLan
- * @date 2020-03-21
+ * @date 2020-04-02
  * @url https://noahlan.com
  */
-public interface ConnectionFactoryConfigurer {
-
-    /**
-     * 添加 ConnectionFactory
-     */
-    void addConnectionFactory(ConnectionFactory<?> connectionFactory);
-
-    /**
-     * 设置wrapper
-     */
-    void addWrapper(SocialAuthenticationWrapper wrapper);
-
-    /**
-     * 获取注册表
-     */
-    ConnectionFactoryRegistry getConnectionFactoryLocator();
+public abstract class AbstractNopServiceProvider<S> implements NopServiceProvider<S> {
+    @Override
+    public abstract S getApi();
 }

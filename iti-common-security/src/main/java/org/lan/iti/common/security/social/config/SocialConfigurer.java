@@ -20,16 +20,23 @@ package org.lan.iti.common.security.social.config;
 
 import org.lan.iti.common.security.social.connect.ConnectionFactoryLocator;
 import org.lan.iti.common.security.social.connect.UsersConnectionRepository;
-import org.springframework.core.env.Environment;
 
 /**
+ * 社交配置
+ *
  * @author NorthLan
  * @date 2020-03-21
  * @url https://noahlan.com
  */
 public interface SocialConfigurer {
 
-    void addConnectionFactories(ConnectionFactoryConfigurer connectionFactoryConfigurer, Environment environment);
+    /**
+     * 添加连接工厂
+     */
+    void addConnectionFactories(ConnectionFactoryConfigurer connectionFactoryConfigurer);
 
+    /**
+     * 获取用户连接仓库
+     */
     UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator);
 }

@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.common.security.social;
+package org.lan.iti.common.security.social.security;
 
 import lombok.AllArgsConstructor;
 import org.lan.iti.common.security.service.ITIUserDetailsService;
@@ -59,7 +59,7 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
         if (userId == null) {
             throw new BadCredentialsException("Unknown access token");
         }
-        UserDetails userDetails = userDetailsService.loadUser(userId, connection.getKey().getProviderId(), null, null);
+        UserDetails userDetails = userDetailsService.loadUser(userId, connection.getKey().getProviderId(), connection.createData().getDomain(), null);
         if (userDetails == null) {
             throw new UsernameNotFoundException("Unknown connected account id");
         }

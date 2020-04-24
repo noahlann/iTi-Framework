@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.common.security.social;
+package org.lan.iti.common.security.social.security;
 
 import lombok.Getter;
 import org.lan.iti.common.core.util.SystemClock;

@@ -16,33 +16,28 @@
  *
  */
 
-package org.lan.iti.common.security.social.config;
+package org.lan.iti.common.security.social.security.provider;
 
 import org.lan.iti.common.security.social.connect.ConnectionFactory;
-import org.lan.iti.common.security.social.connect.support.ConnectionFactoryRegistry;
-import org.lan.iti.common.security.social.security.provider.SocialAuthenticationWrapper;
 
 /**
- * 用于注册连接工厂的策略接口
+ * ConnectionFactory -> SocialAuthenticationService
  *
  * @author NorthLan
- * @date 2020-03-21
+ * @date 2020-04-02
  * @url https://noahlan.com
  */
-public interface ConnectionFactoryConfigurer {
+public interface SocialAuthenticationWrapper {
 
     /**
-     * 添加 ConnectionFactory
+     * ConnectionFactory实现是否支持此wrapper
      */
-    void addConnectionFactory(ConnectionFactory<?> connectionFactory);
+    boolean support(ConnectionFactory<?> cf);
 
     /**
-     * 设置wrapper
+     * 根据ConnectionFactory构建SocialAuthenticationService
+     *
+     * @param cf 对应的连接工厂
      */
-    void addWrapper(SocialAuthenticationWrapper wrapper);
-
-    /**
-     * 获取注册表
-     */
-    ConnectionFactoryRegistry getConnectionFactoryLocator();
+    <A> SocialAuthenticationService<A> wrap(ConnectionFactory<A> cf);
 }

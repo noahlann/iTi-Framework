@@ -16,33 +16,32 @@
  *
  */
 
-package org.lan.iti.common.security.social.config;
+package org.lan.iti.common.security.social.mobile.connect;
 
-import org.lan.iti.common.security.social.connect.ConnectionFactory;
-import org.lan.iti.common.security.social.connect.support.ConnectionFactoryRegistry;
-import org.lan.iti.common.security.social.security.provider.SocialAuthenticationWrapper;
+import org.lan.iti.common.security.social.connect.ApiAdapter;
+import org.lan.iti.common.security.social.connect.ConnectionValues;
+import org.lan.iti.common.security.social.mobile.api.Mobile;
 
 /**
- * 用于注册连接工厂的策略接口
+ * 用户信息适配器
  *
  * @author NorthLan
- * @date 2020-03-21
+ * @date 2020-04-02
  * @url https://noahlan.com
  */
-public interface ConnectionFactoryConfigurer {
+public class MobileAdapter implements ApiAdapter<Mobile> {
+    @Override
+    public boolean test(Mobile api) {
+        return true;
+    }
 
-    /**
-     * 添加 ConnectionFactory
-     */
-    void addConnectionFactory(ConnectionFactory<?> connectionFactory);
+    @Override
+    public void setConnectionValues(Mobile api, ConnectionValues values) {
+        values.setProviderUserId("18685083188");
+    }
 
-    /**
-     * 设置wrapper
-     */
-    void addWrapper(SocialAuthenticationWrapper wrapper);
+    @Override
+    public void updateStatus(Mobile api, String message) {
 
-    /**
-     * 获取注册表
-     */
-    ConnectionFactoryRegistry getConnectionFactoryLocator();
+    }
 }

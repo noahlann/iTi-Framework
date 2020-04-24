@@ -16,27 +16,25 @@
  *
  */
 
-package org.lan.iti.common.security.social;
+package org.lan.iti.common.security.social.oauth2;
 
-import org.lan.iti.common.security.social.connect.ConnectionFactoryLocator;
-import org.lan.iti.common.security.social.provider.SocialAuthenticationService;
-
-import java.util.Set;
+import org.lan.iti.common.security.social.ServiceProvider;
 
 /**
+ * 基于oAuth 2.0 协议的服务提供接口
+ *
  * @author NorthLan
- * @date 2020-03-18
+ * @date 2020-03-30
  * @url https://noahlan.com
  */
-public interface SocialAuthenticationServiceLocator extends ConnectionFactoryLocator {
-
+public interface OAuth2ServiceProvider<A> extends ServiceProvider<A> {
     /**
-     * 通过providerId查找 {@link SocialAuthenticationService}
+     * 获取Api接口(针对于每个用户访问请求)
+     *
+     * @param accessToken api访问令牌
+     * @return 绑定了服务提供商的 API
      */
-    SocialAuthenticationService<?> getAuthenticationService(String providerId);
+    A getApi(String accessToken);
 
-    /**
-     * 返回为其注册了{@link SocialAuthenticationService}的providerId的集合
-     */
-    Set<String> registeredAuthenticationProviderIds();
+    // TODO getOAuth2Operations
 }

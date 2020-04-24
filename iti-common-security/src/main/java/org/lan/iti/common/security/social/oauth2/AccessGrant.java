@@ -38,15 +38,21 @@ public class AccessGrant implements Serializable {
     private final String scope;
     private final String refreshToken;
     private final Long expireTime;
+    private final String unionId;
 
     public AccessGrant(String accessToken) {
-        this(accessToken, null, null, null);
+        this(accessToken, null, null, null, null);
     }
 
     public AccessGrant(String accessToken, String scope, String refreshToken, Long expireIn) {
+        this(accessToken, scope, refreshToken, expireIn, null);
+    }
+
+    public AccessGrant(String accessToken, String scope, String refreshToken, Long expireIn, String unionId) {
         this.accessToken = accessToken;
         this.scope = scope;
         this.refreshToken = refreshToken;
         this.expireTime = expireIn != null ? SystemClock.now() + expireIn * 1000L : null;
+        this.unionId = unionId;
     }
 }

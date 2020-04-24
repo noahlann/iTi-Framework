@@ -16,33 +16,19 @@
  *
  */
 
-package org.lan.iti.common.security.social.config;
-
-import org.lan.iti.common.security.social.connect.ConnectionFactory;
-import org.lan.iti.common.security.social.connect.support.ConnectionFactoryRegistry;
-import org.lan.iti.common.security.social.security.provider.SocialAuthenticationWrapper;
+package org.lan.iti.common.security.social.exception;
 
 /**
- * 用于注册连接工厂的策略接口
+ * oAuth客户端访问api时 token过期异常
  *
  * @author NorthLan
- * @date 2020-03-21
+ * @date 2020-03-30
  * @url https://noahlan.com
  */
-public interface ConnectionFactoryConfigurer {
+public class ExpiredAuthorizationException extends RejectedAuthorizationException {
+    private static final long serialVersionUID = 4739742650993781612L;
 
-    /**
-     * 添加 ConnectionFactory
-     */
-    void addConnectionFactory(ConnectionFactory<?> connectionFactory);
-
-    /**
-     * 设置wrapper
-     */
-    void addWrapper(SocialAuthenticationWrapper wrapper);
-
-    /**
-     * 获取注册表
-     */
-    ConnectionFactoryRegistry getConnectionFactoryLocator();
+    public ExpiredAuthorizationException(String providerId) {
+        super(providerId, "The authorization has expired.");
+    }
 }

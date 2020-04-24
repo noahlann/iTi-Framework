@@ -18,10 +18,7 @@
 
 package org.lan.iti.common.security.social.connect;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -37,8 +34,19 @@ import java.io.Serializable;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor
 public class ConnectionData implements Serializable {
     private static final long serialVersionUID = -1593566761608366694L;
+
+    /**
+     * 用户ID
+     */
+    private String userId;
+
+    /**
+     * 用户域
+     */
+    private String domain;
 
     /**
      * 服务提供商ID
@@ -84,4 +92,12 @@ public class ConnectionData implements Serializable {
      * oauth2 expire_in + loginTime
      */
     private Long expireTime;
+
+    /**
+     * 联合ID,特殊场景使用
+     * <p>
+     * 如: 微信unionId
+     * </p>
+     */
+    private String unionId;
 }

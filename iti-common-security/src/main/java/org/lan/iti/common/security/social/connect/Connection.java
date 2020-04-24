@@ -72,6 +72,11 @@ public interface Connection<A> extends Serializable {
     String getImageUrl();
 
     /**
+     * 获取 Domain
+     */
+    String getDomain();
+
+    /**
      * 将此连接对象与外部用户的配置文件的当前状态同步
      * 触发本地缓存的配置文件字段以在提供者的系统上发生更改时进行更新
      */

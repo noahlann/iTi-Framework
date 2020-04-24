@@ -29,6 +29,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -39,31 +40,42 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
+ * 用户-连接 仓库
+ * <p>
+ * 一个用户一个连接
+ * </p>
+ *
  * @author NorthLan
  * @date 2020-03-24
  * @url https://noahlan.com
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "SqlDialectInspection"})
 @AllArgsConstructor
 public class JdbcConnectionRepository implements ConnectionRepository {
-    private final String userId;
+    private final ConnectionUserKey userKey;
+
     private final JdbcTemplate jdbcTemplate;
     private final ConnectionFactoryLocator connectionFactoryLocator;
     private final TextEncryptor textEncryptor;
-    private final String tablePrefix;
+    private final String tableName;
+    private final String schema;
 
     @Override
     public MultiValueMap<String, Connection<?>> findAllConnections() {
-        List<Connection<?>> resultList = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? order by providerId, rank", connectionMapper, userId);
-        MultiValueMap<String, Connection<?>> connections = new LinkedMultiValueMap<String, Connection<?>>();
+        List<Connection<?>> resultList = jdbcTemplate.query(selectFromUserConnection() + " WHERE user_id = ? AND `domain` = ? ",
+                connectionMapper, userKey.getUserId(), userKey.getDomain());
+        MultiValueMap<String, Connection<?>> connections = new LinkedMultiValueMap<>();
         Set<String> registeredProviderIds = connectionFactoryLocator.registeredProviderIds();
         for (String registeredProviderId : registeredProviderIds) {
-            connections.put(registeredProviderId, Collections.<Connection<?>>emptyList());
+            connections.put(registeredProviderId, Collections.emptyList());
         }
         for (Connection<?> connection : resultList) {
             String providerId = connection.getKey().getProviderId();
+            if (!connections.containsKey(providerId)) {
+                connections.put(providerId, new LinkedList<>());
+            }
             if (connections.get(providerId).size() == 0) {
-                connections.put(providerId, new LinkedList<Connection<?>>());
+                connections.put(providerId, new LinkedList<>());
             }
             connections.add(providerId, connection);
         }
@@ -72,7 +84,8 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 
     @Override
     public List<Connection<?>> findConnections(String providerId) {
-        return jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by rank", connectionMapper, userId, providerId);
+        return jdbcTemplate.query(selectFromUserConnection() + " where user_id = ? and `domain` = ? and provider_id = ?",
+                connectionMapper, userKey.getUserId(), userKey.getDomain(), providerId);
     }
 
     @Override
@@ -88,25 +101,27 @@ public class JdbcConnectionRepository implements ConnectionRepository {
         }
         StringBuilder providerUsersCriteriaSql = new StringBuilder();
         MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("userId", userId);
-        for (Iterator<Map.Entry<String, List<String>>> it = providerUserIds.entrySet().iterator(); it.hasNext();) {
+        parameters.addValue("userId", userKey.getUserId());
+        for (Iterator<Map.Entry<String, List<String>>> it = providerUserIds.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, List<String>> entry = it.next();
             String providerId = entry.getKey();
-            providerUsersCriteriaSql.append("providerId = :providerId_").append(providerId).append(" and providerUserId in (:providerUserIds_").append(providerId).append(")");
+            providerUsersCriteriaSql.append("provider_id = :providerId_").append(providerId).append(" and provider_user_id in (:providerUserIds_").append(providerId).append(")");
             parameters.addValue("providerId_" + providerId, providerId);
             parameters.addValue("providerUserIds_" + providerId, entry.getValue());
             if (it.hasNext()) {
-                providerUsersCriteriaSql.append(" or " );
+                providerUsersCriteriaSql.append(" or ");
             }
         }
-        List<Connection<?>> resultList = new NamedParameterJdbcTemplate(jdbcTemplate).query(selectFromUserConnection() + " where userId = :userId and " + providerUsersCriteriaSql + " order by providerId, rank", parameters, connectionMapper);
+        List<Connection<?>> resultList = new NamedParameterJdbcTemplate(jdbcTemplate).query(
+                selectFromUserConnection() + " where user_id = :userId and " + providerUsersCriteriaSql + " order by provider_id",
+                parameters, connectionMapper);
         MultiValueMap<String, Connection<?>> connectionsForUsers = new LinkedMultiValueMap<String, Connection<?>>();
         for (Connection<?> connection : resultList) {
             String providerId = connection.getKey().getProviderId();
             List<String> userIds = providerUserIds.get(providerId);
             List<Connection<?>> connections = connectionsForUsers.get(providerId);
             if (connections == null) {
-                connections = new ArrayList<Connection<?>>(userIds.size());
+                connections = new ArrayList<>(userIds.size());
                 for (int i = 0; i < userIds.size(); i++) {
                     connections.add(null);
                 }
@@ -122,7 +137,10 @@ public class JdbcConnectionRepository implements ConnectionRepository {
     @Override
     public Connection<?> getConnection(ConnectionKey connectionKey) throws NoSuchConnectionException {
         try {
-            return jdbcTemplate.queryForObject(selectFromUserConnection() + " where userId = ? and providerId = ? and providerUserId = ?", connectionMapper, userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+            return jdbcTemplate.queryForObject(selectFromUserConnection() + " where user_id = ? and `domain` = ? and provider_id = ? and provider_user_id = ?",
+                    connectionMapper,
+                    userKey.getUserId(), userKey.getDomain(),
+                    connectionKey.getProviderId(), connectionKey.getProviderUserId());
         } catch (EmptyResultDataAccessException e) {
             throw new NoSuchConnectionException(connectionKey);
         }
@@ -155,9 +173,8 @@ public class JdbcConnectionRepository implements ConnectionRepository {
     public void addConnection(Connection<?> connection) {
         try {
             ConnectionData data = connection.createData();
-            int rank = jdbcTemplate.queryForObject("select coalesce(max(rank) + 1, 1) as rank from " + tablePrefix + "UserConnection where userId = ? and providerId = ?", new Object[]{ userId, data.getProviderId() }, Integer.class);
-            jdbcTemplate.update("insert into " + tablePrefix + "UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    userId, data.getProviderId(), data.getProviderUserId(), rank, data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
+            jdbcTemplate.update("insert into " + getTableName() + " (user_id, provider_id, provider_user_id, display_name, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    userKey.getUserId(), data.getProviderId(), data.getProviderUserId(), data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
         } catch (DuplicateKeyException e) {
             throw new DuplicateConnectionException(connection.getKey());
         }
@@ -167,29 +184,50 @@ public class JdbcConnectionRepository implements ConnectionRepository {
     @Transactional
     public void updateConnection(Connection<?> connection) {
         ConnectionData data = connection.createData();
-        jdbcTemplate.update("update " + tablePrefix + "UserConnection set displayName = ?, profileUrl = ?, imageUrl = ?, accessToken = ?, secret = ?, refreshToken = ?, expireTime = ? where userId = ? and providerId = ? and providerUserId = ?",
-                data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(), userId, data.getProviderId(), data.getProviderUserId());
+        jdbcTemplate.update("update " + getTableName() + " set display_name = ?, profile_url = ?, image_url = ?, access_token = ?, secret = ?, refresh_token = ?, expire_time = ? where user_id = ? and `domain` = ? and provider_id = ? and provider_user_id = ?",
+                data.getDisplayName(),
+                data.getProfileUrl(),
+                data.getImageUrl(),
+                encrypt(data.getAccessToken()),
+                encrypt(data.getSecret()),
+                encrypt(data.getRefreshToken()),
+                data.getExpireTime(),
+                userKey.getUserId(),
+                userKey.getDomain(),
+                data.getProviderId(),
+                data.getProviderUserId());
     }
 
     @Override
     @Transactional
     public void removeConnections(String providerId) {
-        jdbcTemplate.update("delete from " + tablePrefix + "UserConnection where userId = ? and providerId = ?", userId, providerId);
+        jdbcTemplate.update("delete from " + getTableName() + " where user_id = ? and `domain` = ? and provider_id = ?",
+                userKey.getUserId(), userKey.getDomain(), providerId);
     }
 
     @Override
     @Transactional
     public void removeConnection(ConnectionKey connectionKey) {
-        jdbcTemplate.update("delete from " + tablePrefix + "UserConnection where userId = ? and providerId = ? and providerUserId = ?", userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+        jdbcTemplate.update("delete from ? where user_id = ? and `domain` = ? and provider_id = ? and provider_user_id = ?",
+                getTableName(), userKey.getUserId(), userKey.getDomain(), connectionKey.getProviderId(), connectionKey.getProviderUserId());
     }
 
     // region internal helpers
+    private String getAllColumnStr() {
+        return "user_id, provider_id, provider_user_id, domain, display_name, profile_url, image_url, access_token, secret, refresh_token, expire_time, union_id";
+    }
+
     private String selectFromUserConnection() {
-        return "select user_id, provider_id, provider_user_id, display_name, image_url, access_token, secret, refresh_token, expire_time from " + tablePrefix + "user_connection";
+        return "select " + getAllColumnStr() + " from " + getTableName();
+    }
+
+    private String getTableName() {
+        return schema + tableName;
     }
 
     private Connection<?> findPrimaryConnection(String providerId) {
-        List<Connection<?>> connections = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by rank", connectionMapper, userId, providerId);
+        List<Connection<?>> connections = jdbcTemplate.query(selectFromUserConnection() + " where user_id = ? and `domain` = ? and provider_id = ?",
+                connectionMapper, userKey.getUserId(), userKey.getDomain(), providerId);
         if (connections.size() > 0) {
             return connections.get(0);
         } else {
@@ -202,7 +240,7 @@ public class JdbcConnectionRepository implements ConnectionRepository {
     }
 
     private String encrypt(String text) {
-        return text != null ? textEncryptor.encrypt(text) : text;
+        return text != null ? textEncryptor.encrypt(text) : null;
     }
 
 
@@ -211,26 +249,30 @@ public class JdbcConnectionRepository implements ConnectionRepository {
     private final class ServiceProviderConnectionMapper implements RowMapper<Connection<?>> {
 
         @Override
-        public Connection<?> mapRow(ResultSet resultSet, int i) throws SQLException {
+        public Connection<?> mapRow(@NonNull ResultSet resultSet, int i) throws SQLException {
             ConnectionData connectionData = mapConnectionData(resultSet);
             ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId());
             return connectionFactory.createConnection(connectionData);
         }
 
         private ConnectionData mapConnectionData(ResultSet rs) throws SQLException {
-            return new ConnectionData(rs.getString("providerId"),
-                    rs.getString("providerUserId"),
-                    rs.getString("displayName"),
-                    rs.getString("profileUrl"),
-                    rs.getString("imageUrl"),
-                    decrypt(rs.getString("accessToken")),
+            return new ConnectionData(
+                    rs.getString("user_id"),
+                    rs.getString("domain"),
+                    rs.getString("provider_id"),
+                    rs.getString("provider_user_id"),
+                    rs.getString("display_name"),
+                    rs.getString("profile_url"),
+                    rs.getString("image_url"),
+                    decrypt(rs.getString("access_token")),
                     decrypt(rs.getString("secret")),
-                    decrypt(rs.getString("refreshToken")),
-                    expireTime(rs.getLong("expireTime")));
+                    decrypt(rs.getString("refresh_token")),
+                    expireTime(rs.getLong("expire_time")),
+                    rs.getString("union_id"));
         }
 
         private String decrypt(String encryptedText) {
-            return encryptedText != null ? textEncryptor.decrypt(encryptedText) : encryptedText;
+            return encryptedText != null ? textEncryptor.decrypt(encryptedText) : null;
         }
 
         private Long expireTime(long expireTime) {

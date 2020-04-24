@@ -1,20 +1,22 @@
 /*
- * Copyright (c) [2019-2020] [NorthLan](lan6995@gmail.com)
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright (c) [2019-2020] [NorthLan](lan6995@gmail.com)
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
-package org.lan.iti.common.security.social;
+package org.lan.iti.common.security.social.security;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,7 @@ import org.lan.iti.common.core.util.Formatter;
 import org.lan.iti.common.security.model.ITIUserDetails;
 import org.lan.iti.common.security.social.connect.UsersConnectionRepository;
 import org.lan.iti.common.security.social.exception.SocialAuthenticationException;
-import org.lan.iti.common.security.social.provider.SocialAuthenticationService;
+import org.lan.iti.common.security.social.security.provider.SocialAuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,6 +32,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.util.Assert;
 
 import javax.servlet.ServletException;
@@ -51,18 +54,18 @@ import java.util.Set;
 @Slf4j
 public class SocialAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private static final String DEFAULT_FILTER_PROCESSES_URL = "/social";
+    private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
 
     private SocialAuthenticationServiceLocator authServiceLocator;
 
-    private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
-
-    protected SocialAuthenticationFilter(AuthenticationManager authManager,
+    public SocialAuthenticationFilter(AuthenticationManager authManager,
                                          UsersConnectionRepository usersConnectionRepository,
-                                         SocialAuthenticationServiceLocator socialAuthenticationServiceLocator) {
+                                         SocialAuthenticationServiceLocator authServiceLocator) {
         super(DEFAULT_FILTER_PROCESSES_URL);
         setAuthenticationManager(authManager);
-        this.authServiceLocator = socialAuthenticationServiceLocator;
-        // TODO 一些依赖的东西
+        this.authServiceLocator = authServiceLocator;
+        SimpleUrlAuthenticationFailureHandler delegateAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler("/error");
+        super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(delegateAuthenticationFailureHandler));
     }
 
     @Override
@@ -100,8 +103,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             // 未认证，执行认证请求
             return doAuthentication(authService, request, token);
         } else {
-            // 已认证
-            return auth;
+            // TODO 已认证
+            return null;
         }
     }
 
@@ -150,7 +153,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
         }
         uri = uri.substring(filterProcessesUrl.length());
 
-        // expect /filterprocessesurl/provider, not /filterprocessesurlproviderr
+        // expect /filterProcessesUrl/provider, not /filterProcessesUrlProvider
         if (uri.startsWith("/")) {
             return uri.substring(1);
         } else {

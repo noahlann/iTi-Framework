@@ -31,7 +31,7 @@ import java.util.*;
  */
 public class InMemoryUsersConnectionRepository implements UsersConnectionRepository {
     private ConnectionFactoryLocator connectionFactoryLocator;
-    private Map<String, ConnectionRepository> connectionServices;
+    private Map<ConnectionUserKey, ConnectionRepository> connectionServices;
 
     @Setter
     private ConnectionSignUp connectionSignUp;
@@ -44,32 +44,32 @@ public class InMemoryUsersConnectionRepository implements UsersConnectionReposit
     @Override
     public List<String> findUserIdsWithConnection(Connection<?> connection) {
         List<String> localUserIds = new ArrayList<>();
-        Set<Map.Entry<String, ConnectionRepository>> connectionServiceEntries = connectionServices.entrySet();
-        for (Map.Entry<String, ConnectionRepository> entry : connectionServiceEntries) {
+        Set<Map.Entry<ConnectionUserKey, ConnectionRepository>> connectionServiceEntries = connectionServices.entrySet();
+        for (Map.Entry<ConnectionUserKey, ConnectionRepository> entry : connectionServiceEntries) {
             try {
                 entry.getValue().getConnection(connection.getKey());
-                localUserIds.add(entry.getKey());
+                localUserIds.add(entry.getKey().getUserId());
             } catch (NoSuchConnectionException e) {
                 // just catch it.
             }
         }
-        if (localUserIds.size() == 0 && connectionSignUp != null) {
-            // 注册
-            String newUserId = connectionSignUp.execute(connection);
-            if (newUserId != null) {
-                createConnectionService(newUserId).addConnection(connection);
-                return Collections.singletonList(newUserId);
-            }
-        }
+//        if (localUserIds.size() == 0 && connectionSignUp != null) {
+//            // 注册
+//            String newUserId = connectionSignUp.execute(connection);
+//            if (newUserId != null) {
+//                createConnectionRepository(newUserId).addConnection(connection);
+//                return Collections.singletonList(newUserId);
+//            }
+//        }
         return localUserIds;
     }
 
     @Override
     public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {
         List<String> localUserIds = new ArrayList<>();
-        Set<Map.Entry<String, ConnectionRepository>> connectionServiceEntries = connectionServices.entrySet();
-        for (Map.Entry<String, ConnectionRepository> entry : connectionServiceEntries) {
-            String localUserId = entry.getKey();
+        Set<Map.Entry<ConnectionUserKey, ConnectionRepository>> connectionServiceEntries = connectionServices.entrySet();
+        for (Map.Entry<ConnectionUserKey, ConnectionRepository> entry : connectionServiceEntries) {
+            String localUserId = entry.getKey().getUserId();
             List<Connection<?>> providerConnections = entry.getValue().findConnections(providerId);
             for (Connection<?> connection : providerConnections) {
                 if (providerUserIds.contains(connection.getKey().getProviderUserId())) {
@@ -81,10 +81,10 @@ public class InMemoryUsersConnectionRepository implements UsersConnectionReposit
     }
 
     @Override
-    public ConnectionRepository createConnectionService(String userId) {
-        if (!connectionServices.containsKey(userId)) {
-            connectionServices.put(userId, new InMemoryConnectionRepository(connectionFactoryLocator));
+    public ConnectionRepository createConnectionRepository(ConnectionUserKey userKey) {
+        if (!connectionServices.containsKey(userKey)) {
+            connectionServices.put(userKey, new InMemoryConnectionRepository(connectionFactoryLocator));
         }
-        return connectionServices.get(userId);
+        return connectionServices.get(userKey);
     }
 }

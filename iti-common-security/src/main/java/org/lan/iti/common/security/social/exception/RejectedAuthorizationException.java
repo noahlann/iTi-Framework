@@ -16,33 +16,22 @@
  *
  */
 
-package org.lan.iti.common.security.social.config;
-
-import org.lan.iti.common.security.social.connect.ConnectionFactory;
-import org.lan.iti.common.security.social.connect.support.ConnectionFactoryRegistry;
-import org.lan.iti.common.security.social.security.provider.SocialAuthenticationWrapper;
+package org.lan.iti.common.security.social.exception;
 
 /**
- * 用于注册连接工厂的策略接口
+ * oAuth客户端在调用api期间被拒绝的异常
+ * - token验签失败
+ * - token过期
+ * - token被撤销
  *
  * @author NorthLan
- * @date 2020-03-21
+ * @date 2020-03-30
  * @url https://noahlan.com
  */
-public interface ConnectionFactoryConfigurer {
+public class RejectedAuthorizationException extends NotAuthorizedException {
+    private static final long serialVersionUID = -7653265647545528172L;
 
-    /**
-     * 添加 ConnectionFactory
-     */
-    void addConnectionFactory(ConnectionFactory<?> connectionFactory);
-
-    /**
-     * 设置wrapper
-     */
-    void addWrapper(SocialAuthenticationWrapper wrapper);
-
-    /**
-     * 获取注册表
-     */
-    ConnectionFactoryRegistry getConnectionFactoryLocator();
+    public RejectedAuthorizationException(String providerId, String message) {
+        super(providerId, message);
+    }
 }

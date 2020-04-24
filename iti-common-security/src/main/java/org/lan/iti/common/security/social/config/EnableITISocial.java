@@ -18,31 +18,21 @@
 
 package org.lan.iti.common.security.social.config;
 
-import org.lan.iti.common.security.social.connect.ConnectionFactory;
-import org.lan.iti.common.security.social.connect.support.ConnectionFactoryRegistry;
-import org.lan.iti.common.security.social.security.provider.SocialAuthenticationWrapper;
+import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 /**
- * 用于注册连接工厂的策略接口
+ * 开启 iTi - Social
  *
  * @author NorthLan
- * @date 2020-03-21
+ * @date 2020-03-28
  * @url https://noahlan.com
  */
-public interface ConnectionFactoryConfigurer {
-
-    /**
-     * 添加 ConnectionFactory
-     */
-    void addConnectionFactory(ConnectionFactory<?> connectionFactory);
-
-    /**
-     * 设置wrapper
-     */
-    void addWrapper(SocialAuthenticationWrapper wrapper);
-
-    /**
-     * 获取注册表
-     */
-    ConnectionFactoryRegistry getConnectionFactoryLocator();
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@Import(SocialConfiguration.class)
+public @interface EnableITISocial {
 }

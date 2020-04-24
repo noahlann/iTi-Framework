@@ -18,31 +18,58 @@
 
 package org.lan.iti.common.security.social.config;
 
+import org.lan.iti.common.security.service.ITIUserDetailsService;
 import org.lan.iti.common.security.social.connect.ConnectionFactoryLocator;
 import org.lan.iti.common.security.social.connect.UsersConnectionRepository;
+import org.lan.iti.common.security.social.security.SocialAuthenticationFilter;
+import org.lan.iti.common.security.social.security.SocialAuthenticationProvider;
+import org.lan.iti.common.security.social.security.SocialAuthenticationServiceLocator;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
+ * Configuration class imported by {@link EnableITISocial}.
+ *
  * @author NorthLan
  * @date 2020-03-21
  * @url https://noahlan.com
  */
-@Configuration
-public class SocialConfiguration {
-    private static boolean securityEnabled = isSocialSecurityAvailable();
+public class SocialConfiguration extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     @Autowired
-    private Environment environment;
-
     private List<SocialConfigurer> socialConfigurers;
 
-    @Autowired
+    @Override
+    public void configure(HttpSecurity builder) {
+        ApplicationContext applicationContext = builder.getSharedObject(ApplicationContext.class);
+        UsersConnectionRepository usersConnectionRepository = getBean(applicationContext, UsersConnectionRepository.class);
+        SocialAuthenticationServiceLocator authServiceLocator = getBean(applicationContext, SocialAuthenticationServiceLocator.class);
+        ITIUserDetailsService userDetailsService = getBean(applicationContext, ITIUserDetailsService.class);
+
+        SocialAuthenticationFilter filter = new SocialAuthenticationFilter(
+                builder.getSharedObject(AuthenticationManager.class),
+                usersConnectionRepository,
+                authServiceLocator);
+
+        RememberMeServices rememberMeServices = builder.getSharedObject(RememberMeServices.class);
+        Optional.ofNullable(rememberMeServices).ifPresent(filter::setRememberMeServices);
+
+        builder.authenticationProvider(new SocialAuthenticationProvider(usersConnectionRepository, userDetailsService))
+                .addFilterBefore(postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);
+    }
+
     public void setSocialConfigurers(List<SocialConfigurer> socialConfigurers) {
         Assert.notNull(socialConfigurers, "At least one configuration class must implement SocialConfigurer (or subclass SocialConfigurerAdapter)");
         Assert.notEmpty(socialConfigurers, "At least one configuration class must implement SocialConfigurer (or subclass SocialConfigurerAdapter)");
@@ -51,22 +78,20 @@ public class SocialConfiguration {
 
     @Bean
     public ConnectionFactoryLocator connectionFactoryLocator() {
-        if (securityEnabled) {
-
-        } else {
-
-
+        SecurityConnectionFactoryConfigurer configurer = new SecurityConnectionFactoryConfigurer();
+        for (SocialConfigurer it : socialConfigurers) {
+            it.addConnectionFactories(configurer);
         }
-        return null;
+        return configurer.getConnectionFactoryLocator();
     }
 
     @Bean
     public UsersConnectionRepository usersConnectionService(ConnectionFactoryLocator connectionFactoryLocator) {
         UsersConnectionRepository usersConnectionRepository = null;
         for (SocialConfigurer socialConfigurer : socialConfigurers) {
-            UsersConnectionRepository ucsCandidate = socialConfigurer.getUsersConnectionRepository(connectionFactoryLocator);
-            if (ucsCandidate != null) {
-                usersConnectionRepository = ucsCandidate;
+            UsersConnectionRepository repo = socialConfigurer.getUsersConnectionRepository(connectionFactoryLocator);
+            if (repo != null) {
+                usersConnectionRepository = repo;
                 break;
             }
         }
@@ -75,17 +100,16 @@ public class SocialConfiguration {
     }
 
 //    @Bean
-//    @Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-//    public ConnectionService connectionService(UsersConnectionService usersConnectionService){
-//        return usersConnectionService.createConnectionService()
+//    @Scope(value="request", proxyMode= ScopedProxyMode.INTERFACES)
+//    public ConnectionRepository connectionRepository(UsersConnectionRepository usersConnectionRepository) {
+//        return usersConnectionRepository.createConnectionRepository(userIdSource().getUserId());
 //    }
 
-    private static boolean isSocialSecurityAvailable() {
+    private <T> T getBean(ApplicationContext applicationContext, Class<T> beanType) {
         try {
-            Class.forName("org.lan.iti.common.security.social.SocialAuthenticationServiceLocator");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
+            return applicationContext.getBean(beanType);
+        } catch (NoSuchBeanDefinitionException e) {
+            throw new IllegalStateException("ITISocialConfigurer depends on " + beanType.getName() + ". No single bean of that type found in application context.", e);
         }
     }
 }

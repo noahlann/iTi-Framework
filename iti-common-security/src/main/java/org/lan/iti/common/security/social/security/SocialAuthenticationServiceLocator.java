@@ -16,33 +16,29 @@
  *
  */
 
-package org.lan.iti.common.security.social.config;
+package org.lan.iti.common.security.social.security;
 
-import org.lan.iti.common.security.social.connect.ConnectionFactory;
-import org.lan.iti.common.security.social.connect.support.ConnectionFactoryRegistry;
-import org.lan.iti.common.security.social.security.provider.SocialAuthenticationWrapper;
+import org.lan.iti.common.security.social.connect.ConnectionFactoryLocator;
+import org.lan.iti.common.security.social.security.provider.SocialAuthenticationService;
+
+import java.util.Set;
 
 /**
- * 用于注册连接工厂的策略接口
+ * locator
  *
  * @author NorthLan
- * @date 2020-03-21
+ * @date 2020-03-18
  * @url https://noahlan.com
  */
-public interface ConnectionFactoryConfigurer {
+public interface SocialAuthenticationServiceLocator extends ConnectionFactoryLocator {
 
     /**
-     * 添加 ConnectionFactory
+     * 通过providerId查找 {@link SocialAuthenticationService}
      */
-    void addConnectionFactory(ConnectionFactory<?> connectionFactory);
+    SocialAuthenticationService<?> getAuthenticationService(String providerId);
 
     /**
-     * 设置wrapper
+     * 返回为其注册了{@link SocialAuthenticationService}的providerId的集合
      */
-    void addWrapper(SocialAuthenticationWrapper wrapper);
-
-    /**
-     * 获取注册表
-     */
-    ConnectionFactoryRegistry getConnectionFactoryLocator();
+    Set<String> registeredAuthenticationProviderIds();
 }

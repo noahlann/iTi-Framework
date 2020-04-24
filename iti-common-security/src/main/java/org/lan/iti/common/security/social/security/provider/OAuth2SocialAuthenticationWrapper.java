@@ -16,34 +16,29 @@
  *
  */
 
-package org.lan.iti.common.security.social.provider;
+package org.lan.iti.common.security.social.security.provider;
 
-import org.lan.iti.common.security.social.SocialAuthenticationToken;
 import org.lan.iti.common.security.social.connect.ConnectionFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.lan.iti.common.security.social.connect.support.OAuth2ConnectionFactory;
 
 /**
- * 社交身份鉴权服务
+ * OAuth2 默认转换逻辑
  *
  * @author NorthLan
- * @date 2020-03-17
+ * @date 2020-04-02
  * @url https://noahlan.com
  */
-public interface SocialAuthenticationService<S> {
+public class OAuth2SocialAuthenticationWrapper implements SocialAuthenticationWrapper {
 
-    /**
-     * @return 用于认证的 {@link ConnectionFactory}
-     */
-    ConnectionFactory<S> getConnectionFactory();
+    @Override
+    public boolean support(ConnectionFactory<?> cf) {
+        return cf instanceof OAuth2ConnectionFactory;
+    }
 
-    /**
-     * 获取 AuthToken
-     *
-     * @param request  当前 {@link HttpServletRequest}
-     * @param response 当前 {@link HttpServletResponse}
-     * @return 未授权的Token或null
-     */
-    SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response);
+    @Override
+    public <A> SocialAuthenticationService<A> wrap(ConnectionFactory<A> cf) {
+        final OAuth2AuthenticationService<A> authService = new OAuth2AuthenticationService<>((OAuth2ConnectionFactory<A>) cf);
+        authService.setDefaultScope(((OAuth2ConnectionFactory<A>) cf).getScope());
+        return authService;
+    }
 }

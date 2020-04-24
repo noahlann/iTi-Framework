@@ -16,33 +16,34 @@
  *
  */
 
-package org.lan.iti.common.security.social.config;
+package org.lan.iti.common.security.social.security.provider;
 
+import org.lan.iti.common.security.social.security.SocialAuthenticationToken;
 import org.lan.iti.common.security.social.connect.ConnectionFactory;
-import org.lan.iti.common.security.social.connect.support.ConnectionFactoryRegistry;
-import org.lan.iti.common.security.social.security.provider.SocialAuthenticationWrapper;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * 用于注册连接工厂的策略接口
+ * 社交身份鉴权服务
  *
  * @author NorthLan
- * @date 2020-03-21
+ * @date 2020-03-17
  * @url https://noahlan.com
  */
-public interface ConnectionFactoryConfigurer {
+public interface SocialAuthenticationService<S> {
 
     /**
-     * 添加 ConnectionFactory
+     * @return 用于认证的 {@link ConnectionFactory}
      */
-    void addConnectionFactory(ConnectionFactory<?> connectionFactory);
+    ConnectionFactory<S> getConnectionFactory();
 
     /**
-     * 设置wrapper
+     * 获取 AuthToken
+     *
+     * @param request  当前 {@link HttpServletRequest}
+     * @param response 当前 {@link HttpServletResponse}
+     * @return 未授权的Token或null
      */
-    void addWrapper(SocialAuthenticationWrapper wrapper);
-
-    /**
-     * 获取注册表
-     */
-    ConnectionFactoryRegistry getConnectionFactoryLocator();
+    SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response);
 }
