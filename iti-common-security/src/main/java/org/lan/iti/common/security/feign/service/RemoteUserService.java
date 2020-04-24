@@ -35,16 +35,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface RemoteUserService {
 
     /**
-     * 获取账户信息
+     * 通过用户ID获取用户信息
      *
-     * @param principal 唯一主体
-     * @param type      类型
+     * @param userId 用户ID
+     * @param domain 域
      * @return 用户安全信息
      */
-    @GetMapping(value = "/user/{principal}", consumes = "application/x-www-form-urlencoded")
     @Headers(SecurityConstants.HEADER_FROM_IN)
-    ApiResult<SecurityUser<?>> getSecurityUser(@PathVariable("principal") String principal,
-                                               @RequestParam("type") String type);
+    @GetMapping(value = "security/user/{id}", consumes = "application/x-www-form-urlencoded")
+    ApiResult<SecurityUser<?>> getSecurityUserById(@PathVariable("id") String userId,
+                                                   @RequestParam("domain") String domain);
+
+    /**
+     * 通过用户名获取用户信息
+     *
+     * @param username 用户名
+     * @param domain   域
+     * @return 用户安全信息
+     */
+    @GetMapping(value = "security/user", consumes = "application/x-www-form-urlencoded")
+    @Headers(SecurityConstants.HEADER_FROM_IN)
+    ApiResult<SecurityUser<?>> getSecurityUserByUsername(@RequestParam("username") String username,
+                                                         @RequestParam("domain") String domain);
 
     /**
      * 注册用户账户
@@ -54,7 +66,7 @@ public interface RemoteUserService {
      * @param credentials 凭证
      * @return 用户安全信息(非完整)
      */
-    @PostMapping(value = "/user/{principal}", consumes = "application/x-www-form-urlencoded")
+    @PostMapping(value = "security/user/{principal}", consumes = "application/x-www-form-urlencoded")
     @Headers(SecurityConstants.HEADER_FROM_IN)
     ApiResult<SecurityUser<?>> register(@PathVariable("principal") String principal,
                                         @RequestParam("type") String type,
