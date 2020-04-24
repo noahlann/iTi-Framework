@@ -19,6 +19,7 @@ package org.lan.iti.common.core.base;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -45,23 +46,27 @@ public abstract class BaseModel<T extends BaseModel<T>> extends Model<T> {
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
+    @ApiModelProperty("创建时间")
     protected LocalDateTime createTime;
 
     /**
      * 创建人 ID
      */
     @TableField(fill = FieldFill.INSERT)
+    @ApiModelProperty("创建者ID")
     protected Long createBy;
 
     /**
      * 更新时间
      */
     @TableField(fill = FieldFill.UPDATE)
+    @ApiModelProperty("更新时间")
     protected LocalDateTime updateTime;
 
     /**
      * 更新人 ID
      */
     @TableField(fill = FieldFill.UPDATE)
+    @ApiModelProperty("更新者ID")
     protected Long updateBy;
 }
