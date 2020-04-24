@@ -16,10 +16,12 @@
 
 package org.lan.iti.common.sentinel;
 
+import com.alibaba.csp.sentinel.SphU;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.RequestOriginParser;
 import org.lan.iti.common.sentinel.handler.ITIUrlBlockHandler;
 import org.lan.iti.common.sentinel.parser.ITIHeaderRequestOriginParser;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +34,9 @@ import org.springframework.context.annotation.Configuration;
  * @url https://noahlan.com
  */
 @Configuration
+@ConditionalOnClass(SphU.class)
 public class SentinelAutoConfiguration {
+
     @Bean
     @ConditionalOnMissingBean
     public BlockExceptionHandler blockExceptionHandler() {
