@@ -42,7 +42,7 @@ public abstract class ITIMetaObjectHandler implements MetaObjectHandler {
             try {
                 setFieldValByName(getCreateByFieldName(), innerUserId(), metaObject);
             } catch (Throwable e) {
-                log.warn("createBy设定异常，请检查MetaObjectHandler相关代码", e);
+                log.warn("createBy设定异常，请检查MetaObjectHandler相关代码 {}", e.getMessage());
             }
         }
     }
@@ -53,7 +53,7 @@ public abstract class ITIMetaObjectHandler implements MetaObjectHandler {
         try {
             setFieldValByName(getUpdateByFieldName(), innerUserId(), metaObject);
         } catch (Throwable e) {
-            log.warn("updateBy设定异常，请检查MetaObjectHandler相关代码", e);
+            log.warn("updateBy设定异常，请检查MetaObjectHandler相关代码 {}", e.getMessage());
         }
     }
 
