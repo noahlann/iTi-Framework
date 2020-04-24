@@ -20,10 +20,12 @@ import cn.hutool.core.collection.CollUtil;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.SecurityConstants;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.cloud.security.oauth2.client.AccessTokenContextRelay;
 import org.springframework.cloud.security.oauth2.client.feign.OAuth2FeignRequestInterceptor;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
 import java.util.Collection;
 
@@ -67,10 +69,21 @@ public class ITIFeignClientInterceptor extends OAuth2FeignRequestInterceptor {
             return;
         }
 
-        accessTokenContextRelay.copyToken();
-        if (oAuth2ClientContext != null
-                && oAuth2ClientContext.getAccessToken() != null) {
-            super.apply(template);
+        try {
+            accessTokenContextRelay.copyToken();
+        } catch (BeanCreationException e) {
+            log.warn("创建动态代理类异常,不执行token复制,允许程序继续执行 具体错误: {}", e.getMessage());
+        }
+        if (oAuth2ClientContext != null) {
+            OAuth2AccessToken token = null;
+            try {
+                token = oAuth2ClientContext.getAccessToken();
+            } catch (BeanCreationException e) {
+                log.warn("创建动态代理类异常,不执行token复制,允许程序继续执行 具体错误: {}", e.getMessage());
+            }
+            if (token != null) {
+                super.apply(template);
+            }
         }
     }
 }
