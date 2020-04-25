@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.lan.iti.common.minio.vo.MinioItem;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
 import java.io.InputStream;
@@ -98,8 +99,8 @@ public class MinioTemplate implements InitializingBean {
         Iterable<Result<Item>> objectsIterator = client
                 .listObjects(bucketName, prefix, recursive);
 
-        while (objectsIterator.iterator().hasNext()) {
-            objectList.add(new MinioItem(objectsIterator.iterator().next().get()));
+        for (Result<Item> itemResult : objectsIterator) {
+            objectList.add(new MinioItem(itemResult.get()));
         }
         return objectList;
     }
@@ -138,7 +139,7 @@ public class MinioTemplate implements InitializingBean {
      * @throws Exception https://docs.minio.io/cn/java-client-api-reference.html#putObject
      */
     public void putObject(String bucketName, String objectName, InputStream stream) throws Exception {
-        client.putObject(bucketName, objectName, stream, (long) stream.available(), null, null, "application/octet-stream");
+        client.putObject(bucketName, objectName, stream, (long) stream.available(), null, null, MediaType.APPLICATION_OCTET_STREAM_VALUE);
     }
 
     /**

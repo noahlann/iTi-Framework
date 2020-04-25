@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @url https://noahlan.com
  */
 @Data
-@ConfigurationProperties(prefix = "minio")
+@ConfigurationProperties(prefix = "iti.minio")
 public class MinioProperties {
     /**
      * minio 服务地址 http://ip:port

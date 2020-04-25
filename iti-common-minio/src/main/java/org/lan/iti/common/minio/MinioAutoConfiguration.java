@@ -17,7 +17,6 @@
 package org.lan.iti.common.minio;
 
 import lombok.AllArgsConstructor;
-import org.lan.iti.common.core.annotation.ConditionalOnPropertyNotEmpty;
 import org.lan.iti.common.minio.http.MinioEndpoint;
 import org.lan.iti.common.minio.service.MinioTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -40,8 +39,7 @@ public class MinioAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(MinioTemplate.class)
-//    @ConditionalOnProperty(name = "minio.url")
-    @ConditionalOnPropertyNotEmpty("minio.url")
+    @ConditionalOnProperty(name = "iti.minio.url")
     MinioTemplate template() {
         return new MinioTemplate(
                 properties.getUrl(),
@@ -52,8 +50,9 @@ public class MinioAutoConfiguration {
 
     @Bean
     @ConditionalOnBean(MinioTemplate.class)
-    @ConditionalOnProperty(name = "minio.endpoint.enabled", havingValue = "true")
+    @ConditionalOnProperty(name = "iti.minio.endpoint.enabled", havingValue = "true")
     public MinioEndpoint minioEndpoint(MinioTemplate template) {
+
         return new MinioEndpoint(template);
     }
 

@@ -38,7 +38,7 @@ import java.util.Map;
  * @url https://noahlan.com
  */
 @RestController
-@RequestMapping("${minio.endpoint.name:/minio}")
+@RequestMapping("${iti.minio.endpoint.name:/minio}")
 @AllArgsConstructor
 public class MinioEndpoint {
 
