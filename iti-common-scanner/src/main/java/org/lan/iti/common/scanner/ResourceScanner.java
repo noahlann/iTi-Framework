@@ -18,7 +18,10 @@ package org.lan.iti.common.scanner;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.net.NetUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.lan.iti.common.core.util.BeanUtils;
@@ -170,10 +173,17 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         if (StrUtil.isBlank(code)) {
             code = method.getName();
         }
+        // swagger 支持
+        if (StrUtil.isBlank(name) && swaggerAvailable) {
+            ApiOperation swaggerApi = AnnotationUtils.findAnnotation(method, ApiOperation.class);
+            if (swaggerApi != null && StrUtil.isNotBlank(swaggerApi.value())) {
+                name = swaggerApi.value();
+            }
+        }
         if (StrUtil.isBlank(name)) {
             name = code;
         }
-        // TODO swagger 支持
+
         result.setCode(CodeUtils.getResourceCode(properties.getDelimiter(), applicationName, result.getModuleCode(), code))
                 .setName(name);
 
@@ -207,10 +217,25 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
             if (StrUtil.isBlank(moduleCode)) {
                 moduleCode = CodeUtils.getCtrShortName(clazz, properties.getCtrSuffix());
             }
+            // swagger支持
+            if (StrUtil.isBlank(moduleName) && swaggerAvailable) {
+                Api swaggerApi = AnnotationUtils.findAnnotation(clazz, Api.class);
+                if (swaggerApi != null) {
+                    // 优先读取tags
+                    String[] tags = swaggerApi.tags();
+                    if (ArrayUtil.isNotEmpty(tags)) {
+                        // join with ,
+                        moduleName = ArrayUtil.join(tags, ",");
+                    } else if (StrUtil.isNotBlank(swaggerApi.value())) {
+                        // 取value
+                        moduleName = swaggerApi.value();
+                    }
+                }
+            }
             if (StrUtil.isBlank(moduleName)) {
                 moduleName = moduleCode;
             }
-            // TODO swagger支持
+
             resource.setModuleCode(moduleCode)
                     .setModuleName(moduleName)
                     .setCode(CodeUtils.getResourceCode(properties.getDelimiter(), applicationName, moduleCode, null))
