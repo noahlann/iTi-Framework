@@ -43,10 +43,10 @@ public @interface ITIFilter {
 
     /**
      * 过滤指定类
-     * 默认: {@see Object} 过滤所有类,可不指定
+     * 默认: {@link Object} 过滤所有类,可不指定
      */
     @AliasFor("type")
-    String[] value() default {};
+    Class<?> value() default Object.class;
 
     /**
      * 仅排除字段列表
@@ -62,7 +62,7 @@ public @interface ITIFilter {
 
     /**
      * 过滤指定类
-     * 默认: {@see Object} 过滤所有类,可不指定
+     * 默认: {@link Object} 过滤所有类,可不指定
      */
     @AliasFor("value")
     Class<?> type() default Object.class;
