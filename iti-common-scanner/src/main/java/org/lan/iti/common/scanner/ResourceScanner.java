@@ -38,19 +38,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * 扫描器
@@ -73,7 +70,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
     }
 
     private static Map<Class<?>, ResourceDefinition> ctrResourceMap = new HashMap<>();
-    private static final String METHOD_DELIMITER = ",";
+    private static final String DELIMETER = ",";
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -193,7 +190,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         Set<RequestMethod> methods = info.getMethodsCondition().getMethods();
         Assert.notEmpty(pattern, "无法获取RequestMethod");
         result.setUrl(pattern.iterator().next())
-                .setHttpMethod(CollUtil.join(methods, ","));
+                .setHttpMethod(CollUtil.join(methods, DELIMETER));
         return result;
     }
 
@@ -225,7 +222,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
                     String[] tags = swaggerApi.tags();
                     if (ArrayUtil.isNotEmpty(tags)) {
                         // join with ,
-                        moduleName = ArrayUtil.join(tags, ",");
+                        moduleName = ArrayUtil.join(tags, DELIMETER);
                     } else if (StrUtil.isNotBlank(swaggerApi.value())) {
                         // 取value
                         moduleName = swaggerApi.value();
@@ -243,11 +240,6 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
             resource.setServiceCode(applicationName)
                     .setServiceName(properties.getServiceName());
 
-            resource.setUrl(CodeUtils.convertCtrWildcardUrl(getCtrUrl(clazz)))
-                    .setHttpMethod(Arrays.stream(RequestMethod.values())
-                            .map(RequestMethod::name)
-                            .collect(Collectors.joining(METHOD_DELIMITER)));
-
             resource.setIpAddress(ipAddress);
 
             // register
@@ -258,14 +250,6 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
     // endregion
 
     // region inner helper
-    private String getCtrUrl(Class<?> clazz) {
-        RequestMapping requestMapping = clazz.getDeclaredAnnotation(RequestMapping.class);
-        if (requestMapping == null) {
-            throw new ScannerException("控制器: {} 未指定@RequestMapping,请检查", clazz.getName());
-        }
-        return requestMapping.value()[0];
-    }
-
     private boolean isSwaggerAvailable() {
         try {
             Class.forName("io.swagger.annotations.Api");
