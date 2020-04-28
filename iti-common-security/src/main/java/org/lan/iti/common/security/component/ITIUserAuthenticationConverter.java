@@ -18,7 +18,8 @@ package org.lan.iti.common.security.component;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.ITIConstants;
 import org.lan.iti.common.core.constants.SecurityConstants;
@@ -49,9 +50,12 @@ import java.util.Optional;
  * @url https://noahlan.com
  */
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ITIUserAuthenticationConverter implements UserAuthenticationConverter {
     private static final String N_A = "N/A";
+
+    @Setter
+    private Collection<? extends GrantedAuthority> defaultAuthorities;
 
     /**
      * 用户构建器
@@ -80,7 +84,13 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Map<String, ?> map) {
+        if (!map.containsKey(AUTHORITIES)) {
+            return defaultAuthorities;
+        }
         Object authorities = map.get(AUTHORITIES);
+        if (authorities == null) {
+            return defaultAuthorities;
+        }
         if (authorities instanceof String) {
             return AuthorityUtils.commaSeparatedStringToAuthorityList((String) authorities);
         }
@@ -96,8 +106,9 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
      */
     private void validateTenantId(Map<String, ?> map) {
         String headerValue = getCurrentTenantId();
-        Integer userValue = MapUtil.getInt(map, SecurityConstants.DETAILS_TENANT_ID);
-        if (StrUtil.isNotBlank(headerValue) && !userValue.toString().equals(headerValue)) {
+        String userValue = MapUtil.getStr(map, SecurityConstants.DETAILS_TENANT_ID);
+        if (StrUtil.isNotBlank(headerValue) && StrUtil.isNotBlank(userValue)
+                && !userValue.equals(headerValue)) {
             log.warn("请求头中的租户ID({})和用户的租户ID({})不一致", headerValue, userValue);
             // TODO 不要提示租户ID不对，可能被穷举
             throw new ITIAuth2Exception(SpringSecurityMessageSource.getAccessor().getMessage("AbstractUserDetailsAuthenticationProvider.badTenantId", "Bad tenant ID"));
