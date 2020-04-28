@@ -8,6 +8,7 @@ org.lan.iti.common.data.tenant.TenantContextHolderFilter,\
 org.lan.iti.common.core.config.RestTemplateConfig,\
 org.lan.iti.common.core.config.ITIFormatterConfig,\
 org.lan.iti.common.core.config.MessageSourceConfig,\
+org.lan.iti.common.core.config.ITINegotiationAdapter,\
 org.lan.iti.common.data.orm.MPAutoConfiguration,\
 org.lan.iti.common.data.cache.config.CacheManagerCustomizersConfig,\
 org.lan.iti.common.data.cache.config.RedisCacheAutoConfiguration,\
