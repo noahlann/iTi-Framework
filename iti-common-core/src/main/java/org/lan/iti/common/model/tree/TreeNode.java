@@ -16,74 +16,110 @@
 
 package org.lan.iti.common.model.tree;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
 
 /**
- * 树形节点
+ * 树形节点 属性可通过 {@link TreeNodeConfig} 中被命名
+ * 在你的项目里它可以是部门实体、地区实体等任意类树节点实体
+ * 类树节点实体: 包含key，父Key
+ * 还可以包含扩展字段
  *
  * @author NorthLan
  * @date 2020-02-20
  * @url https://noahlan.com
  */
-@Data
-@ApiModel("树形节点")
-public class TreeNode implements Serializable {
-    private static final long serialVersionUID = 2230740354879863726L;
+@NoArgsConstructor
+public class TreeNode<T> implements Node<T> {
 
     /**
      * 当前节点ID
      */
-    @ApiModelProperty("当前节点")
-    private Long id = null;
+    private T id;
 
     /**
      * 父级节点ID
      */
-    @ApiModelProperty("父级节点")
-    private Long parentId = null;
+    private T parentId;
 
     /**
-     * 子节点列表
+     * 名称
      */
-    @ApiModelProperty("子节点列表")
-    @Setter(AccessLevel.PRIVATE)
-    private List<TreeNode> children = new ArrayList<>();
+    private CharSequence name;
 
     /**
-     * 排序值
+     * 顺序 越小优先级越高 默认0
      */
-    @ApiModelProperty("排序值")
-    private Integer sort = 0;
-
-    // region 方法列表
+    private Comparable<?> weight = 0;
 
     /**
-     * 添加子节点
+     * 扩展字段
      */
-    public void addChild(TreeNode node) {
-        children.add(node);
-    }
+    @Getter
+    @Setter
+    private Map<String, Object> extra;
 
     /**
-     * 递归排序
-     * <p>
-     * 建议仅调用根节点进行排序
+     * 构造
      *
-     * @param comparator 比较器,若为空值则默认按照sort降序排序
+     * @param id       ID
+     * @param parentId 父ID
+     * @param name     名称
+     * @param weight   权重
      */
-    public void sortChildren(Comparator<? super TreeNode> comparator) {
-        children.sort(comparator != null ? comparator : Comparator.comparingInt(TreeNode::getSort));
-        // 所有子节点排个序
-        children.forEach(it -> it.sortChildren(comparator));
+    public TreeNode(T id, T parentId, String name, Comparable<?> weight) {
+        this.id = id;
+        this.parentId = parentId;
+        this.name = name;
+        if (weight != null) {
+            this.weight = weight;
+        }
     }
-    // endregion
+
+    @Override
+    public T getId() {
+        return this.id;
+    }
+
+    @Override
+    public TreeNode<T> setId(T id) {
+        this.id = id;
+        return this;
+    }
+
+    @Override
+    public T getParentId() {
+        return this.parentId;
+    }
+
+    @Override
+    public TreeNode<T> setParentId(T parentId) {
+        this.parentId = parentId;
+        return this;
+    }
+
+    @Override
+    public CharSequence getName() {
+        return this.name;
+    }
+
+    @Override
+    public TreeNode<T> setName(CharSequence name) {
+        this.name = name;
+        return this;
+    }
+
+    @Override
+    public Comparable<?> getWeight() {
+        return this.weight;
+    }
+
+    @Override
+    public TreeNode<T> setWeight(Comparable<?> weight) {
+        this.weight = weight;
+        return this;
+    }
 }
