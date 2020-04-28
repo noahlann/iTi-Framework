@@ -19,6 +19,7 @@ package org.lan.iti.common.security.component;
 import org.lan.iti.common.security.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -34,6 +35,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 /**
  * 自定义异常处理,重写oauth 默认实现
+ *
  * @author NorthLan
  * @date 2020-03-03
  * @url https://noahlan.com
@@ -86,6 +88,7 @@ public class ITIWebResponseExceptionTranslator implements WebResponseExceptionTr
         if (status == HttpStatus.UNAUTHORIZED.value() || (e instanceof InsufficientScopeException)) {
             headers.set(HttpHeaders.WWW_AUTHENTICATE, String.format("%s %s", OAuth2AccessToken.BEARER_TYPE, e.getSummary()));
         }
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
         // 客户端异常直接返回客户端,不然无法解析
         if (e instanceof ClientAuthenticationException) {
