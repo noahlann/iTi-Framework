@@ -154,9 +154,9 @@
     <repositories>
         <!-- 阿里云代理 -->
         <repository>
-            <id>aliyun-maven-central</id>
-            <name>aliyun-maven-central</name>
-            <url>https://maven.aliyun.com/repository/central</url>
+            <id>aliyun-maven-public</id>
+            <name>aliyun-maven-public</name>
+            <url>https://maven.aliyun.com/repository/public</url>
         </repository>
         <repository>
             <id>aliyun-spring</id>
@@ -167,8 +167,15 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>aliyun-repo</id>
-            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+            <id>aliyun-spring-plugin</id>
+            <url>https://maven.aliyun.com/repository/spring-plugin</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>aliyun-public</id>
+            <url>https://maven.aliyun.com/repository/public</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>

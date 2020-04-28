@@ -29,20 +29,19 @@
     <properties>
         <!-- version -->
         <java.version>1.8</java.version>
-        <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
-        <spring-cloud.version>Hoxton.SR2</spring-cloud.version>
-        <spring-cloud-alibaba.version>2.2.0.RELEASE</spring-cloud-alibaba.version>
-        <spring-platform.version>Cairo-SR8</spring-platform.version>
+        <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
+        <spring-cloud.version>Hoxton.SR4</spring-cloud.version>
+        <spring-cloud-alibaba.version>2.2.1.RELEASE</spring-cloud-alibaba.version>
         <security.oauth.version>2.3.6.RELEASE</security.oauth.version>
         <jasypt.version>2.1.1</jasypt.version>
-        <hutool.version>5.1.4</hutool.version>
-        <ttl.version>2.11.2</ttl.version>
+        <hutool.version>5.3.1</hutool.version>
+        <ttl.version>2.11.4</ttl.version>
         <spring-boot-admin.version>2.2.2</spring-boot-admin.version>
         <swagger.core.version>1.5.22</swagger.core.version>
-        <mybatis-plus.version>3.3.1</mybatis-plus.version>
-        <minio.version>6.0.11</minio.version>
         <swagger.fox.version>2.9.2</swagger.fox.version>
-        <knife4j.version>2.0.1</knife4j.version>
+        <mybatis-plus.version>3.3.1</mybatis-plus.version>
+        <minio.version>6.0.13</minio.version>
+        <knife4j.version>2.0.2</knife4j.version>
         <hikari.version>3.4.2</hikari.version>
         <findbugs.version>3.0.1</findbugs.version>
         <snakeyml.version>1.26</snakeyml.version>
@@ -58,13 +57,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.spring.platform</groupId>
-                <artifactId>platform-bom</artifactId>
-                <version>${spring-platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

@@ -52,6 +52,11 @@
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>
