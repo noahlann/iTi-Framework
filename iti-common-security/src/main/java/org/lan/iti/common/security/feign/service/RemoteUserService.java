@@ -42,7 +42,7 @@ public interface RemoteUserService {
      * @return 用户安全信息
      */
     @Headers(SecurityConstants.HEADER_FROM_IN)
-    @GetMapping(value = "security/user/{id}", consumes = "application/x-www-form-urlencoded")
+    @GetMapping(value = "security/user/{id}")
     ApiResult<SecurityUser<?>> getSecurityUserById(@PathVariable("id") String userId,
                                                    @RequestParam("domain") String domain);
 
@@ -53,7 +53,7 @@ public interface RemoteUserService {
      * @param domain   域
      * @return 用户安全信息
      */
-    @GetMapping(value = "security/user", consumes = "application/x-www-form-urlencoded")
+    @GetMapping(value = "security/user")
     @Headers(SecurityConstants.HEADER_FROM_IN)
     ApiResult<SecurityUser<?>> getSecurityUserByUsername(@RequestParam("username") String username,
                                                          @RequestParam("domain") String domain);
@@ -66,7 +66,7 @@ public interface RemoteUserService {
      * @param credentials 凭证
      * @return 用户安全信息(非完整)
      */
-    @PostMapping(value = "security/user/{principal}", consumes = "application/x-www-form-urlencoded")
+    @PostMapping(value = "security/user/{principal}")
     @Headers(SecurityConstants.HEADER_FROM_IN)
     ApiResult<SecurityUser<?>> register(@PathVariable("principal") String principal,
                                         @RequestParam("type") String type,
