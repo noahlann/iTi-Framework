@@ -19,6 +19,7 @@ package org.lan.iti.common.scanner.feign;
 import feign.Headers;
 import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.scanner.model.ResourceDefinition;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +41,7 @@ public interface RemoteResourceService {
      * @param serviceName 服务代码(通常为spring.application.name)
      * @param resources   资源,表达为 [controllerCode - [apiCode-resource]]
      */
-    @PutMapping(value = "/resources/report")
+    @PutMapping(value = "/resources/report", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Headers(SecurityConstants.HEADER_FROM_IN)
     void reportResources(@RequestParam("serviceName") String serviceName,
                          @RequestBody Map<String, Map<String, ResourceDefinition>> resources);
