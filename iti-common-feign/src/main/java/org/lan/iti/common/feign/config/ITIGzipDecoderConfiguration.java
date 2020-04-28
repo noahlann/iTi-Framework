@@ -18,79 +18,55 @@
 
 package org.lan.iti.common.feign.config;
 
-import feign.Contract;
-import feign.Feign;
 import feign.codec.Decoder;
 import feign.optionals.OptionalDecoder;
 import lombok.AllArgsConstructor;
 import org.lan.iti.common.core.feign.decoder.ApiResultDecoder;
 import org.lan.iti.common.core.feign.decoder.ApiResultGenericRecoder;
-import org.lan.iti.common.feign.properties.ITIFeignProperties;
-import org.lan.iti.common.feign.spring.ITIFeignContract;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.openfeign.AnnotatedParameterProcessor;
-import org.springframework.cloud.openfeign.FeignAutoConfiguration;
-import org.springframework.cloud.openfeign.ITIFeignClientsRegistrar;
+import org.springframework.cloud.openfeign.support.DefaultGzipDecoder;
 import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.convert.ConversionService;
 
 import java.util.List;
 
 /**
- * Feign 自动化配置
+ * Configures Default Gzip Decoder.
  *
  * @author NorthLan
- * @date 2020-03-04
+ * @date 2020-04-27
  * @url https://noahlan.com
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnProperty("feign.compression.response.enabled")
+// The OK HTTP client uses "transparent" compression.
+// If the accept-encoding header is present, it disables transparent compression
+@ConditionalOnMissingBean(type = "okhttp3.OkHttpClient")
+@AutoConfigureAfter(ITIFeignAutoConfiguration.class)
 @AllArgsConstructor
-@ConditionalOnClass(Feign.class)
-@Import({ITIFeignClientsRegistrar.class, ITIGzipDecoderConfiguration.class})
-@AutoConfigureAfter(FeignAutoConfiguration.class)
-@EnableConfigurationProperties(ITIFeignProperties.class)
-public class ITIFeignAutoConfiguration {
-    private final ObjectFactory<HttpMessageConverters> messageConverters;
-
-    @Autowired(required = false)
-    private List<AnnotatedParameterProcessor> parameterProcessors;
+public class ITIGzipDecoderConfiguration {
+    private ObjectFactory<HttpMessageConverters> messageConverters;
 
     @Autowired(required = false)
     private List<ApiResultGenericRecoder> genericRecodes;
 
-    /**
-     * 配置自定义的 Decoder
-     * <p>
-     * 必须实现至少一个重编码器
-     * </p>
-     */
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnProperty("feign.compression.response.useGzipDecoder")
     @Primary
-    public Decoder feignDecoder() {
+    public Decoder defaultGzipDecoder() {
         return new OptionalDecoder(
                 new ResponseEntityDecoder(
-                        new ApiResultDecoder(
-                                new SpringDecoder(this.messageConverters), this.genericRecodes)));
-    }
-
-    /**
-     * 自定义解析器
-     */
-    @Bean
-    public Contract feignContract(ConversionService feignConversionService) {
-        return new ITIFeignContract(this.parameterProcessors, feignConversionService);
+                        new DefaultGzipDecoder(
+                                new ApiResultDecoder(
+                                        new SpringDecoder(this.messageConverters), this.genericRecodes))));
     }
 }
