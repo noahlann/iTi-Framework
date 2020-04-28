@@ -146,7 +146,7 @@ public final class SecurityConstants {
     /**
      * 默认用户ID(未登录用户)
      */
-    public static final Long DEFAULT_USER_ID = 0L;
+    public static final String DEFAULT_USER_ID = "0";
 
     // region token 字段
     /**

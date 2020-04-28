@@ -54,7 +54,7 @@ public abstract class BaseModel<T extends BaseModel<T>> extends Model<T> {
      */
     @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty("创建者ID")
-    protected Long createBy;
+    protected String createBy;
 
     /**
      * 更新时间
@@ -68,5 +68,5 @@ public abstract class BaseModel<T extends BaseModel<T>> extends Model<T> {
      */
     @TableField(fill = FieldFill.UPDATE)
     @ApiModelProperty("更新者ID")
-    protected Long updateBy;
+    protected String updateBy;
 }

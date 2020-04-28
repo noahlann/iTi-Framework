@@ -52,7 +52,7 @@ public final class ITIConstants {
     /**
      * 默认租户ID = 0
      */
-    public static final Long DEFAULT_TENANT_ID = 0L;
+    public static final String DEFAULT_TENANT_ID = "0";
 
     /**
      * 编码
@@ -62,7 +62,7 @@ public final class ITIConstants {
     /**
      * 菜单树根节点ID
      */
-    public static final Long MENU_TREE_ROOT_ID = -1L;
+    public static final String MENU_TREE_ROOT_ID = "-1";
 
     /**
      * 公共参数

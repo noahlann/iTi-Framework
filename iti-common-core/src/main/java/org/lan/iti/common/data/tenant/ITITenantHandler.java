@@ -16,6 +16,7 @@
 
 package org.lan.iti.common.data.tenant;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.tenant.TenantHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +44,9 @@ public class ITITenantHandler implements TenantHandler {
      */
     @Override
     public Expression getTenantId(boolean where) {
-        Long tenantId = TenantContextHolder.getTenantId();
+        String tenantId = TenantContextHolder.getTenantId();
         log.debug("当前租户为：{}", tenantId);
-        if (tenantId == null) {
+        if (StrUtil.isBlank(tenantId)) {
             return new NullValue();
         }
         return new LongValue(tenantId);

@@ -26,27 +26,28 @@ import com.alibaba.ttl.TransmittableThreadLocal;
  * @url https://noahlan.com
  */
 public final class TenantContextHolder {
-    private static TransmittableThreadLocal<Long> THREAD_LOCAL_TENANT = new TransmittableThreadLocal<>();
+    private static TransmittableThreadLocal<String> THREAD_LOCAL_TENANT = new TransmittableThreadLocal<>();
 
     /**
      * 设置租户ID
      *
      * @param tenantId 租户ID
      */
-    public static void setTenantId(Long tenantId) {
+    public static void setTenantId(String tenantId) {
         THREAD_LOCAL_TENANT.set(tenantId);
     }
 
     /**
      * 获取租户ID
      */
-    public static Long getTenantId() {
+    public static String getTenantId() {
         return THREAD_LOCAL_TENANT.get();
     }
 
     /**
      * 当前请求链中是否存在租户信息
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean hasTenant() {
         return THREAD_LOCAL_TENANT.get() != null;
     }
