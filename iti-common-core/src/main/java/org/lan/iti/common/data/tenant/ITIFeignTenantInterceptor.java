@@ -39,6 +39,6 @@ public class ITIFeignTenantInterceptor implements RequestInterceptor {
             log.warn("请求链中不存在租户信息，无法增强");
             return;
         }
-        requestTemplate.header(ITIConstants.TENANT_ID_HEADER_NAME, TenantContextHolder.getTenantId().toString());
+        requestTemplate.header(ITIConstants.TENANT_ID_HEADER_NAME, TenantContextHolder.getTenantId());
     }
 }
