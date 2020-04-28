@@ -29,7 +29,6 @@ import org.lan.iti.common.feign.properties.ITIFeignProperties;
 import org.lan.iti.common.feign.spring.ITIFeignContract;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -59,7 +58,7 @@ import java.util.List;
 @AllArgsConstructor
 @ConditionalOnClass(Feign.class)
 @Import({ITIFeignClientsRegistrar.class, ITIGzipDecoderConfiguration.class})
-@AutoConfigureAfter(FeignAutoConfiguration.class)
+@AutoConfigureBefore(FeignAutoConfiguration.class)
 @EnableConfigurationProperties(ITIFeignProperties.class)
 public class ITIFeignAutoConfiguration {
     private final ObjectFactory<HttpMessageConverters> messageConverters;
