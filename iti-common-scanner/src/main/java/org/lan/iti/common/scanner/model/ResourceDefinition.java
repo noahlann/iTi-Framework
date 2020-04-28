@@ -16,6 +16,7 @@
 
 package org.lan.iti.common.scanner.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -32,6 +33,7 @@ import java.io.Serializable;
 @Data
 @Accessors(chain = true)
 @ApiModel("资源模型")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResourceDefinition implements Serializable {
     private static final long serialVersionUID = 3321768686717275759L;
 
@@ -76,7 +78,7 @@ public class ResourceDefinition implements Serializable {
     /**
      * 资源请求方式
      */
-    private String httpMethod = "GET";
+    private String httpMethod;
 
     /**
      * 初始化资源的机器IP

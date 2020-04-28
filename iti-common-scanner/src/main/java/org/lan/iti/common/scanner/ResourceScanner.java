@@ -241,6 +241,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
                     .setServiceName(properties.getServiceName());
 
             resource.setIpAddress(ipAddress);
+            resource.setHttpMethod(null);
 
             // register
             ResourceCache.register(resource);
