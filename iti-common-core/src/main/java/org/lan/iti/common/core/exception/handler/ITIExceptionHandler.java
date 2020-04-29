@@ -17,18 +17,22 @@
 package org.lan.iti.common.core.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.lan.iti.common.core.constants.OrderConstants;
 import org.lan.iti.common.core.exception.ServiceException;
 import org.lan.iti.common.core.exception.enums.ITICoreExceptionEnum;
 import org.lan.iti.common.model.response.ApiResult;
+import org.lan.iti.common.model.response.ArgumentInvalidResult;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -57,10 +61,18 @@ public class ITIExceptionHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResult<?> handleBodyValidException(MethodArgumentNotValidException e) {
-        val fieldErrors = e.getBindingResult().getFieldErrors();
-        val msg = fieldErrors.get(0).getDefaultMessage();
-        log.error("参数绑定异常,{} {}", e.getParameter().getMember().getName(), msg);
-        return ApiResult.error(ITICoreExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode(), msg);
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        List<ArgumentInvalidResult> results = new ArrayList<>();
+        fieldErrors.forEach(it -> results.add(new ArgumentInvalidResult(
+                it.getDefaultMessage(),
+                it.getObjectName(),
+                it.getField(),
+                it.getRejectedValue())));
+        log.error("参数绑定异常,{}", results.toString());
+        return ApiResult.error(
+                ITICoreExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode(),
+                ITICoreExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMessage(),
+                results);
     }
 
     @ExceptionHandler(RuntimeException.class)
