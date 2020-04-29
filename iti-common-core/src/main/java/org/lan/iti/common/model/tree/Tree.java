@@ -118,8 +118,9 @@ public class Tree<T> extends LinkedHashMap<String, Object> implements Node<T> {
         return (List<Tree<T>>) this.get(treeNodeConfig.getChildrenKey());
     }
 
-    public void setChildren(List<Tree<T>> children) {
+    public Tree<T> setChildren(List<Tree<T>> children) {
         this.put(treeNodeConfig.getChildrenKey(), children);
+        return this;
     }
 
     /**
@@ -128,9 +129,10 @@ public class Tree<T> extends LinkedHashMap<String, Object> implements Node<T> {
      * @param key   键
      * @param value 扩展值
      */
-    public void putExtra(String key, Object value) {
+    public Tree<T> putExtra(String key, Object value) {
         Assert.isTrue(StrUtil.isNotEmpty(key), "key must be not empty!");
         this.put(key, value);
+        return this;
     }
     // endregion
 
