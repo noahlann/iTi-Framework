@@ -18,6 +18,7 @@
 
 package org.lan.iti.common.model.util;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.experimental.UtilityClass;
 import org.lan.iti.common.core.util.WebUtils;
@@ -26,6 +27,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * 分页工具类
@@ -45,7 +49,7 @@ public class PageUtils {
      *
      * @param <T> 实体泛型
      */
-    public <T> Page<T> build() {
+    public <T> IPage<T> build() {
         HttpServletRequest request = WebUtils.getRequest();
         PageParameter parameter = new PageParameter();
         if (request != null) {
@@ -64,7 +68,25 @@ public class PageUtils {
      * @param parameter 给定的 PageParameter
      * @param <T>       实体泛型
      */
-    public <T> Page<T> build(@NonNull PageParameter parameter) {
+    public <T> IPage<T> build(@NonNull PageParameter parameter) {
         return new Page<T>(parameter.getCurrent(), parameter.getSize()).addOrder(parameter.getOrders());
+    }
+
+    /**
+     * Page对象转换
+     *
+     * @param source      源page
+     * @param convertFunc 单对象转换方法
+     * @param <T>         源对象类型
+     * @param <R>         目标对象类型
+     */
+    public <T, R> IPage<R> convert(IPage<T> source, Function<T, R> convertFunc) {
+        IPage<R> result = new Page<>(source.getCurrent(), source.getSize(), source.getTotal(), source.isSearchCount());
+        List<R> resultRecords = new ArrayList<>(source.getRecords().size());
+        // 转换
+        source.getRecords().forEach(it -> resultRecords.add(convertFunc.apply(it)));
+        // 设定值
+        result.setRecords(resultRecords);
+        return result;
     }
 }
