@@ -18,27 +18,38 @@
 
 package org.lan.iti.common.core.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * 配置默认Content-type
- * <p>
- * 避免引入 jackson-databind-xml 后导致的response变为xml的问题
+ * iTi 配置
  *
  * @author NorthLan
- * @date 2020-04-28
+ * @date 2020-04-30
  * @url https://noahlan.com
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({WebMvcConfigurer.class, DispatcherServlet.class})
-public class ITINegotiationAdapter implements WebMvcConfigurer {
-    @Override
-    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        configurer.defaultContentType(MediaType.APPLICATION_JSON, MediaType.TEXT_XML, MediaType.APPLICATION_XML);
+public class ITIConfiguration {
+
+    /**
+     * 默认国际化配置
+     */
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource
+                = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:i18n/messages");
+        return messageSource;
+    }
+
+    /**
+     * RestTemplate
+     */
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

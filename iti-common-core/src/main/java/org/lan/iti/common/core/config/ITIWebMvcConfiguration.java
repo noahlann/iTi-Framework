@@ -23,21 +23,23 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.format.DateTimeFormatter;
 
 /**
- * Web Formatter 注册器
+ * iTi Web-Mvc 自动装配
  *
  * @author NorthLan
  * @date 2020-04-02
  * @url https://noahlan.com
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({WebMvcConfigurer.class, DispatcherServlet.class})
-public class ITIFormatterConfig implements WebMvcConfigurer {
+public class ITIWebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
@@ -47,5 +49,10 @@ public class ITIFormatterConfig implements WebMvcConfigurer {
         dateTimeFormatterRegistrar.setTimeFormatter(DateTimeFormatter.ofPattern(DatePattern.NORM_TIME_PATTERN));
         dateTimeFormatterRegistrar.setDateTimeFormatter(DateTimeFormatter.ofPattern(DatePattern.NORM_DATETIME_PATTERN));
         dateTimeFormatterRegistrar.registerFormatters(registry);
+    }
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.defaultContentType(MediaType.APPLICATION_JSON, MediaType.TEXT_XML, MediaType.APPLICATION_XML);
     }
 }
