@@ -19,7 +19,7 @@ package org.lan.iti.common.security.feign.recoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import lombok.AllArgsConstructor;
-import org.lan.iti.common.core.feign.decoder.ApiResultGenericRecoder;
+import org.lan.iti.common.feign.recoder.ApiResultGenericRecoder;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.model.SecurityUser;
 import org.springframework.stereotype.Component;
