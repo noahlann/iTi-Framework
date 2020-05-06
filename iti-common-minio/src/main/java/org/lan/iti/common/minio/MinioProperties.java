@@ -19,6 +19,9 @@ package org.lan.iti.common.minio;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * minio 配置信息
  *
@@ -43,4 +46,34 @@ public class MinioProperties {
      * 密码
      */
     private String secretKey;
+
+    /**
+     * 端点配置
+     */
+    private Endpoint endpoint = new Endpoint();
+
+    /**
+     * 默认桶 名称列表
+     * <p>
+     * 不存在指定名称桶时，服务启动时会自动创建桶
+     * </p>
+     */
+    private List<String> bucketNames = new ArrayList<>();
+
+    @Data
+    static class Endpoint {
+        /**
+         * 是否开启端点
+         */
+        private boolean enabled = false;
+
+        /**
+         * 端点name
+         * <p>
+         * 作用于 @RequestMapping
+         * 将会自动拼接为 @RequestMapping("name/minio")
+         * </p>
+         */
+        private String name;
+    }
 }

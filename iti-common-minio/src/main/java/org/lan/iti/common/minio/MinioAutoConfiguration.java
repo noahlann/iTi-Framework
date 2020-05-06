@@ -17,6 +17,7 @@
 package org.lan.iti.common.minio;
 
 import lombok.AllArgsConstructor;
+import org.lan.iti.common.minio.component.AutoCreateBucketConfiguration;
 import org.lan.iti.common.minio.http.MinioEndpoint;
 import org.lan.iti.common.minio.service.MinioTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -24,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * minio 自动配置类
@@ -32,6 +34,7 @@ import org.springframework.context.annotation.Bean;
  * @date 2020-03-04
  * @url https://noahlan.com
  */
+@Configuration
 @AllArgsConstructor
 @EnableConfigurationProperties({MinioProperties.class})
 public class MinioAutoConfiguration {
@@ -40,7 +43,7 @@ public class MinioAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(MinioTemplate.class)
     @ConditionalOnProperty(name = "iti.minio.url")
-    MinioTemplate template() {
+    public MinioTemplate minioTemplate() {
         return new MinioTemplate(
                 properties.getUrl(),
                 properties.getAccessKey(),
@@ -49,11 +52,15 @@ public class MinioAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(MinioTemplate.class)
-    @ConditionalOnProperty(name = "iti.minio.endpoint.enabled", havingValue = "true")
-    public MinioEndpoint minioEndpoint(MinioTemplate template) {
-
-        return new MinioEndpoint(template);
+    @ConditionalOnMissingBean
+    public AutoCreateBucketConfiguration autoCreateBucketConfiguration() {
+        return new AutoCreateBucketConfiguration(properties, minioTemplate());
     }
 
+    @Bean
+    @ConditionalOnBean(MinioTemplate.class)
+    @ConditionalOnProperty(name = "iti.minio.endpoint.enabled", havingValue = "true")
+    public MinioEndpoint minioEndpoint() {
+        return new MinioEndpoint(minioTemplate());
+    }
 }
