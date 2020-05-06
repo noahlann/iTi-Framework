@@ -16,7 +16,6 @@
 
 package org.lan.iti.common.security.model;
 
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * 鉴权用户信息
@@ -52,10 +52,10 @@ public class SecurityUser<T> implements Serializable {
     /**
      * 用户权限标识
      */
-    private Collection<? extends GrantedAuthority> authorities = Lists.newArrayList();
+    private Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
 
     /**
      * 用户角色代码列表
      */
-    private Collection<String> roles = Lists.newArrayList();
+    private Collection<String> roles = Collections.emptyList();
 }
