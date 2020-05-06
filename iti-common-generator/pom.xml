@@ -32,11 +32,11 @@
     <description>代码生成工具</description>
 
     <dependencies>
-        <!-- core for provided -->
+        <!-- core for optional -->
         <dependency>
             <groupId>org.lan</groupId>
             <artifactId>iti-common-core</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- mybatis-plus-generator -->
         <dependency>

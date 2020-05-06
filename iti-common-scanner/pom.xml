@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.lan</groupId>
             <artifactId>iti-common-feign</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!--spring-web-->
         <dependency>
@@ -51,13 +51,13 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!--feign模块 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
