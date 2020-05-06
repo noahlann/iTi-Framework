@@ -58,6 +58,7 @@
         <module>iti-common-jackson</module>
         <module>iti-common-generator</module>
         <module>iti-common-minio</module>
+        <module>iti-common-sequence</module>
         <module>iti-common-swagger</module>
         <module>iti-common-scanner</module>
         <module>iti-common-sentinel</module>
