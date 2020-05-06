@@ -2,4 +2,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.lan.iti.common.security.config.SecurityAutoConfiguration,\
 org.lan.iti.common.security.feign.recoder.SecurityUserRecoder,\
-org.lan.iti.common.security.component.ITISecurityInnerAspect
+org.lan.iti.common.security.component.ITISecurityInnerAspect,\
+org.lan.iti.common.security.config.SecurityFeignAutoConfiguration

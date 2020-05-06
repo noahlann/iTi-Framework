@@ -37,11 +37,6 @@
             <groupId>org.lan</groupId>
             <artifactId>iti-common-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.lan</groupId>
-            <artifactId>iti-common-security</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <!--feign 依赖-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -50,17 +45,17 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-okhttp</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.github.openfeign</groupId>

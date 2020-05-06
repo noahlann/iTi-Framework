@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.common.feign.security;
+package org.lan.iti.common.security.config;
 
 import feign.RequestInterceptor;
 import org.lan.iti.common.security.feign.ITIFeignClientInterceptor;

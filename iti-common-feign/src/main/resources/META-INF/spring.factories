@@ -1,4 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.lan.iti.common.feign.config.ITISentinelFeignAutoConfiguration,\
-org.lan.iti.common.feign.config.ITIFeignAutoConfiguration,\
-org.lan.iti.common.feign.security.SecurityFeignAutoConfiguration
+org.lan.iti.common.feign.config.ITIFeignAutoConfiguration
