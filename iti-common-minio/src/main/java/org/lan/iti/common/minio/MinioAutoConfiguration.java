@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @AllArgsConstructor
 @EnableConfigurationProperties({MinioProperties.class})
+@ConditionalOnProperty(name = "iti.minio")
 public class MinioAutoConfiguration {
     private final MinioProperties properties;
 
@@ -53,6 +54,7 @@ public class MinioAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnBean(MinioTemplate.class)
     public AutoCreateBucketConfiguration autoCreateBucketConfiguration() {
         return new AutoCreateBucketConfiguration(properties, minioTemplate());
     }
