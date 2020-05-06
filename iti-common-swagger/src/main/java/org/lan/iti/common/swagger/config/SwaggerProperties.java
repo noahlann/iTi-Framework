@@ -31,8 +31,10 @@ import java.util.List;
  * @url https://noahlan.com
  */
 @Data
-@ConfigurationProperties("swagger")
+@ConfigurationProperties(SwaggerProperties.PREFIX)
 public class SwaggerProperties {
+    public static final String PREFIX = "iti.swagger";
+
     /**
      * 是否开启swagger
      */
