@@ -72,6 +72,7 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
         return response;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Authentication extractAuthentication(Map<String, ?> map) {
         if (map.containsKey(USERNAME)) {
