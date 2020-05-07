@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -92,7 +93,7 @@ public class SwaggerAutoConfiguration {
                 .apis(RequestHandlerSelectors.basePackage(properties.getBasePackage()))
                 .paths(Predicates.and(Predicates.not(Predicates.or(excludePath)), Predicates.or(basePath)))
                 .build()
-                .securitySchemes(Collections.singletonList(securitySchema()))
+                .securitySchemes(Arrays.asList(securitySchema(), apiKey()))
                 .securityContexts(Collections.singletonList(securityContext()))
                 .pathMapping("/");
     }
@@ -120,6 +121,17 @@ public class SwaggerAutoConfiguration {
                 .build());
     }
 
+    /**
+     * ApiKey
+     * 避免knife4j不支持OAuth的schema
+     */
+    private ApiKey apiKey() {
+        return new ApiKey(properties.getAuthorization().getName(), HttpHeaders.AUTHORIZATION, "header");
+    }
+
+    /**
+     * 基于oAuth2的schema
+     */
     private OAuth securitySchema() {
         ArrayList<AuthorizationScope> authorizationScopeList = new ArrayList<>();
         properties.getAuthorization().getAuthorizationScopeList().forEach(authorizationScope -> authorizationScopeList.add(new AuthorizationScope(authorizationScope.getScope(), authorizationScope.getDescription())));
