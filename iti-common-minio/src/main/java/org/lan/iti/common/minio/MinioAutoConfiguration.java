@@ -55,8 +55,8 @@ public class MinioAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(MinioTemplate.class)
-    public AutoCreateBucketConfiguration autoCreateBucketConfiguration() {
-        return new AutoCreateBucketConfiguration(properties, minioTemplate());
+    public AutoCreateBucketConfiguration autoCreateBucketConfiguration(MinioTemplate minioTemplate) {
+        return new AutoCreateBucketConfiguration(properties, minioTemplate);
     }
 
     @Bean
