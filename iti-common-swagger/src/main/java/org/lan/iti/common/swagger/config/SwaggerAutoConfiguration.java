@@ -126,7 +126,7 @@ public class SwaggerAutoConfiguration {
      * 避免knife4j不支持OAuth的schema
      */
     private ApiKey apiKey() {
-        return new ApiKey(properties.getAuthorization().getName(), HttpHeaders.AUTHORIZATION, "header");
+        return new ApiKey(properties.getAuthorization().getName() + "_ApiKey", HttpHeaders.AUTHORIZATION, "header");
     }
 
     /**
