@@ -64,6 +64,7 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
 
     @Override
     public Map<String, ?> convertUserAuthentication(Authentication userAuthentication) {
+        // 实际资源服务器不使用此转换
         Map<String, Object> response = new LinkedHashMap<>();
         response.put(USERNAME, userAuthentication.getName());
         if (userAuthentication.getAuthorities() != null && !userAuthentication.getAuthorities().isEmpty()) {
@@ -76,8 +77,9 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
     @Override
     public Authentication extractAuthentication(Map<String, ?> map) {
         if (map.containsKey(USERNAME)) {
-            Map<String, ?> userMap = MapUtil.get(map, SecurityConstants.DETAILS_USER_DETAILS, Map.class);
-            Collection<? extends GrantedAuthority> authorities = getAuthorities(userMap);
+            // 解析 map 中的 authorities,userMap中的authorities指的是 GrantedAuthority 对象
+            Collection<? extends GrantedAuthority> authorities = getAuthorities(map);
+            Map<String, ?> userMap = (Map<String, ?>) map.get(SecurityConstants.DETAILS_USER_DETAILS);
             validateTenantId(userMap);
             return new UsernamePasswordAuthenticationToken(userDetailsBuilder.from(userMap, authorities), N_A, authorities);
         }
