@@ -36,7 +36,7 @@ import java.lang.annotation.*;
 @EnableResourceServer
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @Import({ITIResourceServerAutoConfiguration.class, ITISecurityBeanDefinitionRegistrar.class})
 public @interface EnableITIResourceServer {
 }
