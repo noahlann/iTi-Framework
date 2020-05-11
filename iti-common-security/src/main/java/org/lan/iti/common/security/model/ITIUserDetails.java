@@ -33,7 +33,6 @@ import java.util.Map;
  * @date 2020-02-25
  * @url https://noahlan.com
  */
-@Builder
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
