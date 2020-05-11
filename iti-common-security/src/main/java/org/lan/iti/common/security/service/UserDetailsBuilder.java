@@ -35,7 +35,7 @@ public interface UserDetailsBuilder {
     /**
      * 从框架定义SecurityUser构建
      *
-     * @param user 框架定义SecurityUser
+     * @param user 安全用户信息
      */
     ITIUserDetails from(SecurityUser<?> user, String providerId, String domain);
 
