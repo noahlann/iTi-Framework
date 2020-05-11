@@ -17,8 +17,10 @@
 package org.lan.iti.common.scanner;
 
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.lan.iti.common.scanner.exception.ScannerException;
+import org.lan.iti.common.scanner.model.PatternInfo;
 import org.lan.iti.common.scanner.model.ResourceDefinition;
 import org.springframework.lang.Nullable;
 
@@ -32,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2020-03-06
  * @url https://noahlan.com
  */
+@Slf4j
 public final class ResourceCache {
     /**
      * 以资源编码为标识的存放
@@ -44,6 +47,11 @@ public final class ResourceCache {
      * controllerCode:[code:resource]
      */
     private static final Map<String, Map<String, ResourceDefinition>> RESOURCE_DEFINITION_MAP_CTR = new ConcurrentHashMap<>();
+
+    /**
+     * 所有资源列表
+     */
+    private static List<ResourceDefinition> ALL_RESOURCES = new ArrayList<>();
 
     /**
      * 注册本服务资源
@@ -82,6 +90,62 @@ public final class ResourceCache {
         });
     }
 
+    public static void sort() {
+        getAllResources().sort(new AntPatternComparator());
+    }
+
+    private static class AntPatternComparator implements Comparator<ResourceDefinition> {
+
+        @Override
+        public int compare(ResourceDefinition o1, ResourceDefinition o2) {
+            if (StrUtil.isBlank(o1.getUrl()) || StrUtil.isBlank(o2.getUrl())) {
+                return 0;
+            }
+            PatternInfo info1 = new PatternInfo(o1.getUrl());
+            PatternInfo info2 = new PatternInfo(o2.getUrl());
+
+            if (info1.isLeastSpecific() && info2.isLeastSpecific()) {
+                return 0;
+            } else if (info1.isLeastSpecific()) {
+                return 1;
+            } else if (info2.isLeastSpecific()) {
+                return -1;
+            }
+            if (info1.isPrefixPattern() && info2.isPrefixPattern()) {
+                return info2.getLength() - info1.getLength();
+            } else if (info1.isPrefixPattern() && info2.getDoubleWildcards() == 0) {
+                return 1;
+            } else if (info2.isPrefixPattern() && info1.getDoubleWildcards() == 0) {
+                return -1;
+            }
+
+            if (info1.getTotalCount() != info2.getTotalCount()) {
+                return info1.getTotalCount() - info2.getTotalCount();
+            }
+
+//            log.info("len1 {}.{}", o1.getUrl(), info1.getLength());
+//            log.info("len2 {}.{}", o2.getUrl(), info2.getLength());
+
+            if (info1.getLength() != info2.getLength()) {
+                return info2.getLength() - info1.getLength();
+            }
+
+            if (info1.getSingleWildcards() < info2.getSingleWildcards()) {
+                return -1;
+            } else if (info2.getSingleWildcards() < info1.getSingleWildcards()) {
+                return 1;
+            }
+
+            if (info1.getUriVars() < info2.getUriVars()) {
+                return -1;
+            } else if (info2.getUriVars() < info1.getUriVars()) {
+                return 1;
+            }
+
+            return 0;
+        }
+    }
+
     /**
      * 获取单个资源
      *
@@ -97,7 +161,12 @@ public final class ResourceCache {
      * 获取所有本服务资源
      */
     public static List<ResourceDefinition> getAllResources() {
-        return new ArrayList<>(RESOURCE_DEFINITION_MAP.values());
+        Collection<ResourceDefinition> mapValues = RESOURCE_DEFINITION_MAP.values();
+        if (ALL_RESOURCES.size() == mapValues.size()) {
+            return ALL_RESOURCES;
+        }
+        ALL_RESOURCES = new ArrayList<>(RESOURCE_DEFINITION_MAP.values());
+        return ALL_RESOURCES;
     }
 
     /**

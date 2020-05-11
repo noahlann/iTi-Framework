@@ -80,6 +80,8 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         this.applicationName = PropertiesUtils.getOrDefault("spring.application.name", "unknown");
         // scanning
         scan();
+        // sort
+        sort();
         // reporting
         report();
     }
@@ -117,6 +119,10 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         }
     }
 
+    private void sort() {
+        ResourceCache.sort();
+    }
+
     private void report() {
         if (!properties.getReport().isEnabled()) {
             log.info("未开启资源上报功能,跳过...");
@@ -136,7 +142,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         if (!serviceResources.isEmpty()) {
             log.info("上报所有资源定义到上游服务...");
             try {
-                resourceService.reportResources(applicationName, serviceResources);
+                resourceService.reportResources(applicationName, properties.getReport().isRemove(), serviceResources);
             } catch (Exception e) {
                 // 不打印堆栈信息
                 log.error("上报资源失败，发生异常: {}", e.getMessage());

@@ -38,10 +38,12 @@ public interface RemoteResourceService {
      * 报告业务服务的资源到指定服务
      *
      * @param serviceName 服务代码(通常为spring.application.name)
+     * @param remove      是否删除原有资源
      * @param resources   资源,表达为 [controllerCode - [apiCode-resource]]
      */
     @PutMapping(value = "/resources/report")
     @Headers(SecurityConstants.HEADER_FROM_IN)
     void reportResources(@RequestParam("serviceName") String serviceName,
+                         @RequestParam(value = "remove", defaultValue = "true") Boolean remove,
                          @RequestBody Map<String, Map<String, ResourceDefinition>> resources);
 }
