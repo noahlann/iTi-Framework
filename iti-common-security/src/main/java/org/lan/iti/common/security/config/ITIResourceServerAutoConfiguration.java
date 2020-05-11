@@ -18,19 +18,19 @@
 
 package org.lan.iti.common.security.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.lan.iti.common.security.component.ResourceAuthExceptionEntryPoint;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.Collections;
 
 /**
  * 资源服务器自动装配
@@ -50,6 +50,11 @@ public class ITIResourceServerAutoConfiguration {
     @LoadBalanced
     public RestTemplate lbRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
+        // 由于引入jackson-xml导致默认返回值为xml,添加accept后通过HeaderContentNegotiationStrategy解决
+        restTemplate.setInterceptors(Collections.singletonList(((request, body, execution) -> {
+            request.getHeaders().set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+            return execution.execute(request, body);
+        })));
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
             @Override
             public void handleError(ClientHttpResponse response) throws IOException {
@@ -59,11 +64,5 @@ public class ITIResourceServerAutoConfiguration {
             }
         });
         return restTemplate;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ResourceAuthExceptionEntryPoint resourceAuthExceptionEntryPoint(ObjectMapper objectMapper) {
-        return new ResourceAuthExceptionEntryPoint(objectMapper);
     }
 }
