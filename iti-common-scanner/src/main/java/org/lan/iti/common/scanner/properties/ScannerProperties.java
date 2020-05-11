@@ -58,10 +58,5 @@ public class ScannerProperties {
          * 是否启用资源报告服务
          */
         private boolean enabled = false;
-
-        /**
-         * 是否删除原有本模块资源
-         */
-        private boolean remove = true;
     }
 }

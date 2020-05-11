@@ -142,7 +142,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         if (!serviceResources.isEmpty()) {
             log.info("上报所有资源定义到上游服务...");
             try {
-                resourceService.reportResources(applicationName, properties.getReport().isRemove(), serviceResources);
+                resourceService.reportResources(applicationName, serviceResources);
             } catch (Exception e) {
                 // 不打印堆栈信息
                 log.error("上报资源失败，发生异常: {}", e.getMessage());
