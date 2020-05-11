@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package org.lan.iti.common.jackson.config;
+package org.lan.iti.common.security.jackson;
 
-import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.util.ReflectUtil;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.lan.iti.common.jackson.module.ITIJavaTimeModule;
-import org.lan.iti.common.jackson.module.ITILongModule;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -29,11 +26,8 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * JacksonConfig
@@ -45,23 +39,17 @@ import java.util.TimeZone;
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
 @AutoConfigureBefore(JacksonAutoConfiguration.class)
-public class JacksonConfig {
+public class SecurityJacksonConfig {
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer customizer() {
+    public Jackson2ObjectMapperBuilderCustomizer securityJacksonCustomizer() {
         return builder -> {
-            builder.locale(Locale.CHINA);
-            builder.timeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
-            builder.simpleDateFormat(DatePattern.NORM_DATETIME_PATTERN);
-
             // 由于builder.modules会覆盖原设置,通过反射获取builder原先modules值
             Object originalModulesObj = ReflectUtil.getFieldValue(builder, "modules");
             List<Module> modules = new ArrayList<>();
             if (originalModulesObj instanceof List) {
                 modules.addAll((List<Module>) originalModulesObj);
             }
-            modules.add(new ITIJavaTimeModule());
-            modules.add(new ITILongModule());
-
+            modules.add(new SecurityModule());
             builder.modules(modules);
         };
     }
