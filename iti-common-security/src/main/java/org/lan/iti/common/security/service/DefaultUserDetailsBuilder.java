@@ -18,29 +18,18 @@
 
 package org.lan.iti.common.security.service;
 
-import cn.hutool.core.bean.BeanUtil;
 import org.lan.iti.common.security.model.ITIUserDetails;
-import org.lan.iti.common.security.model.SecurityUser;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
+ * 默认的用户构建器
+ *
  * @author NorthLan
  * @date 2020-04-18
  * @url https://noahlan.com
  */
 public class DefaultUserDetailsBuilder extends AbstractUserDetailsBuilder {
-    @Override
-    public ITIUserDetails from(SecurityUser<?> user, String providerId, String domain) {
-        return super.from(user, providerId, domain);
-    }
 
     @Override
-    public ITIUserDetails from(Map<String, ?> user, Collection<? extends GrantedAuthority> authorities) {
-        ITIUserDetails result = BeanUtil.mapToBean(user, ITIUserDetails.class, true);
-        result.setAuthorities(authorities);
-        return result;
+    protected void build(ITIUserDetails details, Object user, String providerId, String domain) {
     }
 }
