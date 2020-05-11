@@ -99,8 +99,6 @@ public class ApiResultDecoder implements Decoder {
 //        for (String it : headers.keySet()) {
 //
 //        }
-        return ApiResult.<T>builder()
-                .data((T) instance)
-                .build();
+        return ApiResult.ok((T) instance);
     }
 }
