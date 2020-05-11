@@ -53,6 +53,7 @@ public class ITIWebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+//        configurer.ignoreAcceptHeader(true); // 取消 HeaderContentNegotiationStrategy
         configurer.defaultContentType(MediaType.APPLICATION_JSON, MediaType.TEXT_XML, MediaType.APPLICATION_XML);
     }
 }
