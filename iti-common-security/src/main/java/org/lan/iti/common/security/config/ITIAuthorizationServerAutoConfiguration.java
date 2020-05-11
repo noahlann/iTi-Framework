@@ -25,10 +25,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 /**
@@ -41,6 +41,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 @Configuration
 @AllArgsConstructor
 @ConditionalOnClass(RedisAutoConfiguration.class)
+@Order(100)
 public class ITIAuthorizationServerAutoConfiguration extends WebSecurityConfigurerAdapter {
 
     /**
@@ -48,6 +49,7 @@ public class ITIAuthorizationServerAutoConfiguration extends WebSecurityConfigur
      */
     @Bean
     @ConditionalOnMissingBean
+    @Primary
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
@@ -57,11 +59,5 @@ public class ITIAuthorizationServerAutoConfiguration extends WebSecurityConfigur
     @ConditionalOnMissingBean
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return new FormAuthenticationFailureHandler();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
