@@ -19,7 +19,7 @@ package org.lan.iti.common.security.component;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.lan.iti.common.core.enums.StatusEnum;
+import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.exception.ITIAuth2Exception;
 
 import java.io.IOException;
@@ -40,12 +40,7 @@ public class ITIAuth2ExceptionSerializer extends StdSerializer<ITIAuth2Exception
 
     @Override
     public void serialize(ITIAuth2Exception value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        gen.writeStartObject();
         // status errorCode msg data -> ApiResult
-        gen.writeObjectField("status", StatusEnum.FAIL.getCode());
-        gen.writeObjectField("errorCode", value.getErrorCode());
-        gen.writeStringField("msg", value.getMessage());
-        gen.writeObjectField("data", value.getErrorCode());
-        gen.writeEndObject();
+        gen.writeObject(ApiResult.error(value.getErrorCode(), value.getMessage()));
     }
 }
