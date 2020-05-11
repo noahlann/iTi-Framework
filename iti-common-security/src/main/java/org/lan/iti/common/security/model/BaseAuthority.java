@@ -16,14 +16,13 @@
 
 package org.lan.iti.common.security.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.lan.iti.common.core.util.SystemClock;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * 自定义已授权权限标识
@@ -33,37 +32,33 @@ import java.util.Date;
  * @url https://noahlan.com
  */
 @Data
-@Builder
 @Accessors(chain = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class BaseAuthority implements GrantedAuthority {
     private static final long serialVersionUID = -8484605685925055726L;
 
     /**
      * 权限ID
      */
-    private String authorityId;
+    private String id;
 
     /**
      * 权限标识
      */
+    @Getter(AccessLevel.NONE)
     private String authority;
 
     /**
-     * 过期时间
+     * 到期时间
      */
-    private Date expiredTime;
-
-    /**
-     * 权限拥有者
-     */
-    private String owner;
+    private LocalDateTime expiredTime;
 
     /**
      * 权限 是否过期
      */
     public boolean isExpired() {
-        return expiredTime != null && SystemClock.now() > expiredTime.getTime();
+        return expiredTime != null && SystemClock.now() > expiredTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     @Override
