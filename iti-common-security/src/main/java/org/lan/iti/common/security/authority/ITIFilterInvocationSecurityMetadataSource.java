@@ -31,6 +31,7 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.util.AntPathMatcher;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -67,13 +68,14 @@ public class ITIFilterInvocationSecurityMetadataSource implements FilterInvocati
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
         if (object instanceof FilterInvocation) {
             FilterInvocation invocation = (FilterInvocation) object;
-            String method = invocation.getRequest().getMethod();
-            String url = invocation.getRequestUrl();
+            HttpServletRequest request = invocation.getRequest();
+            String method = request.getMethod();
+            String uri = request.getRequestURI();
             Optional<ResourceDefinition> resourceDefinition = authorityService.getAllResources(applicationName).stream()
                     .filter(it ->
                             StrUtil.isNotBlank(it.getUrl())
                                     && StrUtil.containsAnyIgnoreCase(it.getHttpMethod(), method)
-                                    && antPathMatcher.match(it.getUrl(), url))
+                                    && antPathMatcher.match(it.getUrl(), uri))
                     .findFirst();
             if (resourceDefinition.isPresent()) {
                 return Collections.singletonList(convertTo(resourceDefinition.get()));
