@@ -18,6 +18,7 @@
 
 package org.lan.iti.common.core.util;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
 import org.springframework.lang.Nullable;
 
@@ -42,5 +43,21 @@ public class LambdaUtils {
     @Nullable
     public <T, R> String getFieldName(IFunction<T, R> getter) {
         return getter.getImplFieldName();
+    }
+
+    /**
+     * 获取Field名称
+     * <p>
+     * 转下划线形式
+     * </p>
+     *
+     * @param getter getter
+     * @param <T>    入参类型
+     * @param <R>    出参类型
+     * @return 变量名
+     */
+    @Nullable
+    public <T, R> String getFieldNameCamel(IFunction<T, R> getter) {
+        return StrUtil.toUnderlineCase(getFieldName(getter));
     }
 }
