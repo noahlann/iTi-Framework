@@ -23,6 +23,7 @@ import feign.Response;
 import feign.codec.DecodeException;
 import feign.codec.Decoder;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.feign.recoder.ApiResultGenericRecoder;
 import org.lan.iti.common.model.response.ApiResult;
 
@@ -39,6 +40,7 @@ import java.util.List;
  * @date 2020-03-05
  * @url https://noahlan.com
  */
+@Slf4j
 @AllArgsConstructor
 public class ApiResultDecoder implements Decoder {
     private Decoder decoder;
@@ -58,11 +60,24 @@ public class ApiResultDecoder implements Decoder {
         }
         // 重编码
         if (returnObject != null && returnObject.getData() != null) {
-            for (ApiResultGenericRecoder it : genericRecodes) {
-                Class<?> clazz = (Class<?>) ((ParameterizedType)
-                        ((ParameterizedType) type).getActualTypeArguments()[0]).getRawType();
-                if (it.support(clazz)) {
-                    it.process(returnObject, response, type, clazz);
+            Class<?> clazz = null;
+            try {
+                if (type instanceof ParameterizedType) {
+                    Type firstType = ((ParameterizedType) type).getActualTypeArguments()[0];
+                    if (firstType instanceof ParameterizedType) {
+                        clazz = (Class<?>) ((ParameterizedType) firstType).getRawType();
+                    } else {
+                        clazz = (Class<?>) firstType;
+                    }
+                }
+            } catch (ClassCastException e) {
+                log.error("发生类型转换异常，FeignDecoder将失效，请注意传递参数类型。", e);
+            }
+            if (clazz != null) {
+                for (ApiResultGenericRecoder it : genericRecodes) {
+                    if (it.support(clazz)) {
+                        it.process(returnObject, response, type, clazz);
+                    }
                 }
             }
         }
