@@ -113,6 +113,9 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
                 log.error(e.getMessage());
                 continue;
             }
+            if (apiResource == null) {
+                continue;
+            }
 
             // 注册资源
             ResourceCache.register(apiResource);
@@ -164,15 +167,14 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
      * @return API资源对象
      */
     private ResourceDefinition buildResource(RequestMappingInfo info, ResourceDefinition ctrResource, HandlerMethod handlerMethod) {
-        ResourceDefinition result = BeanUtils.convert(ctrResource, ResourceDefinition.class);
         Method method = handlerMethod.getMethod();
         ITIApi api = AnnotationUtils.findAnnotation(method, ITIApi.class);
-        String code = null;
-        String name = null;
-        if (api != null) {
-            code = api.code();
-            name = api.name();
+        if (api == null) {
+            return null;
         }
+        ResourceDefinition result = BeanUtils.convert(ctrResource, ResourceDefinition.class);
+        String code = api.code();
+        String name = api.name();
         if (StrUtil.isBlank(code)) {
             code = method.getName();
         }
