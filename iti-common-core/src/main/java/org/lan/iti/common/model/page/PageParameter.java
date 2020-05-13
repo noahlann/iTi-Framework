@@ -20,6 +20,7 @@ package org.lan.iti.common.model.page;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
@@ -36,6 +37,7 @@ import java.util.List;
  * @url https://noahlan.com
  */
 @Data
+@Accessors(chain = true)
 @Validated
 public class PageParameter implements Serializable {
     private static final long serialVersionUID = -8857063986322273205L;
