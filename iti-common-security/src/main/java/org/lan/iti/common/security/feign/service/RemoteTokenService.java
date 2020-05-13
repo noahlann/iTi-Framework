@@ -18,6 +18,7 @@ package org.lan.iti.common.security.feign.service;
 
 import feign.Headers;
 import org.lan.iti.common.core.constants.SecurityConstants;
+import org.lan.iti.common.model.page.PageParameter;
 import org.lan.iti.common.model.response.ApiResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,7 @@ public interface RemoteTokenService {
      */
     @Headers(SecurityConstants.HEADER_FROM_IN)
     @GetMapping(value = "/token/page")
-    ApiResult<Object> pageToken(/* TODO PageQuery */);
+    ApiResult<Object> tokenPage(PageParameter parameter);
 
     /**
      * 删除 token
@@ -46,5 +47,5 @@ public interface RemoteTokenService {
      */
     @Headers(SecurityConstants.HEADER_FROM_IN)
     @DeleteMapping(value = "/token/{token}")
-    ApiResult<Boolean> removeTokenById(@PathVariable("token") String token);
+    ApiResult<Boolean> removeToken(@PathVariable("token") String token);
 }
