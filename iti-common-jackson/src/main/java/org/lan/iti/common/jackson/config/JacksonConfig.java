@@ -46,6 +46,8 @@ import java.util.TimeZone;
 @ConditionalOnClass(ObjectMapper.class)
 @AutoConfigureBefore(JacksonAutoConfiguration.class)
 public class JacksonConfig {
+
+    @SuppressWarnings("unchecked")
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer customizer() {
         return builder -> {

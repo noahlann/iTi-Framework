@@ -19,12 +19,16 @@
 package org.lan.iti.common.core.config;
 
 import cn.hutool.core.date.DatePattern;
+import org.lan.iti.common.core.base.GlobalErrorView;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -55,5 +59,11 @@ public class ITIWebMvcConfiguration implements WebMvcConfigurer {
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 //        configurer.ignoreAcceptHeader(true); // 取消 HeaderContentNegotiationStrategy
         configurer.defaultContentType(MediaType.APPLICATION_JSON, MediaType.TEXT_XML, MediaType.APPLICATION_XML);
+    }
+
+    @Bean
+    @Primary
+    public View globalErrorView() {
+        return new GlobalErrorView();
     }
 }

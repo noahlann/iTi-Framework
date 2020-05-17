@@ -32,8 +32,10 @@ import java.util.List;
  */
 @Data
 @RefreshScope
-@ConfigurationProperties(prefix = "iti.tenant")
+@ConfigurationProperties(prefix = ITITenantProperties.PREFIX)
 public class ITITenantProperties {
+    public static final String PREFIX = "iti.tenant";
+
     /**
      * 是否启用
      */

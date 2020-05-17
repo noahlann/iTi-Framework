@@ -40,6 +40,8 @@ import java.util.List;
 @ConditionalOnClass(ObjectMapper.class)
 @AutoConfigureBefore(JacksonAutoConfiguration.class)
 public class SecurityJacksonConfig {
+
+    @SuppressWarnings("unchecked")
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer securityJacksonCustomizer() {
         return builder -> {
