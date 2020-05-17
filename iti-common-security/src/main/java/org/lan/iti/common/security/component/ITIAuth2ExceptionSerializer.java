@@ -19,6 +19,13 @@ package org.lan.iti.common.security.component;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import lombok.extern.slf4j.Slf4j;
+import org.lan.iti.common.core.constants.ITIConstants;
+import org.lan.iti.common.core.enums.ErrorLevelEnum;
+import org.lan.iti.common.core.enums.ErrorTypeEnum;
+import org.lan.iti.common.core.error.ErrorCode;
+import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.lan.iti.common.core.util.SpringContextHolder;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.exception.ITIAuth2Exception;
 
@@ -31,6 +38,7 @@ import java.io.IOException;
  * @date 2020-02-24
  * @url https://noahlan.com
  */
+@Slf4j
 public class ITIAuth2ExceptionSerializer extends StdSerializer<ITIAuth2Exception> {
     private static final long serialVersionUID = 5490119983903709414L;
 
@@ -41,6 +49,24 @@ public class ITIAuth2ExceptionSerializer extends StdSerializer<ITIAuth2Exception
     @Override
     public void serialize(ITIAuth2Exception value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         // status errorCode msg data -> ApiResult
-        gen.writeObject(ApiResult.error(value.getErrorCode(), value.getMessage()));
+        // 获取配置
+        ErrorCodeProperties properties = SpringContextHolder.getBeanOfNull(ErrorCodeProperties.class);
+        if (properties == null) {
+            log.warn("无法读取异常配置[{}],将不再按照异常规范返回", ErrorCodeProperties.PREFIX);
+            gen.writeObject(ApiResult.error(value.getErrorCode(), value.getMessage()));
+        } else {
+            if (properties.isEnabled()) {
+                ErrorCode errorCode = ErrorCode.builder()
+                        .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
+                        .mark(properties.getMark())
+                        .type(ErrorTypeEnum.FRAMEWORK.getValue())
+                        .level(ErrorLevelEnum.PRIMARY.getValue())
+                        .code(0)
+                        .build();
+                gen.writeObject(ApiResult.error(errorCode.toString(), value.getErrorCode() + "|" + value.getMessage()));
+            } else {
+                gen.writeObject(ApiResult.error(value.getErrorCode(), value.getMessage()));
+            }
+        }
     }
 }

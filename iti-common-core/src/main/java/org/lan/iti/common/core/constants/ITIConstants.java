@@ -73,4 +73,9 @@ public final class ITIConstants {
      * 默认存储bucket
      */
     public static final String DEFAULT_BUCKET_NAME = "iti";
+
+    /**
+     * 异常编码版本号
+     */
+    public static final int EXCEPTION_ERROR_CODE_VERSION = 1;
 }

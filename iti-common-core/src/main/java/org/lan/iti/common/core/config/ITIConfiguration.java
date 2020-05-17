@@ -18,10 +18,13 @@
 
 package org.lan.iti.common.core.config;
 
+import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -32,6 +35,8 @@ import org.springframework.web.client.RestTemplate;
  * @url https://noahlan.com
  */
 @Configuration(proxyBeanMethods = false)
+@Order(Integer.MIN_VALUE)
+@EnableConfigurationProperties(ErrorCodeProperties.class)
 public class ITIConfiguration {
 
     /**

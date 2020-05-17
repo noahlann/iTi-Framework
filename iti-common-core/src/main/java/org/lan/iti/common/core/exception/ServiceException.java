@@ -16,42 +16,53 @@
 
 package org.lan.iti.common.core.exception;
 
-import lombok.Getter;
-import org.lan.iti.common.core.exception.enums.IExceptionEnum;
+import org.lan.iti.common.core.enums.ErrorLevelEnum;
+import org.lan.iti.common.core.enums.ErrorTypeEnum;
 
 /**
  * 业务异常统一规范
  *
  * @author NorthLan
- * @date 2020-02-22
+ * @date 2020-05-14
  * @url https://noahlan.com
  */
-@Getter
-public class ServiceException extends RuntimeException {
+public class ServiceException extends AbstractException {
     private static final long serialVersionUID = -6476522626904036566L;
 
-    private Integer code;
-    private Object body;
+    private int code;
+    private int level;
 
-    public ServiceException(String message, int code, Object body) {
+    public ServiceException(int code, String message) {
         super(message);
         this.code = code;
-        this.body = body;
+        this.level = ErrorLevelEnum.IGNORE.getValue();
     }
 
-    public ServiceException(String message, Throwable cause, int code, Object body) {
-        super(message, cause);
+    public ServiceException(int code, int level, String message) {
+        super(message);
         this.code = code;
-        this.body = body;
     }
 
-    public ServiceException(IExceptionEnum exceptionEnum) {
-        super(exceptionEnum.getMessage());
-        this.code = exceptionEnum.getCode();
+    @Override
+    public int getType() {
+        return ErrorTypeEnum.BIZ.getValue();
     }
 
-//    @Override
-//    public synchronized Throwable fillInStackTrace() {
-//        return this;
-//    }
+    @Override
+    public int getLevel() {
+        return this.level;
+    }
+
+    @Override
+    public int getCode() {
+        return this.code;
+    }
+
+    /**
+     * 移除堆栈信息
+     */
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 }

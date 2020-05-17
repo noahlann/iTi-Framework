@@ -16,6 +16,10 @@
 
 package org.lan.iti.common.core.exception;
 
+import org.lan.iti.common.core.enums.ErrorLevelEnum;
+import org.lan.iti.common.core.enums.ErrorTypeEnum;
+import org.lan.iti.common.core.enums.ITIExceptionEnum;
+
 /**
  * checked 异常
  *
@@ -23,10 +27,11 @@ package org.lan.iti.common.core.exception;
  * @date 2020-02-22
  * @url https://noahlan.com
  */
-public class CheckedException extends RuntimeException {
+public class CheckedException extends AbstractException {
     private static final long serialVersionUID = 8785074151876375850L;
 
     public CheckedException() {
+        super();
     }
 
     public CheckedException(String message) {
@@ -45,4 +50,18 @@ public class CheckedException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    @Override
+    public int getType() {
+        return ErrorTypeEnum.FRAMEWORK.getValue();
+    }
+
+    @Override
+    public int getLevel() {
+        return ErrorLevelEnum.IMPORTANT.getValue();
+    }
+
+    @Override
+    public int getCode() {
+        return ITIExceptionEnum.CHECK_ERROR.getCode();
+    }
 }

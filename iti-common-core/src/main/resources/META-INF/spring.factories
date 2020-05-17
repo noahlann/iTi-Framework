@@ -1,6 +1,5 @@
 # AutoConfiguration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.lan.iti.common.core.exception.handler.ITIExceptionHandler,\
 org.lan.iti.common.core.util.SpringContextHolder,\
 org.lan.iti.common.core.xss.RequestWrapperFilter,\
 org.lan.iti.common.data.orm.MPDefaultConfigurationImporter,\
