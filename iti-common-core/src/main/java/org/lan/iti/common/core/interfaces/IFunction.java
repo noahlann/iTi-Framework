@@ -16,7 +16,9 @@
  *
  */
 
-package org.lan.iti.common.core.util;
+package org.lan.iti.common.core.interfaces;
+
+import org.lan.iti.common.core.util.PropertyNamer;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;

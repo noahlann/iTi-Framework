@@ -21,6 +21,7 @@ package org.lan.iti.common.core.util;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.lan.iti.common.core.interfaces.IFunction;
 
 /**
  * @author NorthLan

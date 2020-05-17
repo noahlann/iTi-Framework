@@ -17,7 +17,7 @@
 package org.lan.iti.common.core.base;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.lan.iti.common.core.util.IFunction;
+import org.lan.iti.common.core.interfaces.IFunction;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 

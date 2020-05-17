@@ -20,6 +20,7 @@ package org.lan.iti.common.core.util;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
+import org.lan.iti.common.core.interfaces.IFunction;
 import org.springframework.lang.Nullable;
 
 /**
