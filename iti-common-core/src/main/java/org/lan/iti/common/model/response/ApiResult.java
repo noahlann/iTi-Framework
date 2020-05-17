@@ -93,6 +93,22 @@ public class ApiResult<T> implements Serializable {
 
     /**
      * 成功结果
+     * <pre>
+     *     此方法为避免泛型转型问题
+     *     当T为CharSequence子类时，无法选择将参数赋值给data还是msg
+     * </pre>
+     *
+     * @param msg 成功描述信息
+     */
+    public static <T> ApiResult<T> okMsg(CharSequence msg) {
+        return ok(msg, null);
+    }
+
+    /**
+     * 成功结果
+     * <pre>
+     *     当T为CharSequence子类时，无法选择将参数赋值给data还是msg
+     * </pre>
      *
      * @param msg 成功描述信息
      */
