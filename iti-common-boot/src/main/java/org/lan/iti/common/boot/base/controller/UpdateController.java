@@ -48,7 +48,10 @@ public interface UpdateController<Entity extends Serializable, UpdateDTO extends
     @ITIApi
     default ApiResult<?> updateById(@RequestBody @Validated(UpdateGroup.class) UpdateDTO dto) {
         Entity entity = BeanUtils.convert(dto, getEntityClass());
-        processBeforeUpdate(entity, dto);
+        ApiResult<?> result = processBeforeUpdate(entity, dto);
+        if (result != null) {
+            return processResult(result, getCallerMethod());
+        }
         if (!getBaseService().updateById(entity)) {
             throw new ServiceException(ITIExceptionEnum.BIZ_UPDATE_ERROR.getCode(),
                     ErrorLevelEnum.NORMAL.getValue(), ITIExceptionEnum.BIZ_UPDATE_ERROR.getMsg());
@@ -61,7 +64,10 @@ public interface UpdateController<Entity extends Serializable, UpdateDTO extends
     @ITIApi
     default ApiResult<?> updateByIdBatch(@RequestBody @Validated(UpdateGroup.class) List<UpdateDTO> dtoList) {
         List<Entity> entities = BeanUtils.convertList(dtoList, getEntityClass());
-        processBeforeUpdate(entities, dtoList);
+        ApiResult<?> result = processBeforeUpdate(entities, dtoList);
+        if (result != null) {
+            return processResult(result, getCallerMethod());
+        }
         if (!getBaseService().updateBatchById(entities)) {
             throw new ServiceException(ITIExceptionEnum.BIZ_UPDATE_ERROR.getCode(),
                     ErrorLevelEnum.NORMAL.getValue(), ITIExceptionEnum.BIZ_UPDATE_ERROR.getMsg());
@@ -75,7 +81,8 @@ public interface UpdateController<Entity extends Serializable, UpdateDTO extends
      * @param entity    通过dto生成的Entity
      * @param updateDTO 更新DTO
      */
-    default void processBeforeUpdate(Entity entity, UpdateDTO updateDTO) {
+    default ApiResult<?> processBeforeUpdate(Entity entity, UpdateDTO updateDTO) {
+        return null;
     }
 
     /**
@@ -84,6 +91,7 @@ public interface UpdateController<Entity extends Serializable, UpdateDTO extends
      * @param entity    通过dto生成的Entity
      * @param updateDTO 更新DTO
      */
-    default void processBeforeUpdate(List<Entity> entity, List<UpdateDTO> updateDTO) {
+    default ApiResult<?> processBeforeUpdate(List<Entity> entity, List<UpdateDTO> updateDTO) {
+        return null;
     }
 }

@@ -44,7 +44,10 @@ public interface SaveController<Entity extends Serializable, SaveDTO extends Ser
     @PostMapping
     default ApiResult<?> save(@RequestBody @Validated(SaveGroup.class) SaveDTO dto) {
         Entity entity = BeanUtils.convert(dto, getEntityClass());
-        processBeforeSave(entity, dto);
+        ApiResult<?> result = processBeforeSave(entity, dto);
+        if (result != null) {
+            return processResult(result, getCallerMethod());
+        }
         getBaseService().save(entity);
         return processResult(ApiResult.ok(entity), getCallerMethod());
     }
@@ -54,7 +57,10 @@ public interface SaveController<Entity extends Serializable, SaveDTO extends Ser
     @PostMapping("/batch")
     default ApiResult<?> saveBatch(@RequestBody @Validated(SaveGroup.class) List<SaveDTO> dtoList) {
         List<Entity> entities = BeanUtils.convertList(dtoList, getEntityClass());
-        processBeforeSave(entities, dtoList);
+        ApiResult<?> result = processBeforeSave(entities, dtoList);
+        if (result != null) {
+            return processResult(result, getCallerMethod());
+        }
         getBaseService().saveBatch(entities);
         return processResult(ApiResult.ok(entities), getCallerMethod());
     }
@@ -67,7 +73,8 @@ public interface SaveController<Entity extends Serializable, SaveDTO extends Ser
      *
      * @param entity 经过属性赋值生成的实体
      */
-    default void processBeforeSave(Entity entity, SaveDTO dto) {
+    default ApiResult<?> processBeforeSave(Entity entity, SaveDTO dto) {
+        return null;
     }
 
     /**
@@ -78,6 +85,7 @@ public interface SaveController<Entity extends Serializable, SaveDTO extends Ser
      *
      * @param entities 经过属性赋值生成的实体列表
      */
-    default void processBeforeSave(List<Entity> entities, List<SaveDTO> dtoList) {
+    default ApiResult<?> processBeforeSave(List<Entity> entities, List<SaveDTO> dtoList) {
+        return null;
     }
 }

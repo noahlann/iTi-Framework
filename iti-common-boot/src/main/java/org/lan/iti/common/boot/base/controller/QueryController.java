@@ -31,6 +31,7 @@ import org.lan.iti.common.scanner.annotation.ITIApi;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.Serializable;
 
@@ -57,8 +58,12 @@ public interface QueryController<Entity extends Serializable, QueryDTO extends S
     @ITIApi
     @ApiOperation("列表查询")
     @GetMapping("list")
-    default ApiResult<?> getList(@Validated(QueryGroup.class) QueryDTO dto) {
+    default ApiResult<?> getList(@Validated(QueryGroup.class) QueryDTO dto, @RequestParam(value = "keyword", required = false) String keyword) {
         Entity entity = BeanUtils.convert(dto, getEntityClass());
+        ApiResult<?> result = processBeforeQueryListOrPage(entity, dto, keyword, null);
+        if (result != null) {
+            return processResult(result, getCallerMethod());
+        }
         return processResult(ApiResult.ok(getBaseService().list(Wrappers.query(entity))),
                 getCallerMethod());
     }
@@ -66,9 +71,17 @@ public interface QueryController<Entity extends Serializable, QueryDTO extends S
     @ITIApi
     @ApiOperation("分页查询")
     @GetMapping("page")
-    default ApiResult<?> getPage(PageParameter parameter, @Validated(QueryGroup.class) QueryDTO dto) {
+    default ApiResult<?> getPage(PageParameter parameter, @Validated(QueryGroup.class) QueryDTO dto, @RequestParam(value = "keyword", required = false) String keyword) {
         Entity entity = BeanUtils.convert(dto, getEntityClass());
+        ApiResult<?> result = processBeforeQueryListOrPage(entity, dto, keyword, parameter);
+        if (result != null) {
+            return processResult(result, getCallerMethod());
+        }
         return processResult(ApiResult.ok(getBaseService().page(PageUtils.build(parameter), Wrappers.query(entity))),
                 getCallerMethod());
+    }
+
+    default ApiResult<?> processBeforeQueryListOrPage(Entity entity, QueryDTO dto, String keyword, PageParameter page) {
+        return null;
     }
 }

@@ -76,6 +76,14 @@ public interface DeleteController<Entity extends Serializable, DeleteDTO extends
         if (entity == null) {
             throw new ServiceException(ITIExceptionEnum.BIZ_DELETE_ERROR.getCode(), ErrorLevelEnum.PRIMARY.getValue(), "条件为空,无法按条件删除");
         }
+        ApiResult<?> result = processBeforeDeleteBy(entity, dto);
+        if (result != null) {
+            return processResult(result, getCallerMethod());
+        }
         return processResult(ApiResult.ok(getBaseService().remove(Wrappers.update(entity))), getCallerMethod());
+    }
+
+    default ApiResult<?> processBeforeDeleteBy(Entity entity, DeleteDTO dto) {
+        return null;
     }
 }
