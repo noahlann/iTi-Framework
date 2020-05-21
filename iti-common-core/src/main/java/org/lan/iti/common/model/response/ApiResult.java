@@ -76,6 +76,22 @@ public class ApiResult<T> implements Serializable {
     // region Static-method
 
     /**
+     * 复制ApiResult，除了data字段
+     * <pre>
+     *     通常用户data类型转换
+     * </pre>
+     *
+     * @param other 源
+     * @param <T>   目标类型
+     */
+    public static <T> ApiResult<T> from(ApiResult<?> other) {
+        return new ApiResult<T>()
+                .setStatus(other.getStatus())
+                .setErrorCode(other.getErrorCode())
+                .setMsg(other.getMsg());
+    }
+
+    /**
      * 成功结果
      */
     public static <T> ApiResult<T> ok() {
