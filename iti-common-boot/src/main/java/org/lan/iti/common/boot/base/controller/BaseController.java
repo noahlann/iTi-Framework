@@ -18,8 +18,8 @@
 
 package org.lan.iti.common.boot.base.controller;
 
-import cn.hutool.core.util.ReflectUtil;
 import org.lan.iti.common.core.base.BaseService;
+import org.lan.iti.common.core.util.ReflectUtils;
 import org.lan.iti.common.model.response.ApiResult;
 
 import java.io.Serializable;
@@ -52,7 +52,7 @@ public interface BaseController<E extends Serializable> {
     default Method getCallerMethod() {
         final StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[2];
         final String methodName = stackTraceElement.getMethodName();
-        return ReflectUtil.getMethodByName(getClass(), methodName);
+        return ReflectUtils.getMethodByName(getClass(), methodName);
     }
 
     /**
