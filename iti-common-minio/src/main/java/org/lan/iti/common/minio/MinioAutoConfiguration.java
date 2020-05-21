@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @AllArgsConstructor
 @EnableConfigurationProperties({MinioProperties.class})
-@ConditionalOnProperty(name = "iti.minio")
+@ConditionalOnProperty(prefix = "iti.minio", name = "enabled", havingValue = "true")
 public class MinioAutoConfiguration {
     private final MinioProperties properties;
 
