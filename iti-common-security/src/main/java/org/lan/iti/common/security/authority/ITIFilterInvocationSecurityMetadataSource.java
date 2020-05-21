@@ -19,9 +19,12 @@
 package org.lan.iti.common.security.authority;
 
 import cn.hutool.core.util.StrUtil;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.scanner.model.ResourceDefinition;
+import org.lan.iti.common.scanner.util.PathUtils;
 import org.lan.iti.common.security.authority.service.AuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,12 +33,10 @@ import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
  * @date 2020-05-09
  * @url https://noahlan.com
  */
+@NoArgsConstructor
+@Slf4j
 public class ITIFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
     @Setter
     private FilterInvocationSecurityMetadataSource superMetadataSource;
@@ -58,11 +61,9 @@ public class ITIFilterInvocationSecurityMetadataSource implements FilterInvocati
     @Value("${spring.application.name:_SELF_}")
     private String applicationName;
 
-    private AntPathMatcher antPathMatcher;
+    private AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-    public ITIFilterInvocationSecurityMetadataSource() {
-        this.antPathMatcher = new AntPathMatcher();
-    }
+    private UrlPathHelper pathHelper = new UrlPathHelper();
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
@@ -71,14 +72,31 @@ public class ITIFilterInvocationSecurityMetadataSource implements FilterInvocati
             HttpServletRequest request = invocation.getRequest();
             String method = request.getMethod();
             String uri = request.getRequestURI();
-            Optional<ResourceDefinition> resourceDefinition = authorityService.getAllResources(applicationName).stream()
-                    .filter(it ->
-                            StrUtil.isNotBlank(it.getUrl())
-                                    && StrUtil.containsAnyIgnoreCase(it.getHttpMethod(), method)
-                                    && antPathMatcher.match(it.getUrl(), uri))
-                    .findFirst();
-            if (resourceDefinition.isPresent()) {
-                return Collections.singletonList(convertTo(resourceDefinition.get()));
+            String urlPath = pathHelper.getLookupPathForRequest(request);
+
+            List<ResourceDefinition> allResources = authorityService.getAllResources(applicationName);
+            List<ResourceDefinition> matchingPatterns = new ArrayList<>();
+            for (ResourceDefinition item : allResources) {
+                String registeredPattern = item.getUrl();
+                if (StrUtil.isBlank(registeredPattern)) {
+                    continue;
+                }
+                if (StrUtil.containsAnyIgnoreCase(item.getHttpMethod(), method)
+                        && antPathMatcher.match(registeredPattern, urlPath)) {
+                    matchingPatterns.add(item);
+                }
+            }
+            ResourceDefinition bestMatch = null;
+            Comparator<ResourceDefinition> patternComparator = PathUtils.getPatternComparator(urlPath);
+            if (!matchingPatterns.isEmpty()) {
+                matchingPatterns.sort(patternComparator);
+                if (log.isTraceEnabled() && matchingPatterns.size() > 1) {
+                    log.trace("Matching patterns " + matchingPatterns);
+                }
+                bestMatch = matchingPatterns.get(0);
+            }
+            if (bestMatch != null) {
+                return Collections.singletonList(convertTo(bestMatch));
             }
         }
         if (superMetadataSource == null) {

@@ -80,8 +80,6 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         this.applicationName = PropertiesUtils.getOrDefault("spring.application.name", "unknown");
         // scanning
         scan();
-        // sort
-        sort();
         // reporting
         report();
     }
@@ -120,10 +118,6 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
             // 注册资源
             ResourceCache.register(apiResource);
         }
-    }
-
-    private void sort() {
-        ResourceCache.sort();
     }
 
     private void report() {
