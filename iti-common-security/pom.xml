@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.lan</groupId>
         <artifactId>iti-common</artifactId>
-        <version>1.3.1</version>
+        <version>1.4.0</version>
     </parent>
 
     <artifactId>iti-common-security</artifactId>
@@ -69,7 +69,12 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- jdbc -->
+        <!-- redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
