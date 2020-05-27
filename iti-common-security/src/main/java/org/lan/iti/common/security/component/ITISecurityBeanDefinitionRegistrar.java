@@ -18,7 +18,7 @@ package org.lan.iti.common.security.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.SecurityConstants;
-import org.lan.iti.common.security.config.ITIResourceServerConfigurerAdapter;
+import org.lan.iti.common.security.config.ITIResourceServerConfiguration;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -41,7 +41,7 @@ public class ITISecurityBeanDefinitionRegistrar implements ImportBeanDefinitionR
         }
 
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-        beanDefinition.setBeanClass(ITIResourceServerConfigurerAdapter.class);
+        beanDefinition.setBeanClass(ITIResourceServerConfiguration.class);
         registry.registerBeanDefinition(SecurityConstants.RESOURCE_SERVER_CONFIGURER, beanDefinition);
     }
 }

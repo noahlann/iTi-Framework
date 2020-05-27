@@ -31,6 +31,10 @@ import org.springframework.http.HttpStatus;
 public class InvalidException extends ITIAuth2Exception {
     private static final long serialVersionUID = 6183181425292182632L;
 
+    public InvalidException(String msg) {
+        this(msg, null);
+    }
+
     public InvalidException(String msg, Throwable t) {
         super(msg);
     }

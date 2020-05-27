@@ -16,6 +16,7 @@
 
 package org.lan.iti.common.security.service;
 
+import org.lan.iti.common.core.constants.SecurityConstants;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,29 +37,28 @@ public interface ITIUserDetailsService extends UserDetailsService {
     /**
      * 根据 唯一标识与类型 查询 UserDetails
      *
-     * @param principle 唯一标识 (userId, userName)
+     * @param principal 唯一标识 (userId, userName)
      * @param domain    域类型
-     * @param extra     扩展信息
      * @return 用户鉴权模型
      */
-    UserDetails loadUser(String principle, String providerId, String domain, Map<String, String> extra) throws UsernameNotFoundException;
+    UserDetails loadUser(String principal, String providerId, String domain) throws UsernameNotFoundException;
 
     /**
      * 自动注册
      *
-     * @param principle   唯一标识 (手机号/微信openid/微博openid等)
+     * @param principal   唯一标识 (手机号/微信openid/微博openid等)
      * @param domain      域类型
      * @param credentials 身份信息（密码等）
      * @param extra       扩展信息
      * @return 用户鉴权模型（粗略版）
      */
-    UserDetails register(String principle, String providerId, String domain, String credentials, Map<String, String> extra);
+    UserDetails register(String principal, String providerId, String domain, String credentials, Map<String, String> extra);
 
     /**
      * 扩展默认实现,最终通过loadUser方法载入用户信息
      */
     @Override
     default UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return loadUser(username, "sys", "sys", null);
+        return loadUser(username, SecurityConstants.DEFAULT_PROVIDER_ID, SecurityConstants.DEFAULT_DOMAIN);
     }
 }

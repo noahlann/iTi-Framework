@@ -16,7 +16,6 @@
 
 package org.lan.iti.common.security.service;
 
-import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -44,20 +43,14 @@ public class ITIUserDetailsServiceImpl implements ITIUserDetailsService {
     private final UserDetailsBuilder userDetailsBuilder;
 
     @Override
-    public UserDetails loadUser(String principle, String providerId, String domain, Map<String, String> extra) throws UsernameNotFoundException {
-        ApiResult<SecurityUser<?>> user;
-        if (StrUtil.equals(providerId, "sys")) {
-            user = remoteUserService.getSecurityUserByUsername(principle, domain);
-        } else {
-            user = remoteUserService.getSecurityUserById(principle, domain);
-        }
-        // TODO 更多逻辑判定
+    public UserDetails loadUser(String principal, String providerId, String domain) throws UsernameNotFoundException {
+        ApiResult<SecurityUser<?>> user = remoteUserService.getSecurityUser(providerId, principal, domain);
         return buildUserDetails(user, providerId, domain);
     }
 
     @Override
-    public UserDetails register(String principle, String providerId, String domain, String credentials, Map<String, String> extra) {
-        ApiResult<SecurityUser<?>> user = remoteUserService.register(principle, providerId, credentials);
+    public UserDetails register(String principal, String providerId, String domain, String credentials, Map<String, String> extra) {
+        ApiResult<SecurityUser<?>> user = remoteUserService.register(principal, providerId, credentials);
         return buildUserDetails(user, providerId, domain);
     }
 

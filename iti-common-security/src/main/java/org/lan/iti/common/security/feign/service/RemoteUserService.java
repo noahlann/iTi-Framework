@@ -35,28 +35,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface RemoteUserService {
 
     /**
-     * 通过用户ID获取用户信息
+     * 根据条件获取用户信息
      *
-     * @param userId 用户ID
-     * @param domain 域
+     * @param principal 用户ID
+     * @param domain    域
      * @return 用户安全信息
      */
     @Headers(SecurityConstants.HEADER_FROM_IN)
-    @GetMapping(value = "security/user/{id}")
-    ApiResult<SecurityUser<?>> getSecurityUserById(@PathVariable("id") String userId,
+    @GetMapping(value = "security/user")
+    ApiResult<SecurityUser<?>> getSecurityUser(@RequestParam("providerId") String providerId,
+                                                   @RequestParam("principal") String principal,
                                                    @RequestParam("domain") String domain);
 
-    /**
-     * 通过用户名获取用户信息
-     *
-     * @param username 用户名
-     * @param domain   域
-     * @return 用户安全信息
-     */
-    @GetMapping(value = "security/user")
-    @Headers(SecurityConstants.HEADER_FROM_IN)
-    ApiResult<SecurityUser<?>> getSecurityUserByUsername(@RequestParam("username") String username,
-                                                         @RequestParam("domain") String domain);
 
     /**
      * 注册用户账户

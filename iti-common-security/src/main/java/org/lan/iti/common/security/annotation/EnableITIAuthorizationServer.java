@@ -16,7 +16,8 @@
 
 package org.lan.iti.common.security.annotation;
 
-import org.lan.iti.common.security.config.ITIAuthorizationServerAutoConfiguration;
+import org.lan.iti.common.security.config.ITIAuthorizationServerWebSecurityConfiguration;
+import org.lan.iti.common.security.config.ITIAuthorizationServerConfigurerAdapter;
 import org.lan.iti.common.security.service.ITIUserDetailsServiceImpl;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -35,6 +36,8 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @EnableAuthorizationServer
-@Import({ITIAuthorizationServerAutoConfiguration.class, ITIUserDetailsServiceImpl.class})
+@Import({ITIAuthorizationServerWebSecurityConfiguration.class,
+        ITIAuthorizationServerConfigurerAdapter.class,
+        ITIUserDetailsServiceImpl.class})
 public @interface EnableITIAuthorizationServer {
 }

@@ -63,7 +63,7 @@ public class ITIAuth2ExceptionSerializer extends StdSerializer<ITIAuth2Exception
                         .level(ErrorLevelEnum.PRIMARY.getValue())
                         .code(0)
                         .build();
-                gen.writeObject(ApiResult.error(errorCode.toString(), value.getErrorCode() + "|" + value.getMessage()));
+                gen.writeObject(ApiResult.error(errorCode.toString(), value.getMessage()));
             } else {
                 gen.writeObject(ApiResult.error(value.getErrorCode(), value.getMessage()));
             }
