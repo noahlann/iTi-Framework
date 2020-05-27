@@ -85,9 +85,19 @@ public final class SecurityConstants {
     public static final String HEADER_FROM_IN = FROM + ": " + FROM_IN;
 
     /**
-     * 社交获取token接口URL
+     * domain
      */
-    public static final String SOCIAL_TOKEN_URL = "/social/**";
+    public static final String DOMAIN = "domain";
+
+    /**
+     * 默认用户域
+     */
+    public static final String DEFAULT_DOMAIN = "sys";
+
+    /**
+     * 默认服务提供商
+     */
+    public static final String DEFAULT_PROVIDER_ID = "sys";
 
     /**
      * oauth获取token接口URL

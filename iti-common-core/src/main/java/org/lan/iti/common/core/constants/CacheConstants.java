@@ -32,9 +32,27 @@ public final class CacheConstants {
     public static final String GLOBAL_KEY = "GLOBAL:";
 
     /**
-     * 验证码前缀
+     * iTi自定义 鉴权参数前缀
      */
-    public static final String DEFAULT_CODE_KEY = "DEFAULT_CODE_KEY:";
+    public static final String AUTH_KEY = "c_auth:";
+
+    /**
+     * 校验验证码的客户端
+     */
+    public static final String NEED_VALIDATE = "nv";
+
+    /**
+     * 验证码key
+     */
+    public static final String CODE = "code";
+
+    /**
+     * 自定义鉴权参数缓存键
+     */
+    public static final String CODE_MOBILE = "mobile";
+    public static final String MOBILE_CODE_PREFIX = AUTH_KEY + CODE_MOBILE + ":" + CODE + ":";
+    // 需要校验验证码的手机号码列表(set)
+    public static final String MOBILE_CODE_NEED_VALIDATE = MOBILE_CODE_PREFIX + NEED_VALIDATE;
 
     /**
      * 用户信息缓存
