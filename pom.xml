@@ -22,7 +22,7 @@
 
     <groupId>org.lan</groupId>
     <artifactId>iti-common</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     <developers>
