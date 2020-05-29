@@ -18,33 +18,32 @@
 
 package org.lan.iti.common.data.orm.typehandler;
 
+import cn.hutool.json.JSONUtil;
 import org.postgresql.util.PGobject;
 
+import java.util.Map;
+
 /**
- * Json 类型转换器
- * <p>
- * 插入/更新时封装为PGobject对象
- * 查询时封装为PGobject对象后提取value字段
- * </p>
+ * Map <-> Jsonb 类型处理器
  *
  * @author NorthLan
- * @date 2020-04-09
+ * @date 2020-05-28
  * @url https://noahlan.com
  */
-public class StringJsonTypeHandler extends BasePGJsonTypeHandler<String> {
+public class MapJsonbTypeHandler extends BasePGJsonTypeHandler<Map> {
 
     @Override
     protected String getType() {
-        return JSON;
+        return JSONB;
     }
 
     @Override
-    protected String convertValue(String parameter) {
-        return parameter;
+    protected String convertValue(Map parameter) {
+        return JSONUtil.toJsonStr(parameter);
     }
 
     @Override
-    protected String getValue(PGobject pGobject) {
-        return pGobject.getValue();
+    protected Map getValue(PGobject pGobject) {
+        return JSONUtil.toBean(pGobject.getValue(), Map.class);
     }
 }
