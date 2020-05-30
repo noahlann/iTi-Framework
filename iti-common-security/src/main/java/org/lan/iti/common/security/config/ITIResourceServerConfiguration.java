@@ -27,6 +27,7 @@ import org.lan.iti.common.security.component.ITIWebResponseExceptionTranslator;
 import org.lan.iti.common.security.component.PermitAllUrlProperties;
 import org.lan.iti.common.security.service.UserDetailsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDecisionManager;
@@ -60,6 +61,9 @@ public class ITIResourceServerConfiguration extends ResourceServerConfigurerAdap
 
     @Autowired
     private RemoteTokenServices remoteTokenServices;
+
+    @Value("${security.oauth2.resource.loadBalanced:false}")
+    private Boolean oauth2ResourceLoadBalanced;
 
     @Autowired
     private PermitAllUrlProperties permitAllUrlProperties;
@@ -106,7 +110,9 @@ public class ITIResourceServerConfiguration extends ResourceServerConfigurerAdap
         accessTokenConverter.setUserTokenConverter(new ITIUserAuthenticationConverter(userDetailsBuilder));
 
         // RemoteTokenService
-        remoteTokenServices.setRestTemplate(lbRestTemplate);
+        if (oauth2ResourceLoadBalanced) {
+            remoteTokenServices.setRestTemplate(lbRestTemplate);
+        }
         remoteTokenServices.setAccessTokenConverter(accessTokenConverter);
 
         // WebResponseExceptionTranslator
