@@ -17,10 +17,11 @@
 package org.lan.iti.generator;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.toolkit.StringPool;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
-import com.baomidou.mybatisplus.generator.config.GlobalConfig;
-import com.baomidou.mybatisplus.generator.config.INameConvert;
+import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +31,11 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * mybatis-plus 代码生成器
@@ -46,6 +49,7 @@ import java.nio.file.Paths;
 public class MPGenerator {
     private MPGeneratorProperties properties;
     private AutoGenerator autoGenerator;
+
 
     /**
      * static method
@@ -137,8 +141,11 @@ public class MPGenerator {
         }
 
         autoGenerator = new AutoGenerator();
-        // 设置outputDir 支持直接填写模块名
-        setOutputDir(properties.getGlobalConfig());
+        // 设置 outputDir 支持直接填写模块名
+        GlobalConfig globalConfig = properties.getGlobalConfig();
+        globalConfig.setOutputDir(getOutputDir(globalConfig.getOutputDir(), globalConfig.isKotlin(), true));
+        // 设置 pathInfo
+        initModulePathInfo(properties);
         autoGenerator.setGlobalConfig(properties.getGlobalConfig());
         autoGenerator.setDataSource(properties.getDataSourceConfig());
         autoGenerator.setPackageInfo(properties.getPackageConfig());
@@ -150,25 +157,110 @@ public class MPGenerator {
             throw new RuntimeException("当前选择模板引擎不存在, 请检查项目依赖配置是否正确引入相关模板引擎包");
         }
         autoGenerator.setTemplateEngine(buildEngine(engineType.getTemplateClass()));
+
     }
 
-    private void setOutputDir(GlobalConfig globalConfig) {
+    private String getOutputDir(String outputDir, boolean isKotlin, boolean isSrc) {
         String currentDir = System.getProperty("user.dir");
-        String newOutputDir = globalConfig.getOutputDir();
-//        if (!Paths.get(newOutputDir).isAbsolute()) {
-//            // 相对路径,从根目录相对,获取根目录信息
-//            currentDir = currentDir.substring(0, currentDir.lastIndexOf('\\'));
-//        }
+        String newOutputDir = outputDir;
         if (StrUtil.isBlank(newOutputDir)) {
-            newOutputDir = currentDir + "/src/main";
+            newOutputDir = StrUtil.join(File.separator, currentDir, "src", "main");
         } else {
-            newOutputDir = currentDir + "/" + newOutputDir + "/src/main";
+            newOutputDir = StrUtil.join(File.separator, currentDir, newOutputDir, "src", "main");
         }
-        if (globalConfig.isKotlin()) {
-            newOutputDir += "/kotlin";
+        String last;
+        if (isSrc) {
+            last = isKotlin ? "kotlin" : "java";
         } else {
-            newOutputDir += "/java";
+            last = "resources";
         }
-        globalConfig.setOutputDir(newOutputDir);
+        newOutputDir += File.separator + last;
+        return newOutputDir;
+    }
+
+    /**
+     * 设置 pathInfo
+     * <pre>
+     *     仅modulePath有值时生效
+     *     pathInfo若有填写，则不覆盖具体值
+     * </pre>
+     */
+    private void initModulePathInfo(MPGeneratorProperties properties) {
+        PackageConfig pc = properties.getPackageConfig();
+        GlobalConfig gc = properties.getGlobalConfig();
+        TemplateConfig tc = properties.getTemplateConfig();
+        MPGeneratorProperties.ModulePath modulePath = properties.getModulePath();
+
+        boolean isKotlin = gc.isKotlin();
+        Map<String, String> pathInfo = pc.getPathInfo();
+        Map<String, String> packageInfo;
+
+        if (StrUtil.isNotBlank(modulePath.getApiOutputDir()) &&
+                StrUtil.isNotBlank(modulePath.getServerOutputDir())) {
+            String apiOutputDir = getOutputDir(modulePath.getApiOutputDir(), isKotlin, true);
+            String serverOutputDir = getOutputDir(modulePath.getServerOutputDir(), isKotlin, true);
+            String xmlOutputDir = getOutputDir(modulePath.getServerOutputDir(), isKotlin, false);
+            // 包信息 copy from ConfigBuilder#
+            packageInfo = new HashMap<>(8);
+            packageInfo.put(ConstVal.MODULE_NAME, pc.getModuleName());
+            // api
+            packageInfo.put(ConstVal.ENTITY, joinPackage(pc.getParent(), pc.getEntity()));
+            // server
+            packageInfo.put(ConstVal.MAPPER, joinPackage(pc.getParent(), pc.getMapper()));
+            packageInfo.put(ConstVal.SERVICE, joinPackage(pc.getParent(), pc.getService()));
+            packageInfo.put(ConstVal.SERVICE_IMPL, joinPackage(pc.getParent(), pc.getServiceImpl()));
+            packageInfo.put(ConstVal.CONTROLLER, joinPackage(pc.getParent(), pc.getController()));
+            packageInfo.put(ConstVal.XML, joinPackage(null, pc.getXml()));
+
+            // set pathInfo
+            if (pathInfo == null) {
+                pathInfo = new HashMap<>(6);
+            }
+            setPathInfo(pathInfo, packageInfo, tc.getEntity(isKotlin), apiOutputDir, ConstVal.ENTITY_PATH, ConstVal.ENTITY);
+            setPathInfo(pathInfo, packageInfo, tc.getXml(), xmlOutputDir, ConstVal.XML_PATH, ConstVal.XML);
+            setPathInfo(pathInfo, packageInfo, tc.getMapper(), serverOutputDir, ConstVal.MAPPER_PATH, ConstVal.MAPPER);
+            setPathInfo(pathInfo, packageInfo, tc.getService(), serverOutputDir, ConstVal.SERVICE_PATH, ConstVal.SERVICE);
+            setPathInfo(pathInfo, packageInfo, tc.getServiceImpl(), serverOutputDir, ConstVal.SERVICE_IMPL_PATH, ConstVal.SERVICE_IMPL);
+            setPathInfo(pathInfo, packageInfo, tc.getController(), serverOutputDir, ConstVal.CONTROLLER_PATH, ConstVal.CONTROLLER);
+            pc.setPathInfo(pathInfo);
+        }
+    }
+
+    private void setPathInfo(Map<String, String> pathInfo, Map<String, String> packageInfo, String template, String outputDir, String path, String module) {
+        if (!pathInfo.containsKey(path) && StrUtil.isNotBlank(template)) {
+            pathInfo.put(path, joinPath(outputDir, packageInfo.get(module)));
+        }
+    }
+
+    /**
+     * 连接路径字符串
+     *
+     * @param parentDir   路径常量字符串
+     * @param packageName 包名
+     * @return 连接后的路径
+     */
+    private String joinPath(String parentDir, String packageName) {
+        if (StringUtils.isBlank(parentDir)) {
+            parentDir = System.getProperty(ConstVal.JAVA_TMPDIR);
+        }
+        if (!StringUtils.endsWith(parentDir, File.separator)) {
+            parentDir += File.separator;
+        }
+        packageName = packageName.replaceAll("\\.", StringPool.BACK_SLASH + File.separator);
+        return parentDir + packageName;
+    }
+
+    /**
+     * 连接父子包名
+     *
+     * @param parent     父包名
+     * @param subPackage 子包名
+     * @return 连接后的包名
+     */
+    private String joinPackage(String parent, String subPackage) {
+        if (StringUtils.isBlank(parent)) {
+            return subPackage;
+        }
+        return parent + StringPool.DOT + subPackage;
     }
 }

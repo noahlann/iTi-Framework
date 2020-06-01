@@ -40,6 +40,11 @@ public class MPGeneratorProperties {
     private GlobalConfig globalConfig = new GlobalConfig();
 
     /**
+     * 模块化路径配置
+     */
+    private ModulePath modulePath = new ModulePath();
+
+    /**
      * 数据源配置
      */
     private DataSourceConfig dataSourceConfig = new DataSourceConfig();
@@ -63,6 +68,19 @@ public class MPGeneratorProperties {
      * 模板引擎类型
      */
     private TemplateEngineType templateEngineType = TemplateEngineType.FREEMARKER;
+
+    @Data
+    public static class ModulePath {
+        /**
+         * api module 的输出路径
+         */
+        private String apiOutputDir;
+
+        /**
+         * server module 的输出路径
+         */
+        private String serverOutputDir;
+    }
 
     /**
      * 模板引擎类型

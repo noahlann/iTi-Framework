@@ -46,22 +46,26 @@ dataSourceConfig:
   username: postgres
   password: gxzc222..
 
+modulePath:
+  apiOutputDir: "xxx/xxx-api"
+  serverOutputDir: "xxx/xxx-server"
+
 # 包配置
 packageConfig:
   # 父包名。如果为空，将下面子包名必须写全部， 否则就只需写子包名
-  parent: com.gxzc
+  parent: # 留空 com.gxzc
   # 父包模块名
   # moduleName: module
   # Entity包名
-  #entity: entity
+  entity: com.gxzc.xxx.xxx.api.entity
   # Service包名
-  #service: service
+  service: com.gxzc.xxx.xxx.service
   # Service Impl包名
-  #serviceImpl: service.impl
+  serviceImpl: com.gxzc.xxx.xxx.service.impl
   # Mapper包名
-  #mapper: mapper
+  mapper: com.gxzc.xxx.xxx.mapper
   # Mapper XML包名
-  # xml: mapper
+  xml: mapping
   # Controller包名
   #controller: controller
 
@@ -115,8 +119,8 @@ strategyConfig:
   entitySerialVersionUID: true
   #【实体】是否生成字段常量（默认 false）
   entityColumnConstant: false
-  # 【实体】是否为构建者模型（默认 false）
-  entityBuilderModel: true
+  # 【实体】是否为链式模型（默认 false）
+  chainModel: true
   # 【实体】是否为lombok模型（默认 false）
   entityLombokModel: true
   # Boolean类型字段是否移除is前缀（默认 false）
