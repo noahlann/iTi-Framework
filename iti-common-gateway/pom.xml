@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.lan</groupId>
         <artifactId>iti-common</artifactId>
-        <version>1.4.3</version>
+        <version>1.4.4</version>
     </parent>
 
     <artifactId>iti-common-gateway</artifactId>

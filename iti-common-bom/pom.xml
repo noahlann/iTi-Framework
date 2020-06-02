@@ -22,7 +22,7 @@
     <groupId>org.lan</groupId>
     <artifactId>iti-common-bom</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.3</version>
+    <version>1.4.4</version>
 
     <description>common公共核心依赖管理</description>
 
@@ -141,6 +141,11 @@
             <dependency>
                 <groupId>org.lan</groupId>
                 <artifactId>iti-common-security</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.lan</groupId>
+                <artifactId>iti-common-sequence</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
