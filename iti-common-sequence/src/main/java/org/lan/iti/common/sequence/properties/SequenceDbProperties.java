@@ -41,6 +41,11 @@ public class SequenceDbProperties extends BaseProperties {
     private String tableName = "iti_sequence";
 
     /**
+     * 模式
+     */
+    private String schema = "public";
+
+    /**
      * 重试次数
      */
     private int retryTimes = 1;

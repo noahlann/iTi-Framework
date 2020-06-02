@@ -18,14 +18,13 @@
 
 package org.lan.iti.common.sequence.range.impl.redis;
 
-import cn.hutool.core.util.StrUtil;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.lan.iti.common.sequence.exception.SequenceException;
 import org.lan.iti.common.sequence.range.Range;
 import org.lan.iti.common.sequence.range.RangeManager;
-import redis.clients.jedis.Jedis;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.Assert;
 
 /**
  * Redis 区间管理器
@@ -40,41 +39,13 @@ public class RedisRangeManager implements RangeManager {
      */
     private final static String KEY_PREFIX = "x_sequence_";
 
-    /**
-     * redis客户端
-     */
-    @Getter
     @Setter
     @Accessors(chain = true)
-    private Jedis jedis;
-
-    /**
-     * IP
-     */
-    @Getter
-    @Setter
-    @Accessors(chain = true)
-    private String ip;
-    /**
-     * PORT
-     */
-    @Getter
-    @Setter
-    @Accessors(chain = true)
-    private Integer port;
-
-    /**
-     * 验证权限
-     */
-    @Getter
-    @Setter
-    @Accessors(chain = true)
-    private String auth;
+    private RedisTemplate<String, String> redisTemplate;
 
     /**
      * 区间步长
      */
-    @Getter
     @Setter
     @Accessors(chain = true)
     private int step = 1000;
@@ -82,7 +53,6 @@ public class RedisRangeManager implements RangeManager {
     /**
      * 区间起始位置，真实从stepStart+1开始
      */
-    @Getter
     @Setter
     @Accessors(chain = true)
     private long stepStart = 0;
@@ -95,15 +65,19 @@ public class RedisRangeManager implements RangeManager {
 
     @Override
     public Range nextRange(String name) throws SequenceException {
+        String key = getRealKey(name);
         if (!keyAlreadyExist) {
-            Boolean isExists = jedis.exists(getRealKey(name));
-            if (!isExists) {
-                // 第一次不存在，进行初始化   setnx不存在就set，存在就忽略
-                jedis.setnx(getRealKey(name), String.valueOf(stepStart));
+            Boolean isExists = redisTemplate.hasKey(key);
+            if (isExists == null || !isExists) {
+                // 第一次不存在，进行初始化   setIfAbsent不存在就set，存在就忽略
+                redisTemplate.opsForValue().setIfAbsent(key, String.valueOf(stepStart));
             }
             keyAlreadyExist = true;
         }
-        Long max = jedis.incrBy(getRealKey(name), step);
+        Long max = redisTemplate.opsForValue().increment(key, step);
+        if (max == null) {
+            throw new SequenceException("redis写入数据错误，请检查连接");
+        }
         long min = max - step + 1;
         return new Range(min, max);
     }
@@ -111,18 +85,15 @@ public class RedisRangeManager implements RangeManager {
     @Override
     public void init() {
         checkParam();
-        jedis = new Jedis(ip, port);
-        if (StrUtil.isNotBlank(auth)) {
-            jedis.auth(auth);
-        }
     }
 
     private void checkParam() {
-        if (StrUtil.isNotBlank(ip)) {
-            throw new IllegalArgumentException("[RedisRangeManager-checkParam] ip is empty.");
+        Assert.notNull(redisTemplate, "[RedisRangeManager-redisTemplate] is null");
+        if (step <= 0) {
+            throw new SequenceException("[RedisRangeManager] step must greater than 0.");
         }
-        if (null == port) {
-            throw new IllegalArgumentException("[RedisRangeManager-checkParam] port is null.");
+        if (stepStart < 0) {
+            throw new SequenceException("[RedisRangeManager] stepStart < 0.");
         }
     }
 

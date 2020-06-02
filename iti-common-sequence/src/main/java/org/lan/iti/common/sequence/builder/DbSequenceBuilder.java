@@ -18,11 +18,9 @@
 
 package org.lan.iti.common.sequence.builder;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.sequence.properties.SequenceDbProperties;
 import org.lan.iti.common.sequence.range.Name;
+import org.lan.iti.common.sequence.range.impl.db.DbRangeManager;
 import org.lan.iti.common.sequence.sequence.Sequence;
 import org.lan.iti.common.sequence.sequence.impl.DefaultRangeSequence;
 
@@ -36,9 +34,6 @@ import javax.sql.DataSource;
  * @date 2020-05-06
  * @url https://noahlan.com
  */
-@Data
-@Accessors(chain = true)
-@Slf4j
 public class DbSequenceBuilder implements SequenceBuilder {
 
     /**
@@ -59,10 +54,27 @@ public class DbSequenceBuilder implements SequenceBuilder {
 
     @Override
     public Sequence build() {
+        DbRangeManager rangeManager = new DbRangeManager(this.dataSource);
+        rangeManager.setRetryTimes(this.properties.getRetryTimes())
+                .setStep(this.properties.getStep())
+                .setStepStart(this.properties.getStepStart())
+                .setTableName(this.properties.getTableName())
+                .setSchema(this.properties.getSchema())
+                .init();
         DefaultRangeSequence sequence = new DefaultRangeSequence();
         sequence.setName(this.name);
-        log.warn("功能未完成,请勿使用");
+        sequence.setRangeManager(rangeManager);
         return sequence;
+    }
+
+    public DbSequenceBuilder name(Name name) {
+        this.name = name;
+        return this;
+    }
+
+    public DbSequenceBuilder dataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+        return this;
     }
 
     public DbSequenceBuilder properties(SequenceDbProperties properties) {

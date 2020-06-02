@@ -18,12 +18,12 @@
 
 package org.lan.iti.common.sequence.builder;
 
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import org.lan.iti.common.sequence.properties.SequenceRedisProperties;
 import org.lan.iti.common.sequence.range.Name;
 import org.lan.iti.common.sequence.range.impl.redis.RedisRangeManager;
 import org.lan.iti.common.sequence.sequence.Sequence;
 import org.lan.iti.common.sequence.sequence.impl.DefaultRangeSequence;
+import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * Redis序列号生成器构建者
@@ -32,38 +32,30 @@ import org.lan.iti.common.sequence.sequence.impl.DefaultRangeSequence;
  * @date 2020-05-06
  * @url https://noahlan.com
  */
-@Setter
-@Accessors(chain = true)
 public class RedisSequenceBuilder implements SequenceBuilder {
-    /**
-     * 连接redis的IP[必选]
-     */
-    private String ip;
-
-    /**
-     * 连接redis的port[必选]
-     */
-    private int port;
 
     /**
      * 业务名称[必选]
      */
     private Name name;
 
-    /**
-     * 认证权限，看Redis是否配置了需要密码auth[可选]
-     */
-    private String auth;
+    private SequenceRedisProperties properties;
+    private RedisTemplate<String, String> redisTemplate;
 
-    /**
-     * 获取range步长[可选，默认：1000]
-     */
-    private int step = 1000;
+    public RedisSequenceBuilder properties(SequenceRedisProperties properties) {
+        this.properties = properties;
+        return this;
+    }
 
-    /**
-     * 序列号分配起始值[可选：默认：0]
-     */
-    private long stepStart = 0;
+    public RedisSequenceBuilder name(Name name) {
+        this.name = name;
+        return this;
+    }
+
+    public RedisSequenceBuilder redisTemplate(RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+        return this;
+    }
 
     public static RedisSequenceBuilder create() {
         return new RedisSequenceBuilder();
@@ -72,11 +64,9 @@ public class RedisSequenceBuilder implements SequenceBuilder {
     @Override
     public Sequence build() {
         RedisRangeManager rangeManager = new RedisRangeManager();
-        rangeManager.setIp(this.ip)
-                .setPort(this.port)
-                .setAuth(this.auth)
-                .setStep(this.step)
-                .setStepStart(this.stepStart)
+        rangeManager.setRedisTemplate(this.redisTemplate)
+                .setStep(this.properties.getStep())
+                .setStepStart(this.properties.getStepStart())
                 .init();
         DefaultRangeSequence sequence = new DefaultRangeSequence();
         sequence.setName(this.name);

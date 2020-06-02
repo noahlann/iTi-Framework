@@ -18,8 +18,6 @@
 
 package org.lan.iti.common.sequence.builder;
 
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.sequence.properties.SequenceSnowflakeProperties;
 import org.lan.iti.common.sequence.sequence.Sequence;
 import org.lan.iti.common.sequence.sequence.impl.SnowflakeSequence;
@@ -34,10 +32,8 @@ import javax.validation.constraints.NotNull;
  * @date 2020-05-06
  * @url https://noahlan.com
  */
-@Slf4j
 public class SnowflakeSequenceBuilder implements SequenceBuilder {
 
-    @Setter
     @NotNull
     private SequenceSnowflakeProperties properties;
 
