@@ -18,6 +18,8 @@
 
 package org.lan.iti.common.boot.base.controller;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * 查询 控制器接口
@@ -42,7 +45,11 @@ import java.io.Serializable;
  * @date 2020-05-14
  * @url https://noahlan.com
  */
-public interface QueryController<Entity extends Serializable, QueryDTO extends Serializable> extends BaseController<Entity> {
+public interface QueryController<Entity extends Serializable, QueryDTO> extends BaseController<Entity> {
+    /**
+     * 关键字 _key
+     */
+    String KEY_KEYWORD = "keyword";
 
     @ITIApi
     @ApiOperation("通过ID查询")
@@ -55,33 +62,96 @@ public interface QueryController<Entity extends Serializable, QueryDTO extends S
                 getCallerMethod());
     }
 
+    /**
+     * 列表查询
+     * <pre>
+     *     子类可通过 重写 {@link #wrapperList(Object, Map, Serializable)} 方法来自定义查询条件包装器
+     *     若此方法返回 {@code null},则执行原有查询逻辑：dto封装为entity(AND)进行查询
+     * </pre>
+     *
+     * @param dto   查询条件 数据传输对象
+     * @param extra 额外条件
+     */
     @ITIApi
     @ApiOperation("列表查询")
     @GetMapping("list")
-    default ApiResult<?> getList(@Validated(QueryGroup.class) QueryDTO dto, @RequestParam(value = "keyword", required = false) String keyword) {
+    default ApiResult<?> getList(@Validated(QueryGroup.class) QueryDTO dto, @RequestParam Map<String, String> extra) {
         Entity entity = BeanUtils.convert(dto, getEntityClass());
-        ApiResult<?> result = processBeforeQueryListOrPage(entity, dto, keyword, null);
+
+        // 子类重写接管方法逻辑(非null返回值)
+        ApiResult<?> result = processList(dto, extra, entity);
         if (result != null) {
             return processResult(result, getCallerMethod());
         }
-        return processResult(ApiResult.ok(getBaseService().list(Wrappers.query(entity))),
-                getCallerMethod());
+
+        // 子类重写接管条件生成逻辑
+        Wrapper<Entity> condition = wrapperList(dto, extra, entity);
+        if (condition != null) {
+            return processResult(ApiResult.ok(getBaseService().list(condition)), getCallerMethod());
+        }
+        return processResult(ApiResult.ok(getBaseService().list(Wrappers.query(entity))), getCallerMethod());
     }
 
+    /**
+     * 分页查询
+     * <pre>
+     *     {@link #getList(Object, Map)}
+     * </pre>
+     *
+     * @param dto   查询条件 数据传输对象
+     * @param extra 额外条件
+     */
     @ITIApi
     @ApiOperation("分页查询")
     @GetMapping("page")
-    default ApiResult<?> getPage(PageParameter parameter, @Validated(QueryGroup.class) QueryDTO dto, @RequestParam(value = "keyword", required = false) String keyword) {
+    default ApiResult<?> getPage(@Validated(QueryGroup.class) QueryDTO dto, PageParameter pageParameter, @RequestParam Map<String, String> extra) {
         Entity entity = BeanUtils.convert(dto, getEntityClass());
-        ApiResult<?> result = processBeforeQueryListOrPage(entity, dto, keyword, parameter);
+        IPage<Entity> page = PageUtils.build(pageParameter);
+
+        // 子类重写接管方法逻辑(非null返回值)
+        ApiResult<?> result = processPage(page, dto, extra, entity);
         if (result != null) {
             return processResult(result, getCallerMethod());
         }
-        return processResult(ApiResult.ok(getBaseService().page(PageUtils.build(parameter), Wrappers.query(entity))),
-                getCallerMethod());
+
+        // 子类重写接管条件生成逻辑
+        Wrapper<Entity> condition = wrapperPage(page, dto, extra, entity);
+        if (condition != null) {
+            return processResult(ApiResult.ok(getBaseService().page(PageUtils.build(pageParameter), condition)), getCallerMethod());
+        }
+        return processResult(ApiResult.ok(getBaseService().page(PageUtils.build(pageParameter), Wrappers.query(entity))), getCallerMethod());
     }
 
-    default ApiResult<?> processBeforeQueryListOrPage(Entity entity, QueryDTO dto, String keyword, PageParameter page) {
+    default ApiResult<?> processList(QueryDTO dto, Map<String, String> extra, Entity entity) {
+        return null;
+    }
+
+    default ApiResult<?> processPage(IPage<Entity> page, QueryDTO dto, Map<String, String> extra, Entity entity) {
+        return null;
+    }
+
+    /**
+     * 构造查询条件
+     *
+     * @param dto    查询条件 数据传输对象
+     * @param extra  额外条件
+     * @param entity dto转换的entity对象
+     * @return QueryWrapper，若为null则使用entity(AND)作为条件
+     */
+    default Wrapper<Entity> wrapperList(QueryDTO dto, Map<String, String> extra, Entity entity) {
+        return null;
+    }
+
+    /**
+     * 构造查询条件
+     *
+     * @param page   分页对象
+     * @param dto    查询条件 数据传输对象
+     * @param extra  额外条件
+     * @param entity dto转换的entity对象
+     * @return QueryWrapper，若为null则使用entity(AND)作为条件
+     */
+    default Wrapper<Entity> wrapperPage(IPage<Entity> page, QueryDTO dto, Map<String, String> extra, Entity entity) {
         return null;
     }
 }

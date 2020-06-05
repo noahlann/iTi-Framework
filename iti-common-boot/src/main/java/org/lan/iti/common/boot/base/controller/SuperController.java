@@ -19,10 +19,8 @@
 package org.lan.iti.common.boot.base.controller;
 
 import org.lan.iti.common.core.base.BaseService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 
 /**
  * 超级控制器抽象类,继承该类将会使控制器具有如下方法(接口)
@@ -52,40 +50,19 @@ import java.lang.reflect.ParameterizedType;
  *
  * @param <Service>   服务
  * @param <Entity>    实体
- * @param <QueryDTO>  查询条件数据传输对象
- * @param <UpdateDTO> 更新条件数据传输对象
- * @param <SaveDTO>   新增条件数据传输对象
- * @param <DeleteDTO> 删除条件数据传输对象
+ * @param <QueryDTO>  查询条件 数据传输对象
+ * @param <UpdateDTO> 更新条件 数据传输对象
+ * @param <SaveDTO>   新增条件 数据传输对象
+ * @param <DeleteDTO> 删除条件 数据传输对象
  * @author NorthLan
  * @date 2020-05-14
  * @url https://noahlan.com
  */
 public abstract class SuperController<Service extends BaseService<Entity>, Entity extends Serializable,
-        QueryDTO extends Serializable,
-        UpdateDTO extends Serializable,
-        SaveDTO extends Serializable,
-        DeleteDTO extends Serializable>
+        QueryDTO, UpdateDTO, SaveDTO, DeleteDTO> extends SimpleController<Service, Entity>
         implements
         QueryController<Entity, QueryDTO>,
         UpdateController<Entity, UpdateDTO>,
         SaveController<Entity, SaveDTO>,
         DeleteController<Entity, DeleteDTO> {
-
-    protected Class<Entity> entityClass = null;
-
-    @Autowired
-    protected Service baseService;
-
-    @Override
-    public Class<Entity> getEntityClass() {
-        if (entityClass == null) {
-            this.entityClass = (Class<Entity>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-        }
-        return entityClass;
-    }
-
-    @Override
-    public BaseService<Entity> getBaseService() {
-        return baseService;
-    }
 }

@@ -37,17 +37,21 @@ import java.util.List;
  * @date 2020-05-14
  * @url https://noahlan.com
  */
-public interface SaveController<Entity extends Serializable, SaveDTO extends Serializable> extends BaseController<Entity> {
+public interface SaveController<Entity extends Serializable, SaveDTO> extends BaseController<Entity> {
 
     @ITIApi
     @ApiOperation("新增")
     @PostMapping
     default ApiResult<?> save(@RequestBody @Validated(SaveGroup.class) SaveDTO dto) {
         Entity entity = BeanUtils.convert(dto, getEntityClass());
-        ApiResult<?> result = processBeforeSave(entity, dto);
+
+        // 子类重写接管方法逻辑
+        ApiResult<?> result = processSave(entity, dto);
         if (result != null) {
             return processResult(result, getCallerMethod());
         }
+
+        // 默认逻辑
         getBaseService().save(entity);
         return processResult(ApiResult.ok(entity), getCallerMethod());
     }
@@ -57,10 +61,14 @@ public interface SaveController<Entity extends Serializable, SaveDTO extends Ser
     @PostMapping("/batch")
     default ApiResult<?> saveBatch(@RequestBody @Validated(SaveGroup.class) List<SaveDTO> dtoList) {
         List<Entity> entities = BeanUtils.convertList(dtoList, getEntityClass());
-        ApiResult<?> result = processBeforeSave(entities, dtoList);
+
+        // 子类重写接管方法逻辑
+        ApiResult<?> result = processSaveBatch(entities, dtoList);
         if (result != null) {
             return processResult(result, getCallerMethod());
         }
+
+        // 默认逻辑
         getBaseService().saveBatch(entities);
         return processResult(ApiResult.ok(entities), getCallerMethod());
     }
@@ -73,7 +81,7 @@ public interface SaveController<Entity extends Serializable, SaveDTO extends Ser
      *
      * @param entity 经过属性赋值生成的实体
      */
-    default ApiResult<?> processBeforeSave(Entity entity, SaveDTO dto) {
+    default ApiResult<?> processSave(Entity entity, SaveDTO dto) {
         return null;
     }
 
@@ -85,7 +93,7 @@ public interface SaveController<Entity extends Serializable, SaveDTO extends Ser
      *
      * @param entities 经过属性赋值生成的实体列表
      */
-    default ApiResult<?> processBeforeSave(List<Entity> entities, List<SaveDTO> dtoList) {
+    default ApiResult<?> processSaveBatch(List<Entity> entities, List<SaveDTO> dtoList) {
         return null;
     }
 }

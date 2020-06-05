@@ -20,9 +20,6 @@ package org.lan.iti.common.boot.base.controller;
 
 
 import io.swagger.annotations.ApiOperation;
-import org.lan.iti.common.core.enums.ErrorLevelEnum;
-import org.lan.iti.common.core.enums.ITIExceptionEnum;
-import org.lan.iti.common.core.exception.ServiceException;
 import org.lan.iti.common.core.interfaces.validator.UpdateGroup;
 import org.lan.iti.common.core.util.BeanUtils;
 import org.lan.iti.common.model.response.ApiResult;
@@ -41,7 +38,7 @@ import java.util.List;
  * @date 2020-05-14
  * @url https://noahlan.com
  */
-public interface UpdateController<Entity extends Serializable, UpdateDTO extends Serializable> extends BaseController<Entity> {
+public interface UpdateController<Entity extends Serializable, UpdateDTO> extends BaseController<Entity> {
 
     @ApiOperation("更新")
     @PutMapping
@@ -52,10 +49,7 @@ public interface UpdateController<Entity extends Serializable, UpdateDTO extends
         if (result != null) {
             return processResult(result, getCallerMethod());
         }
-        if (!getBaseService().updateById(entity)) {
-            throw new ServiceException(ITIExceptionEnum.BIZ_UPDATE_ERROR.getCode(),
-                    ErrorLevelEnum.NORMAL.getValue(), ITIExceptionEnum.BIZ_UPDATE_ERROR.getMsg());
-        }
+        getBaseService().updateById(entity);
         return processResult(ApiResult.ok(entity), getCallerMethod());
     }
 
@@ -68,10 +62,7 @@ public interface UpdateController<Entity extends Serializable, UpdateDTO extends
         if (result != null) {
             return processResult(result, getCallerMethod());
         }
-        if (!getBaseService().updateBatchById(entities)) {
-            throw new ServiceException(ITIExceptionEnum.BIZ_UPDATE_ERROR.getCode(),
-                    ErrorLevelEnum.NORMAL.getValue(), ITIExceptionEnum.BIZ_UPDATE_ERROR.getMsg());
-        }
+        getBaseService().updateBatchById(entities);
         return processResult(ApiResult.ok(entities), getCallerMethod());
     }
 

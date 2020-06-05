@@ -40,6 +40,7 @@ public abstract class SimpleController<Service extends BaseService<Entity>, Enti
     @Autowired
     protected Service baseService;
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<Entity> getEntityClass() {
         if (entityClass == null) {
