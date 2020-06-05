@@ -73,7 +73,7 @@ public class PathUtils {
             }
 
             if (info1.isPrefixPattern() && info2.isPrefixPattern()) {
-                return Integer.compare(info2.getLength(), info1.getLength());
+                return info2.getLength() - info1.getLength();
             } else if (info1.isPrefixPattern() && info2.getDoubleWildcards() == 0) {
                 return 1;
             } else if (info2.isPrefixPattern() && info1.getDoubleWildcards() == 0) {
@@ -81,11 +81,11 @@ public class PathUtils {
             }
 
             if (info1.getTotalCount() != info2.getTotalCount()) {
-                return Integer.compare(info1.getTotalCount(), info2.getTotalCount());
+                return info1.getTotalCount() - info2.getTotalCount();
             }
 
             if (info1.getLength() != info2.getLength()) {
-                return Integer.compare(info2.getLength(), info1.getLength());
+                return info2.getLength() - info1.getLength();
             }
 
             if (info1.getSingleWildcards() < info2.getSingleWildcards()) {

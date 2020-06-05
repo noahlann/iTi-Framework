@@ -71,7 +71,6 @@ public class ITIFilterInvocationSecurityMetadataSource implements FilterInvocati
             FilterInvocation invocation = (FilterInvocation) object;
             HttpServletRequest request = invocation.getRequest();
             String method = request.getMethod();
-            String uri = request.getRequestURI();
             String urlPath = pathHelper.getLookupPathForRequest(request);
 
             List<ResourceDefinition> allResources = authorityService.getAllResources(applicationName);
