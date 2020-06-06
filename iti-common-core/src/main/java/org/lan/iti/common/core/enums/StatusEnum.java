@@ -16,34 +16,26 @@
 
 package org.lan.iti.common.core.enums;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
  * 状态 枚举
+ * <pre>
+ *     通常与数据库值对应
+ * </pre>
  *
  * @author NorthLan
  * @date 2020-02-20
  * @url https://noahlan.com
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public enum StatusEnum {
-    // 启用禁用
-    ENABLED(1, "启用"),
-    DISABLED(0, "禁用"),
-    // return status
-    SUCCESS(1, "成功"),
-    FAIL(0, "失败"),
     // status flag
-    DELETE(0, "删除"),
     NORMAL(1, "正常"),
-    LOCK(9, "锁定"),
-    // logicDelete
-    LOGIC_DELETE(1, "逻辑删除"),
-    LOGIC_NOT_DELETE(0, "逻辑未删除");
+    LOCK(9, "锁定");
 
-    private Integer code;
+    private Integer value;
     private String desc;
 }

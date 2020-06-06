@@ -84,4 +84,9 @@ public class ResourceDefinition implements Serializable {
      * 初始化资源的机器IP
      */
     private String ipAddress;
+
+    /**
+     * 资源类型
+     */
+    private String type;
 }

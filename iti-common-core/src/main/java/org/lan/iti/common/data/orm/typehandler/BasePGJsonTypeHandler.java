@@ -38,6 +38,7 @@ import java.sql.SQLException;
  * @date 2020-05-28
  * @url https://noahlan.com
  */
+@SuppressWarnings("unchecked")
 public abstract class BasePGJsonTypeHandler<T> extends BaseTypeHandler<T> {
     protected static final String JSON = "json";
     protected static final String JSONB = "jsonb";

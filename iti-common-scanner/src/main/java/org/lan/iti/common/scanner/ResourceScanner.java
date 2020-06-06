@@ -30,6 +30,7 @@ import org.lan.iti.common.scanner.annotation.ITIApi;
 import org.lan.iti.common.scanner.exception.ScannerException;
 import org.lan.iti.common.scanner.feign.RemoteResourceService;
 import org.lan.iti.common.scanner.model.ResourceDefinition;
+import org.lan.iti.common.scanner.model.ResourceType;
 import org.lan.iti.common.scanner.properties.ScannerProperties;
 import org.lan.iti.common.scanner.util.CodeUtils;
 import org.springframework.beans.BeansException;
@@ -135,7 +136,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         }
 
         // 本服务所有资源
-        val serviceResources = ResourceCache.getCtrResources();
+        val serviceResources = ResourceCache.getAllResources();
         if (!serviceResources.isEmpty()) {
             log.info("上报所有资源定义到上游服务...");
             try {
@@ -166,9 +167,10 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         if (api == null) {
             return null;
         }
-        ResourceDefinition result = BeanUtils.convert(ctrResource, ResourceDefinition.class);
+        ResourceDefinition resource = BeanUtils.convert(ctrResource, ResourceDefinition.class);
         String code = api.code();
         String name = api.name();
+        String type = api.type();
         if (StrUtil.isBlank(code)) {
             code = method.getName();
         }
@@ -183,17 +185,18 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
             name = code;
         }
 
-        result.setCode(CodeUtils.getResourceCode(properties.getDelimiter(), applicationName, result.getModuleCode(), code))
-                .setName(name);
+        resource.setCode(CodeUtils.getResourceCode(properties.getDelimiter(), applicationName, resource.getModuleCode(), code))
+                .setName(name)
+                .setType(type);
 
         Set<String> pattern = info.getPatternsCondition().getPatterns();
         Assert.notEmpty(pattern, "无法获取API URL");
 
         Set<RequestMethod> methods = info.getMethodsCondition().getMethods();
         Assert.notEmpty(pattern, "无法获取RequestMethod");
-        result.setUrl(pattern.iterator().next())
+        resource.setUrl(pattern.iterator().next())
                 .setHttpMethod(CollUtil.join(methods, DELIMETER));
-        return result;
+        return resource;
     }
 
     /**
@@ -209,9 +212,11 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
 
             String moduleName = null;
             String moduleCode = null;
+            String type = ResourceType.DEFAULT;
             if (api != null) {
                 moduleName = api.name();
                 moduleCode = api.code();
+                type = api.type();
             }
             if (StrUtil.isBlank(moduleCode)) {
                 moduleCode = CodeUtils.getCtrShortName(clazz, properties.getCtrSuffix());
@@ -238,7 +243,8 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
             resource.setModuleCode(moduleCode)
                     .setModuleName(moduleName)
                     .setCode(CodeUtils.getResourceCode(properties.getDelimiter(), applicationName, moduleCode, null))
-                    .setName(moduleName);
+                    .setName(moduleName)
+                    .setType(type);
             resource.setServiceCode(applicationName)
                     .setServiceName(properties.getServiceName());
 

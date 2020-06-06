@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * 系统资源服务接口
@@ -38,10 +38,10 @@ public interface RemoteResourceService {
      * 报告业务服务的资源到指定服务
      *
      * @param serviceName 服务代码(通常为spring.application.name)
-     * @param resources   资源,表达为 [controllerCode - [apiCode-resource]]
+     * @param resources   某服务所有资源
      */
     @PutMapping(value = "/resources/report")
     @Headers(SecurityConstants.HEADER_FROM_IN)
     void reportResources(@RequestParam("serviceName") String serviceName,
-                         @RequestBody Map<String, Map<String, ResourceDefinition>> resources);
+                         @RequestBody List<ResourceDefinition> resources);
 }

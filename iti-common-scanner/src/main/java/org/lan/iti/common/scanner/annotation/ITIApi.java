@@ -16,6 +16,7 @@
 
 package org.lan.iti.common.scanner.annotation;
 
+import org.lan.iti.common.scanner.model.ResourceType;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -64,4 +65,9 @@ public @interface ITIApi {
      * </p>
      */
     String code() default "";
+
+    /**
+     * 资源类型
+     */
+    String type() default ResourceType.DEFAULT;
 }

@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.lan.iti.common.core.enums.ReturnStatusEnum;
 import org.lan.iti.common.core.enums.StatusEnum;
 
 import java.io.Serializable;
@@ -52,7 +53,7 @@ public class ApiResult<T> implements Serializable {
      * </p>
      */
     @ApiModelProperty(value = "返回标记：成功标记=1，失败标记=0")
-    private Integer status = StatusEnum.SUCCESS.getCode();
+    private Integer status = ReturnStatusEnum.SUCCESS.getValue();
 
     /**
      * 错误码，当且仅当status=0时有效
@@ -180,7 +181,7 @@ public class ApiResult<T> implements Serializable {
             errorMsg = "失败";
         }
         return result
-                .setStatus(StatusEnum.FAIL.getCode())
+                .setStatus(ReturnStatusEnum.FAIL.getValue())
                 .setErrorCode(errorCode)
                 .setMsg(errorMsg)
                 .setData(data);
