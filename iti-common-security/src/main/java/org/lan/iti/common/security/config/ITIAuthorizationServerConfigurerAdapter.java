@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.lan.iti.common.security.properties.OAuth2ClientDetailsProperties;
 import org.lan.iti.common.security.properties.SecurityProperties;
 import org.lan.iti.common.security.service.ITIClientDetailsService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -39,8 +40,8 @@ import javax.sql.DataSource;
  * @date 2020-05-23
  * @url https://noahlan.com
  */
-@Configuration
 @EnableConfigurationProperties(SecurityProperties.class)
+@ConditionalOnBean(DataSource.class)
 @AllArgsConstructor
 @Order(90)
 public class ITIAuthorizationServerConfigurerAdapter extends AuthorizationServerConfigurerAdapter {

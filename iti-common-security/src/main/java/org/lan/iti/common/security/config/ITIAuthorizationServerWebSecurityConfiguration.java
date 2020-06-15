@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,7 +37,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
  * @date 2020-04-10
  * @url https://noahlan.com
  */
-@Configuration
 @AllArgsConstructor
 @ConditionalOnClass(RedisAutoConfiguration.class)
 @Order(100)
