@@ -22,7 +22,7 @@
     <groupId>org.lan</groupId>
     <artifactId>iti-common-bom</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.3</version>
+    <version>1.5.4</version>
 
     <description>common公共核心依赖管理</description>
 
