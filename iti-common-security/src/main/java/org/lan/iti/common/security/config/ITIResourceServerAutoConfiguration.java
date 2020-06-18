@@ -21,6 +21,7 @@ package org.lan.iti.common.security.config;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,11 @@ import java.util.Collections;
  * @date 2020-02-25
  * @url https://noahlan.com
  */
-@ComponentScan("org.lan.iti.common.security")
+@ComponentScan(value = "org.lan.iti.common.security",
+        excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {
+                ITIAuthorizationServerConfigurerAdapter.class,
+                ITIAuthorizationServerWebSecurityConfiguration.class
+        })})
 public class ITIResourceServerAutoConfiguration {
 
     /**

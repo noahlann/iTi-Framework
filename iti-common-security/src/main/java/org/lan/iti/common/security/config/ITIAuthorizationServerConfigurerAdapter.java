@@ -19,10 +19,10 @@
 package org.lan.iti.common.security.config;
 
 import lombok.AllArgsConstructor;
+import org.lan.iti.common.security.component.ITIWebResponseExceptionTranslator;
 import org.lan.iti.common.security.properties.OAuth2ClientDetailsProperties;
 import org.lan.iti.common.security.properties.SecurityProperties;
 import org.lan.iti.common.security.service.ITIClientDetailsService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -30,6 +30,8 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 
 import javax.sql.DataSource;
 
@@ -40,8 +42,8 @@ import javax.sql.DataSource;
  * @date 2020-05-23
  * @url https://noahlan.com
  */
+@Configuration
 @EnableConfigurationProperties(SecurityProperties.class)
-@ConditionalOnBean(DataSource.class)
 @AllArgsConstructor
 @Order(90)
 public class ITIAuthorizationServerConfigurerAdapter extends AuthorizationServerConfigurerAdapter {
@@ -50,7 +52,15 @@ public class ITIAuthorizationServerConfigurerAdapter extends AuthorizationServer
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security.allowFormAuthenticationForClients()
+        // WebResponseExceptionTranslator
+        WebResponseExceptionTranslator<?> webResponseExceptionTranslator = new ITIWebResponseExceptionTranslator();
+
+        // ResourceAuthExceptionEntryPoint
+        OAuth2AuthenticationEntryPoint oAuth2AuthenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
+        oAuth2AuthenticationEntryPoint.setExceptionTranslator(webResponseExceptionTranslator);
+
+        security.authenticationEntryPoint(oAuth2AuthenticationEntryPoint)
+                .allowFormAuthenticationForClients()
                 .checkTokenAccess("isAuthenticated()");
     }
 
