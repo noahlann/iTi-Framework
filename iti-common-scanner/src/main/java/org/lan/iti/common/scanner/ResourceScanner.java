@@ -30,14 +30,16 @@ import org.lan.iti.common.scanner.annotation.ITIApi;
 import org.lan.iti.common.scanner.exception.ScannerException;
 import org.lan.iti.common.scanner.feign.RemoteResourceService;
 import org.lan.iti.common.scanner.model.ResourceDefinition;
-import org.lan.iti.common.scanner.model.ResourceType;
 import org.lan.iti.common.scanner.properties.ScannerProperties;
 import org.lan.iti.common.scanner.util.CodeUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.event.SmartApplicationListener;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
@@ -58,7 +60,7 @@ import java.util.function.Function;
  * @url https://noahlan.com
  */
 @Slf4j
-public class ResourceScanner implements ApplicationListener<ApplicationReadyEvent> {
+public class ResourceScanner implements SmartApplicationListener {
     private final ScannerProperties properties;
     //
     private boolean swaggerAvailable = false;
@@ -70,14 +72,24 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         this.properties = properties;
     }
 
-    private static Map<Class<?>, ResourceDefinition> ctrResourceMap = new HashMap<>();
+    private static final Map<Class<?>, ResourceDefinition> ctrResourceMap = new HashMap<>();
     private static final String DELIMETER = ",";
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public boolean supportsEventType(@NonNull Class<? extends ApplicationEvent> eventType) {
+        return eventType == ApplicationReadyEvent.class;
+    }
+
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE;
+    }
+
+    @Override
+    public void onApplicationEvent(@NonNull ApplicationEvent event) {
         this.swaggerAvailable = isSwaggerAvailable();
         this.ipAddress = NetUtil.getLocalhostStr();
-        this.applicationContext = event.getApplicationContext();
+        this.applicationContext = ((ApplicationReadyEvent) event).getApplicationContext();
         this.applicationName = PropertiesUtils.getOrDefault("spring.application.name", "unknown");
         // scanning
         scan();
@@ -170,7 +182,6 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         ResourceDefinition resource = BeanUtils.convert(ctrResource, ResourceDefinition.class);
         String code = api.code();
         String name = api.name();
-        String type = api.type();
         if (StrUtil.isBlank(code)) {
             code = method.getName();
         }
@@ -186,8 +197,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
         }
 
         resource.setCode(CodeUtils.getResourceCode(properties.getDelimiter(), applicationName, resource.getModuleCode(), code))
-                .setName(name)
-                .setType(type);
+                .setName(name);
 
         Set<String> pattern = info.getPatternsCondition().getPatterns();
         Assert.notEmpty(pattern, "无法获取API URL");
@@ -212,11 +222,9 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
 
             String moduleName = null;
             String moduleCode = null;
-            String type = ResourceType.DEFAULT;
             if (api != null) {
                 moduleName = api.name();
                 moduleCode = api.code();
-                type = api.type();
             }
             if (StrUtil.isBlank(moduleCode)) {
                 moduleCode = CodeUtils.getCtrShortName(clazz, properties.getCtrSuffix());
@@ -243,8 +251,7 @@ public class ResourceScanner implements ApplicationListener<ApplicationReadyEven
             resource.setModuleCode(moduleCode)
                     .setModuleName(moduleName)
                     .setCode(CodeUtils.getResourceCode(properties.getDelimiter(), applicationName, moduleCode, null))
-                    .setName(moduleName)
-                    .setType(type);
+                    .setName(moduleName);
             resource.setServiceCode(applicationName)
                     .setServiceName(properties.getServiceName());
 
