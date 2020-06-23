@@ -50,9 +50,14 @@ public final class ITIConstants {
     public static final String VERSION = "VERSION";
 
     /**
+     * 系统默认ID
+     */
+    public static final String DEFAULT_ID = "0";
+
+    /**
      * 默认租户ID = 0
      */
-    public static final String DEFAULT_TENANT_ID = "0";
+    public static final String DEFAULT_TENANT_ID = DEFAULT_ID;
 
     /**
      * 编码
