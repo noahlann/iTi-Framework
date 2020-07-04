@@ -35,6 +35,8 @@ public class SecurityUtils {
 
     /**
      * 获取Authentication
+     *
+     * @return Authentication
      */
     public Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();
@@ -42,6 +44,8 @@ public class SecurityUtils {
 
     /**
      * 从Authentication中获取用户
+     *
+     * @return iTi定义的用户信息
      */
     public ITIUserDetails getUser(Authentication authentication) {
         Object principal = authentication.getPrincipal();

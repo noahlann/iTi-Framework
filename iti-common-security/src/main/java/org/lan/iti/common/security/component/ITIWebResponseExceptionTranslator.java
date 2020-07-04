@@ -41,7 +41,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
  * @url https://noahlan.com
  */
 public class ITIWebResponseExceptionTranslator implements WebResponseExceptionTranslator<OAuth2Exception> {
-    private ThrowableAnalyzer throwableAnalyzer = new DefaultThrowableAnalyzer();
+    private final ThrowableAnalyzer throwableAnalyzer = new DefaultThrowableAnalyzer();
 
     @Override
     public ResponseEntity<OAuth2Exception> translate(Exception e) {

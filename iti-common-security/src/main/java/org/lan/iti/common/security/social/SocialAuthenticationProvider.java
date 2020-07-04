@@ -43,7 +43,7 @@ import org.springframework.util.Assert;
  */
 @Slf4j
 public class SocialAuthenticationProvider implements AuthenticationProvider, InitializingBean {
-    private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+    private final MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
     // UserDetails
     @Setter
     private ITIUserDetailsService userDetailsService;
@@ -51,7 +51,7 @@ public class SocialAuthenticationProvider implements AuthenticationProvider, Ini
     private SocialAuthenticationServiceRegistry registry;
 
     // checks
-    private UserDetailsChecker authenticationChecks = new DefaultAuthenticationChecks();
+    private final UserDetailsChecker authenticationChecks = new DefaultAuthenticationChecks();
 
     @Override
     public void afterPropertiesSet() {

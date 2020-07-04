@@ -35,6 +35,8 @@ import java.lang.reflect.Method;
 public interface BaseController<E extends Serializable> {
     /**
      * 获取实体类型
+     *
+     * @return 实体类型
      */
     Class<E> getEntityClass();
 

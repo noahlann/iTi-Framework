@@ -35,6 +35,7 @@ import org.springframework.util.Assert;
  * @date 2020-05-15
  * @url https://noahlan.com
  */
+@SuppressWarnings("FieldMayBeFinal")
 @Builder
 @Getter
 public class ErrorCode {
