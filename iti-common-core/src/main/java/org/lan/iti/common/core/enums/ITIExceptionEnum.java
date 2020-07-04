@@ -43,6 +43,7 @@ public enum ITIExceptionEnum {
     METHOD_ARGUMENT_NOT_VALID(600, "请求参数验证错误"),
     CHECK_ERROR("参数检查错误"),
     PAGE_NOT_FOUND("页面不存在"),
+    BAD_SQL("SQL语句错误"),
 
     /**
      * 其他错误

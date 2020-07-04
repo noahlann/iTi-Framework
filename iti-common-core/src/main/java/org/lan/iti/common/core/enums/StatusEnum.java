@@ -34,8 +34,9 @@ import lombok.Getter;
 public enum StatusEnum {
     // status flag
     NORMAL(1, "正常"),
-    LOCK(9, "锁定");
+    LOCK(2, "锁定"),
+    EXPIRED(3, "过期");
 
-    private Integer value;
-    private String desc;
+    private final Integer value;
+    private final String desc;
 }
