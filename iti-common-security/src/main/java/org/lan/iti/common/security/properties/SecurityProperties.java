@@ -16,7 +16,7 @@
 
 package org.lan.iti.common.security.properties;
 
-import lombok.Getter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -26,10 +26,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @date 2020-02-27
  * @url https://noahlan.com
  */
-@Getter
+@Data
 @ConfigurationProperties("iti.security")
 public class SecurityProperties {
-
     /**
      * 自动注册登录
      */
