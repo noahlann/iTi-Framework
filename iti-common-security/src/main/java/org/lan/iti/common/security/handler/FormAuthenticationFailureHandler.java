@@ -17,16 +17,16 @@
 package org.lan.iti.common.security.handler;
 
 import cn.hutool.http.HttpUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.WebUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Optional;
 
 /**
  * 表单登录失败处理逻辑
@@ -37,10 +37,15 @@ import java.nio.charset.Charset;
  */
 @Slf4j
 public class FormAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+    @SneakyThrows
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        log.debug("表单登录失败:{}", exception.getLocalizedMessage());
-        WebUtils.getResponse().sendRedirect(String.format("/token/login?error=%s"
-                , HttpUtil.encodeParams(exception.getMessage(), Charset.defaultCharset())));
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
+        log.debug("表单登录失败: {}", exception.getLocalizedMessage());
+        Optional<HttpServletResponse> responseOptional = WebUtils.getCurrentResponse();
+        if (responseOptional.isPresent()) {
+            responseOptional.get().sendRedirect(String.format("/token/login?error=%s"
+                    , HttpUtil.encodeParams(exception.getMessage(), Charset.defaultCharset())));
+        }
     }
 }

@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.ITIConstants;
 import org.lan.iti.common.core.constants.SecurityConstants;
+import org.lan.iti.common.core.util.WebUtils;
 import org.lan.iti.common.security.exception.ITIAuth2Exception;
 import org.lan.iti.common.security.service.UserDetailsBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,14 +33,10 @@ import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * 扩展 用户登录信息转化器
@@ -118,19 +115,10 @@ public class ITIUserAuthenticationConverter implements UserAuthenticationConvert
         }
     }
 
-    // TODO 需构建到util中去
-    private Optional<HttpServletRequest> getCurrentHttpRequest() {
-        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-                .filter(requestAttributes -> ServletRequestAttributes.class.isAssignableFrom(requestAttributes.getClass()))
-                .map(requestAttributes -> ((ServletRequestAttributes) requestAttributes))
-                .map(ServletRequestAttributes::getRequest);
-    }
-
     /**
      * 获取请求链中的租户ID
      */
-    // TODO 需构建到util中去
     private String getCurrentTenantId() {
-        return getCurrentHttpRequest().map(httpServletRequest -> httpServletRequest.getHeader(ITIConstants.TENANT_ID_HEADER_NAME)).orElse(null);
+        return WebUtils.getCurrentRequest().map(httpServletRequest -> httpServletRequest.getHeader(ITIConstants.TENANT_ID_HEADER_NAME)).orElse(null);
     }
 }

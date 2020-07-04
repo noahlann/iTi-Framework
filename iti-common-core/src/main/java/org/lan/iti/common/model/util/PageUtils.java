@@ -50,7 +50,7 @@ public class PageUtils {
      * @param <T> 实体泛型
      */
     public <T> IPage<T> build() {
-        HttpServletRequest request = WebUtils.getRequest();
+        HttpServletRequest request = WebUtils.getCurrentRequest().orElse(null);
         PageParameter parameter = new PageParameter();
         if (request != null) {
             ServletRequestDataBinder binder = new ServletRequestDataBinder(parameter, "pageParameter");

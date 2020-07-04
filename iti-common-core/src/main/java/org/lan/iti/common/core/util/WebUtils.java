@@ -29,7 +29,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
@@ -42,6 +41,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 扩展 WebUtils
@@ -75,9 +75,7 @@ public class WebUtils extends org.springframework.web.util.WebUtils {
      * @return cookie value
      */
     public String getCookieVal(String name) {
-        HttpServletRequest request = WebUtils.getRequest();
-        Assert.notNull(request, "request from RequestContextHolder is null");
-        return getCookieVal(request, name);
+        return getCookieVal(getCurrentRequest().orElse(null), name);
     }
 
     /**
@@ -121,24 +119,25 @@ public class WebUtils extends org.springframework.web.util.WebUtils {
     /**
      * 获取 HttpServletRequest
      *
-     * @return {HttpServletRequest}
+     * @return 可空对象 request
      */
-    public HttpServletRequest getRequest() {
-        try {
-            RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-            return ((ServletRequestAttributes) requestAttributes).getRequest();
-        } catch (IllegalStateException e) {
-            return null;
-        }
+    public Optional<HttpServletRequest> getCurrentRequest() {
+        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+                .filter(requestAttributes -> ServletRequestAttributes.class.isAssignableFrom(requestAttributes.getClass()))
+                .map(requestAttributes -> ((ServletRequestAttributes) requestAttributes))
+                .map(ServletRequestAttributes::getRequest);
     }
 
     /**
      * 获取 HttpServletResponse
      *
-     * @return {HttpServletResponse}
+     * @return 可空对象 response
      */
-    public HttpServletResponse getResponse() {
-        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+    public Optional<HttpServletResponse> getCurrentResponse() {
+        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+                .filter(requestAttributes -> ServletRequestAttributes.class.isAssignableFrom(requestAttributes.getClass()))
+                .map(requestAttributes -> ((ServletRequestAttributes) requestAttributes))
+                .map(ServletRequestAttributes::getResponse);
     }
 
     /**
@@ -174,7 +173,7 @@ public class WebUtils extends org.springframework.web.util.WebUtils {
      * @return {String}
      */
     public String getIP() {
-        return getIP(WebUtils.getRequest());
+        return getIP(WebUtils.getCurrentRequest().orElse(null));
     }
 
     /**
