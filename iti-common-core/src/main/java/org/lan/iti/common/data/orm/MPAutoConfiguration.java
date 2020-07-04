@@ -18,9 +18,14 @@
 
 package org.lan.iti.common.data.orm;
 
+import com.baomidou.mybatisplus.core.parser.ISqlParser;
+import com.baomidou.mybatisplus.extension.parsers.DynamicTableNameParser;
+import com.baomidou.mybatisplus.extension.parsers.ITableNameHandler;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.tenant.TenantSqlParser;
 import lombok.AllArgsConstructor;
+import org.lan.iti.common.data.dynamic.DynamicTableHandler;
+import org.lan.iti.common.data.dynamic.DynamicTableProperties;
 import org.lan.iti.common.data.tenant.ITITenantHandler;
 import org.lan.iti.common.data.tenant.ITITenantProperties;
 import org.mybatis.spring.annotation.MapperScan;
@@ -31,7 +36,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author NorthLan
@@ -41,7 +49,7 @@ import java.util.Collections;
 @Configuration
 @MapperScan(basePackages = {"org.lan.iti.**.mapper", "com.gxzc.**.mapper"})
 @ConditionalOnClass(ITIMetaObjectHandler.class)
-@EnableConfigurationProperties(ITITenantProperties.class)
+@EnableConfigurationProperties({ITITenantProperties.class, DynamicTableProperties.class})
 @AllArgsConstructor
 public class MPAutoConfiguration {
 
@@ -49,6 +57,11 @@ public class MPAutoConfiguration {
      * 租户配置
      */
     private final ITITenantProperties tenantProperties;
+
+    /**
+     * 动态表名配置
+     */
+    private final DynamicTableProperties dynamicTableProperties;
 
     @Bean
     @ConditionalOnMissingBean
@@ -61,13 +74,24 @@ public class MPAutoConfiguration {
     @ConditionalOnMissingBean
     public PaginationInterceptor paginationInterceptor() {
         PaginationInterceptor interceptor = new PaginationInterceptor();
-
+        List<ISqlParser> sqlParserList = new ArrayList<>();
         if (tenantProperties.isEnabled()) {
             TenantSqlParser tenantSqlParser = new TenantSqlParser();
             tenantSqlParser.setTenantHandler(itiTenantHandler());
-            interceptor.setSqlParserList(Collections.singletonList(tenantSqlParser));
+            sqlParserList.add(tenantSqlParser);
         }
 
+        if (dynamicTableProperties.isEnabled()) {
+            DynamicTableNameParser dynamicTableNameParser = new DynamicTableNameParser();
+            Map<String, ITableNameHandler> tableNameHandlerMap = new HashMap<>();
+            for (DynamicTableProperties.TableNameDict dict : dynamicTableProperties.getNames()) {
+                tableNameHandlerMap.put(dict.getFullName(), new DynamicTableHandler(dict));
+            }
+            dynamicTableNameParser.setTableNameHandlerMap(tableNameHandlerMap);
+            sqlParserList.add(dynamicTableNameParser);
+        }
+
+        interceptor.setSqlParserList(sqlParserList);
         return interceptor;
     }
 }

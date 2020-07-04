@@ -17,6 +17,7 @@
 package org.lan.iti.common.security.service;
 
 import org.lan.iti.common.core.constants.SecurityConstants;
+import org.lan.iti.common.data.dynamic.DomainContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -59,6 +60,6 @@ public interface ITIUserDetailsService extends UserDetailsService {
      */
     @Override
     default UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return loadUser(username, SecurityConstants.DEFAULT_PROVIDER_ID, SecurityConstants.DEFAULT_DOMAIN);
+        return loadUser(username, SecurityConstants.DEFAULT_PROVIDER_ID, DomainContextHolder.getDomain());
     }
 }

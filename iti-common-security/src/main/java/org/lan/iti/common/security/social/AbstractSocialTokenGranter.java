@@ -22,6 +22,7 @@ import cn.hutool.core.util.StrUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.SecurityConstants;
+import org.lan.iti.common.data.dynamic.DomainContextHolder;
 import org.lan.iti.common.security.social.service.SocialAuthenticationService;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -51,7 +52,7 @@ public abstract class AbstractSocialTokenGranter extends AbstractTokenGranter im
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
     @Getter
-    private String grantType;
+    private final String grantType;
 
     protected AbstractSocialTokenGranter(AuthenticationManager authenticationManager,
                                          AuthorizationServerTokenServices tokenServices,
@@ -65,13 +66,14 @@ public abstract class AbstractSocialTokenGranter extends AbstractTokenGranter im
 
     @Override
     protected OAuth2Authentication getOAuth2Authentication(ClientDetails client, TokenRequest tokenRequest) {
-
         Map<String, String> parameters = new LinkedHashMap<>(tokenRequest.getRequestParameters());
+        // Domain以请求参数为准
         String domain = parameters.get(SecurityConstants.DOMAIN);
-        // check domain
+        // 取参数
         if (StrUtil.isBlank(domain)) {
-            log.warn("domain must not be null or empty: [{}]. use [{}] instead.", domain, SecurityConstants.DEFAULT_DOMAIN);
-            domain = SecurityConstants.DEFAULT_DOMAIN;
+            domain = DomainContextHolder.getDomain();
+        } else {
+            DomainContextHolder.setDomain(domain);
         }
 
         Authentication userAuth = getAuthToken(domain, tokenRequest, parameters);
