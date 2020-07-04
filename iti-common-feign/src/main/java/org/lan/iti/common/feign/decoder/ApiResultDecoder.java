@@ -43,8 +43,8 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 public class ApiResultDecoder implements Decoder {
-    private Decoder decoder;
-    private List<ApiResultGenericRecoder> genericRecodes;
+    private final Decoder decoder;
+    private final List<ApiResultGenericRecoder> genericRecodes;
 
     @Override
     public Object decode(Response response, Type type) throws IOException, DecodeException, FeignException {

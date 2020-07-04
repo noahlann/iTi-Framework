@@ -20,7 +20,7 @@ package org.lan.iti.common.feign.config;
 
 import feign.RequestInterceptor;
 import org.lan.iti.common.feign.properties.ITIFeignProperties;
-import org.lan.iti.common.feign.tenant.ITIFeignTenantInterceptor;
+import org.lan.iti.common.feign.interceptor.ITIFeignInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +40,6 @@ public class ITIFeignTenantAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RequestInterceptor itiFeignTenantInterceptor() {
-        return new ITIFeignTenantInterceptor();
+        return new ITIFeignInterceptor();
     }
 }
