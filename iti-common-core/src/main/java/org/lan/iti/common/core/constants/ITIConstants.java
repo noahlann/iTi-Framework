@@ -40,6 +40,11 @@ public final class ITIConstants {
     public static final String TENANT_ID_HEADER_NAME = "TENANT_ID";
 
     /**
+     * header中的domain信息
+     */
+    public static final String DOMAIN_HEADER_NAME = "domain";
+
+    /**
      * Feign 传递泛型的实际类名
      */
     public static final String FEIGN_GENERICS_HEADER_NAME = "ITI-FEIGN-GENERICS";

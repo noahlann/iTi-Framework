@@ -37,7 +37,7 @@ import net.sf.jsqlparser.expression.NullValue;
 @AllArgsConstructor
 public class ITITenantHandler implements TenantHandler {
 
-    private ITITenantProperties properties;
+    private final ITITenantProperties properties;
 
     /**
      * 获取租户值

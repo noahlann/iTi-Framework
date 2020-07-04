@@ -16,7 +16,9 @@
 
 package org.lan.iti.common.data.tenant;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
+import org.lan.iti.common.core.constants.ITIConstants;
 
 /**
  * 租户 持有器
@@ -41,13 +43,16 @@ public final class TenantContextHolder {
      * 获取租户ID
      */
     public static String getTenantId() {
+        String result = THREAD_LOCAL_TENANT.get();
+        if (StrUtil.isBlank(result)) {
+            setTenantId(ITIConstants.DEFAULT_TENANT_ID);
+        }
         return THREAD_LOCAL_TENANT.get();
     }
 
     /**
      * 当前请求链中是否存在租户信息
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean hasTenant() {
         return THREAD_LOCAL_TENANT.get() != null;
     }

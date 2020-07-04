@@ -16,12 +16,13 @@
  *
  */
 
-package org.lan.iti.common.feign.tenant;
+package org.lan.iti.common.feign.interceptor;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.ITIConstants;
+import org.lan.iti.common.data.dynamic.DomainContextHolder;
 import org.lan.iti.common.data.tenant.TenantContextHolder;
 
 /**
@@ -35,13 +36,17 @@ import org.lan.iti.common.data.tenant.TenantContextHolder;
  * @url https://noahlan.com
  */
 @Slf4j
-public class ITIFeignTenantInterceptor implements RequestInterceptor {
+public class ITIFeignInterceptor implements RequestInterceptor {
+
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        if (!TenantContextHolder.hasTenant()) {
-            log.warn("请求链中不存在租户信息，无法增强");
-            return;
+        if (TenantContextHolder.hasTenant()) {
+            requestTemplate.header(ITIConstants.TENANT_ID_HEADER_NAME, TenantContextHolder.getTenantId());
+            log.debug("请求链中存在租户信息，Feign增强");
         }
-        requestTemplate.header(ITIConstants.TENANT_ID_HEADER_NAME, TenantContextHolder.getTenantId());
+        if (DomainContextHolder.hasDomain()) {
+            requestTemplate.header(ITIConstants.DOMAIN_HEADER_NAME, DomainContextHolder.getDomain());
+            log.debug("请求链中存在域(domain)信息，Feign增强");
+        }
     }
 }
