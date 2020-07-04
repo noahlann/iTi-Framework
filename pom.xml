@@ -48,6 +48,9 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- version -->
         <java.version>1.8</java.version>
+
+        <!-- sonar -->
+        <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
     </properties>
 
     <modules>
@@ -149,6 +152,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar-maven-plugin.version}</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -190,4 +198,15 @@
         </repository>
     </distributionManagement>
 
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <sonar.host.url>http://192.168.1.46:9000</sonar.host.url>
+            </properties>
+        </profile>
+    </profiles>
 </project>
