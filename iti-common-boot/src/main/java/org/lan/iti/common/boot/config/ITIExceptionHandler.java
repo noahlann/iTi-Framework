@@ -33,6 +33,7 @@ import org.lan.iti.common.model.response.ArgumentInvalidResult;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -62,12 +63,16 @@ public class ITIExceptionHandler {
         return properties.getMark();
     }
 
+    private boolean isErrorCodeEnabled() {
+        return properties.isEnabled();
+    }
+
     @ExceptionHandler(AbstractException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<?> handleServiceException(AbstractException e) {
         log.error("服务具体异常：", e);
         String errorCode = String.valueOf(e.getCode());
-        if (properties.isEnabled()) {
+        if (isErrorCodeEnabled()) {
             errorCode = ErrorCode.builder()
                     .version(e.getVersion())
                     .mark(getMark())
@@ -92,7 +97,7 @@ public class ITIExceptionHandler {
                 it.getRejectedValue())));
         log.error("参数验证错误, {}", results.toString());
         String errorCode = String.valueOf(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode());
-        if (properties.isEnabled()) {
+        if (isErrorCodeEnabled()) {
             errorCode = ErrorCode.builder()
                     .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
                     .mark(getMark())
@@ -111,7 +116,7 @@ public class ITIExceptionHandler {
     public ApiResult<?> handleSQLException(SQLException e) {
         log.error("数据库异常：", e);
         String errorCode = String.valueOf(e.getErrorCode());
-        if (properties.isEnabled()) {
+        if (isErrorCodeEnabled()) {
             errorCode = ErrorCode.builder()
                     .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
                     .mark(getMark())
@@ -123,12 +128,29 @@ public class ITIExceptionHandler {
         return ApiResult.error(errorCode, e.getMessage());
     }
 
+    @ExceptionHandler(BadSqlGrammarException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResult<?> handleBadSQLException(BadSqlGrammarException e) {
+        log.error("SQL异常：", e);
+        String errorCode = String.valueOf(ITIExceptionEnum.BAD_SQL.getCode());
+        if (isErrorCodeEnabled()) {
+            errorCode = ErrorCode.builder()
+                    .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
+                    .mark(getMark())
+                    .type(ErrorTypeEnum.EXT.getValue())
+                    .level(ErrorLevelEnum.IMPORTANT.getValue())
+                    .code(ITIExceptionEnum.BAD_SQL.getCode())
+                    .build().toString();
+        }
+        return ApiResult.error(errorCode, ITIExceptionEnum.BAD_SQL.getMsg());
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<?> handleException(RuntimeException e) {
         log.error("运行时异常，未知错误：", e);
         String errorCode = String.valueOf(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode());
-        if (properties.isEnabled()) {
+        if (isErrorCodeEnabled()) {
             errorCode = ErrorCode.builder()
                     .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
                     .mark(getMark())
