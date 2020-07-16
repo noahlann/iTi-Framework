@@ -52,10 +52,6 @@ public class ContextHolderFilter extends OncePerRequestFilter {
         String tenantId = httpServletRequest.getHeader(ITIConstants.TENANT_ID_HEADER_NAME);
         String domain = httpServletRequest.getHeader(ITIConstants.DOMAIN_HEADER_NAME);
 
-        log.debug("Header信息 租户ID:[{}] | 域domain:[{}]",
-                tenantId,
-                domain);
-
         // tenantId
         if (StrUtil.isNotBlank(tenantId)) {
             TenantContextHolder.setTenantId(tenantId);
@@ -66,8 +62,10 @@ public class ContextHolderFilter extends OncePerRequestFilter {
             DomainContextHolder.setDomain(domain);
         }
 
-        log.debug("当前请求域 租户ID:[{}] | 域domain:[{}]",
+        log.debug("请求域 租户ID:[{}->{}] | 域domain:[{}->{}]",
+                tenantId,
                 TenantContextHolder.getTenantId(),
+                domain,
                 DomainContextHolder.getDomain());
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
