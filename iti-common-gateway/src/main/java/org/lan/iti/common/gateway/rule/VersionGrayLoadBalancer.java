@@ -41,7 +41,7 @@ import java.util.Map;
 @Slf4j
 @AllArgsConstructor
 public class VersionGrayLoadBalancer implements GrayLoadBalancer {
-    private DiscoveryClient discoveryClient;
+    private final DiscoveryClient discoveryClient;
 
     @Override
     public ServiceInstance choose(String serviceId, ServerHttpRequest request) {
@@ -58,6 +58,7 @@ public class VersionGrayLoadBalancer implements GrayLoadBalancer {
         if (StrUtil.isBlank(reqVersion)) {
             return instances.get(RandomUtil.randomInt(instances.size()));
         }
+
         // 遍历可以实例元数据，若匹配则返回此实例
         for (ServiceInstance instance : instances) {
             Map<String, String> metadata = instance.getMetadata();
