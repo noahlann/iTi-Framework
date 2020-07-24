@@ -16,31 +16,21 @@
 
 package org.lan.iti.common.gateway.configuration;
 
-import io.lettuce.core.ReadFrom;
-import io.lettuce.core.cluster.ClusterClientOptions;
-import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.CacheConstants;
 import org.lan.iti.common.gateway.model.RouteDefinitionVo;
-import org.lan.iti.common.gateway.support.RouteCacheHolder;
 import org.lan.iti.common.gateway.support.redis.RedisRouteDefinitionRepository;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.cloud.gateway.config.GatewayProperties;
 import org.springframework.cloud.gateway.config.PropertiesRouteDefinitionLocator;
 import org.springframework.cloud.gateway.route.RouteDefinitionRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-
-import java.time.Duration;
 
 /**
  * Redis动态路由自动装配
@@ -52,7 +42,10 @@ import java.time.Duration;
 @Slf4j
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@AllArgsConstructor
 public class RedisDynamicRouteAutoConfiguration {
+    private final RedisTemplate<String, RouteDefinitionVo> redisTemplate;
+    private final RedisConnectionFactory redisConnectionFactory;
 
     /**
      * 配置文件设置为空
@@ -65,11 +58,9 @@ public class RedisDynamicRouteAutoConfiguration {
 
     /**
      * Redis仓储配置
-     *
-     * @param redisTemplate redisTemplate
      */
     @Bean
-    public RouteDefinitionRepository redisRouteDefinitionWriter(RedisTemplate<String, RouteDefinitionVo> redisTemplate) {
+    public RouteDefinitionRepository redisRouteDefinitionWriter() {
         return new RedisRouteDefinitionRepository(redisTemplate);
     }
 
@@ -77,37 +68,13 @@ public class RedisDynamicRouteAutoConfiguration {
      * Redis消息监听
      */
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
-        RedisMessageListenerContainer container
-                = new RedisMessageListenerContainer();
+    public RedisMessageListenerContainer redisMessageListenerContainer() {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
         container.addMessageListener((message, bytes) -> {
             log.warn("接收到 JVM 重新加载路由事件");
-            RouteCacheHolder.clear();
+            ((RedisRouteDefinitionRepository) redisRouteDefinitionWriter()).clearRoutes();
         }, new ChannelTopic(CacheConstants.ROUTE_JVM_RELOAD_TOPIC));
         return container;
-    }
-
-    @Bean
-    @ConditionalOnProperty(value = "spring.redis.cluster.enable", havingValue = "true")
-    public LettuceConnectionFactory redisConnectionFactory(RedisProperties redisProperties) {
-        RedisClusterConfiguration redisClusterConfiguration = new RedisClusterConfiguration(redisProperties.getCluster().getNodes());
-
-        // https://github.com/lettuce-io/lettuce-core/wiki/Redis-Cluster#user-content-refreshing-the-cluster-topology-view
-        ClusterTopologyRefreshOptions clusterTopologyRefreshOptions = ClusterTopologyRefreshOptions.builder()
-                .enablePeriodicRefresh()
-                .enableAllAdaptiveRefreshTriggers()
-                .refreshPeriod(Duration.ofSeconds(5))
-                .build();
-
-        ClusterClientOptions clusterClientOptions = ClusterClientOptions.builder()
-                .topologyRefreshOptions(clusterTopologyRefreshOptions).build();
-
-        // https://github.com/lettuce-io/lettuce-core/wiki/ReadFrom-Settings
-        LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
-                .readFrom(ReadFrom.REPLICA_PREFERRED)
-                .clientOptions(clusterClientOptions).build();
-
-        return new LettuceConnectionFactory(redisClusterConfiguration, lettuceClientConfiguration);
     }
 }
