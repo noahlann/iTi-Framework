@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.lan.iti.common.gateway.support.redis;
+package org.lan.iti.common.gateway.annotation;
 
-import org.springframework.context.ApplicationEvent;
+import org.lan.iti.common.gateway.configuration.RedisDynamicRouteAutoConfiguration;
+import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 /**
- * Redis 路由初始化事件
+ * 开启动态路由
  *
  * @author NorthLan
  * @date 2020-03-09
  * @url https://noahlan.com
  */
-public class RedisDynamicRouteEvent extends ApplicationEvent {
-    /**
-     * Create a new {@code ApplicationEvent}.
-     *
-     * @param source the object on which the event initially occurred or with
-     *               which the event is associated (never {@code null})
-     */
-    public RedisDynamicRouteEvent(Object source) {
-        super(source);
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Target(ElementType.TYPE)
+@Import(RedisDynamicRouteAutoConfiguration.class)
+public @interface EnableITIRedisDynamicRoute {
 }
