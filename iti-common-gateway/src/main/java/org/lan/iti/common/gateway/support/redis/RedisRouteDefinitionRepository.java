@@ -21,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.CacheConstants;
 import org.lan.iti.common.gateway.model.RouteDefinitionVo;
-import org.lan.iti.common.gateway.support.RouteCacheHolder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionRepository;
@@ -31,8 +30,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * 基于Redis的路由信息仓库
@@ -45,10 +43,38 @@ import java.util.List;
 @AllArgsConstructor
 public class RedisRouteDefinitionRepository implements RouteDefinitionRepository {
     private final RedisTemplate<String, RouteDefinitionVo> redisTemplate;
+    private final Map<String, RouteDefinitionVo> routes = Collections.synchronizedMap(new LinkedHashMap<>());
 
     private void setupRedisTemplate() {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(RouteDefinitionVo.class));
+    }
+
+    /**
+     * 获取当前内存中的路由信息列表
+     *
+     * @return 当前路由信息列表
+     */
+    private Collection<RouteDefinitionVo> getRouteList() {
+        return routes.values();
+    }
+
+    /**
+     * 内存中添加路由信息
+     *
+     * @param routeDefinitionVos 路由信息列表
+     */
+    private void addRoutes(List<RouteDefinitionVo> routeDefinitionVos) {
+        routeDefinitionVos.forEach(it -> {
+            routes.put(it.getId(), it);
+        });
+    }
+
+    /**
+     * 清理Redis-内存中的路由信息
+     */
+    public void clearRoutes() {
+        routes.clear();
     }
 
     /**
@@ -62,7 +88,7 @@ public class RedisRouteDefinitionRepository implements RouteDefinitionRepository
     @Override
     public Flux<RouteDefinition> getRouteDefinitions() {
         // 读内存
-        Collection<RouteDefinitionVo> inMemoryRouteList = RouteCacheHolder.getRouteList();
+        Collection<RouteDefinitionVo> inMemoryRouteList = getRouteList();
         if (CollUtil.isNotEmpty(inMemoryRouteList)) {
             log.debug("内存中缓存路由：{} {}", inMemoryRouteList.size(), inMemoryRouteList);
             return Flux.fromIterable(inMemoryRouteList);
@@ -74,8 +100,8 @@ public class RedisRouteDefinitionRepository implements RouteDefinitionRepository
         log.debug("Redis中缓存路由：{} {}", redisRouteList.size(), redisRouteList);
 
         // 更新内存缓存
-        RouteCacheHolder.clear();
-        RouteCacheHolder.add(redisRouteList);
+        clearRoutes();
+        addRoutes(redisRouteList);
         return Flux.fromIterable(redisRouteList);
     }
 
