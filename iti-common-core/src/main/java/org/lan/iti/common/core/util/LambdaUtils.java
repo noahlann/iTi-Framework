@@ -18,10 +18,13 @@
 
 package org.lan.iti.common.core.util;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
 import org.lan.iti.common.core.interfaces.IFunction;
 import org.springframework.lang.Nullable;
+
+import java.util.Map;
 
 /**
  * Java 8 lambda 工具类
@@ -32,6 +35,8 @@ import org.springframework.lang.Nullable;
  */
 @UtilityClass
 public class LambdaUtils {
+    private final Map<String, String> CACHE_FIELD_MAP = MapUtil.newConcurrentHashMap();
+    private final Map<String, String> CACHE_CAMEL_FIELD_MAP = MapUtil.newConcurrentHashMap();
 
     /**
      * 获取Field名称
@@ -43,7 +48,15 @@ public class LambdaUtils {
      */
     @Nullable
     public <T, R> String getFieldName(IFunction<T, R> getter) {
-        return getter.getImplFieldName();
+        String simpleClassName = getter.getClass().getSimpleName();
+        if (CACHE_FIELD_MAP.containsKey(simpleClassName)) {
+            return CACHE_FIELD_MAP.get(simpleClassName);
+        }
+        String result = getter.getImplFieldName();
+        if (result == null) {
+            return null;
+        }
+        return CACHE_FIELD_MAP.put(simpleClassName, result);
     }
 
     /**
@@ -59,6 +72,14 @@ public class LambdaUtils {
      */
     @Nullable
     public <T, R> String getFieldNameCamel(IFunction<T, R> getter) {
-        return StrUtil.toUnderlineCase(getFieldName(getter));
+        String simpleClassName = getter.getClass().getSimpleName();
+        if (CACHE_CAMEL_FIELD_MAP.containsKey(simpleClassName)) {
+            return CACHE_CAMEL_FIELD_MAP.get(simpleClassName);
+        }
+        String result = StrUtil.toUnderlineCase(getFieldName(getter));
+        if (result == null) {
+            return null;
+        }
+        return CACHE_CAMEL_FIELD_MAP.put(simpleClassName, result);
     }
 }
