@@ -47,7 +47,7 @@ import reactor.core.publisher.Mono;
  * @url https://noahlan.com
  */
 @Slf4j
-@Order(-1)
+@Order(-2)
 @Configuration
 @RequiredArgsConstructor
 public class GlobalExceptionConfiguration implements ErrorWebExceptionHandler {
@@ -84,8 +84,12 @@ public class GlobalExceptionConfiguration implements ErrorWebExceptionHandler {
                         .build()
                         .toString();
             }
+            String msg = ex.getMessage();
+            if (ex instanceof ResponseStatusException) {
+                msg = ((ResponseStatusException) ex).getReason();
+            }
             try {
-                return bufferFactory.wrap(objectMapper.writeValueAsBytes(ApiResult.error(errorCode, ex.getMessage())));
+                return bufferFactory.wrap(objectMapper.writeValueAsBytes(ApiResult.error(errorCode, msg)));
             } catch (JsonProcessingException e) {
                 log.warn("Error writing response", ex);
                 return bufferFactory.wrap(new byte[0]);
