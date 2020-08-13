@@ -16,10 +16,11 @@
 
 package org.lan.iti.common.security.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.model.response.ApiResult;
+import org.lan.iti.common.security.exception.ServiceUnavailableException;
 import org.lan.iti.common.security.feign.service.RemoteUserService;
 import org.lan.iti.common.security.model.SecurityUser;
 import org.springframework.cache.CacheManager;
@@ -36,7 +37,7 @@ import java.util.Map;
  * @url https://noahlan.com
  */
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ITIUserDetailsServiceImpl implements ITIUserDetailsService {
     private final CacheManager cacheManager;
     private final RemoteUserService remoteUserService;
@@ -56,6 +57,10 @@ public class ITIUserDetailsServiceImpl implements ITIUserDetailsService {
 
     @SneakyThrows
     private UserDetails buildUserDetails(ApiResult<SecurityUser<?>> result, String providerId, String domain) {
+        if (!result.isSuccess()) {
+            throw new ServiceUnavailableException("内部调用异常，请联系管理员");
+        }
+
         SecurityUser<?> securityUser = result.getData();
         if (securityUser == null) {
             throw new UsernameNotFoundException("用户不存在");

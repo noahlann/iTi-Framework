@@ -18,13 +18,12 @@
 
 package org.lan.iti.common.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.security.authority.ITIFilterInvocationSecurityMetadataSource;
 import org.lan.iti.common.security.authority.config.AuthorityAutoConfiguration;
 import org.lan.iti.common.security.authority.properties.AuthorityProperties;
-import org.lan.iti.common.security.component.ITIUserAuthenticationConverter;
-import org.lan.iti.common.security.component.ITIWebResponseExceptionTranslator;
-import org.lan.iti.common.security.component.PermitAllUrlProperties;
+import org.lan.iti.common.security.component.*;
 import org.lan.iti.common.security.service.UserDetailsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +36,6 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
-import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
@@ -57,13 +55,16 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @EnableConfigurationProperties(AuthorityProperties.class)
 @Import(AuthorityAutoConfiguration.class)
-public class ITIResourceServerConfiguration extends ResourceServerConfigurerAdapter {
+public class ITIResourceServerConfigurerAdapter extends ResourceServerConfigurerAdapter {
+
+    @Value("${security.oauth2.resource.loadBalanced:false}")
+    private Boolean oauth2ResourceLoadBalanced;
 
     @Autowired
     private RemoteTokenServices remoteTokenServices;
 
-    @Value("${security.oauth2.resource.loadBalanced:false}")
-    private Boolean oauth2ResourceLoadBalanced;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private PermitAllUrlProperties permitAllUrlProperties;
@@ -86,11 +87,11 @@ public class ITIResourceServerConfiguration extends ResourceServerConfigurerAdap
     public void configure(HttpSecurity http) throws Exception {
         // 允许使用iframe 嵌套，避免 swagger-ui 不被加载的问题
         http.headers().frameOptions().disable();
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests = http.authorizeRequests();
-        permitAllUrlProperties.getIgnoreUrls()
-                .forEach(url -> authorizeRequests.antMatchers(url).permitAll());
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.authorizeRequests();
+        permitAllUrlProperties.getIgnoreUrls().forEach(url -> registry.antMatchers(url).permitAll());
+        // 功能权限
         if (authorityProperties.isEnabled()) {
-            authorizeRequests.withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+            registry.withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
                 @Override
                 public <O extends FilterSecurityInterceptor> O postProcess(O o) {
                     itiSecurityMetadataSource.setSuperMetadataSource(o.getSecurityMetadataSource());
@@ -100,8 +101,7 @@ public class ITIResourceServerConfiguration extends ResourceServerConfigurerAdap
                 }
             });
         }
-        authorizeRequests.anyRequest().authenticated()
-                .and().csrf().disable();
+        registry.anyRequest().authenticated().and().csrf().disable();
     }
 
     @Override
@@ -118,16 +118,12 @@ public class ITIResourceServerConfiguration extends ResourceServerConfigurerAdap
         // WebResponseExceptionTranslator
         WebResponseExceptionTranslator<?> webResponseExceptionTranslator = new ITIWebResponseExceptionTranslator();
 
-        // ResourceAuthExceptionEntryPoint
-        OAuth2AuthenticationEntryPoint oAuth2AuthenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
-        oAuth2AuthenticationEntryPoint.setExceptionTranslator(webResponseExceptionTranslator);
-
         // AccessDeniedHandler
-        OAuth2AccessDeniedHandler accessDeniedHandler = new OAuth2AccessDeniedHandler();
-        accessDeniedHandler.setExceptionTranslator(webResponseExceptionTranslator);
+        ((OAuth2AccessDeniedHandler) resources.getAccessDeniedHandler())
+                .setExceptionTranslator(webResponseExceptionTranslator);
 
-        resources.authenticationEntryPoint(oAuth2AuthenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler)
+        resources.authenticationEntryPoint(new ResourceAuthExceptionEntryPoint(objectMapper))
+                .tokenExtractor(new ITIBearerTokenExtractor(permitAllUrlProperties))
                 .tokenServices(remoteTokenServices);
     }
 }

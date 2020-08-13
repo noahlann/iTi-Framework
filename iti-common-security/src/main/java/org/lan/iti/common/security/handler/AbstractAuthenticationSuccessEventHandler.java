@@ -17,6 +17,7 @@
 package org.lan.iti.common.security.handler;
 
 import cn.hutool.core.collection.CollUtil;
+import org.lan.iti.common.security.model.ITIUserDetails;
 import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
  * @url https://noahlan.com
  */
 public abstract class AbstractAuthenticationSuccessEventHandler implements ApplicationListener<AuthenticationSuccessEvent> {
+
     @Override
     public void onApplicationEvent(@NonNull AuthenticationSuccessEvent event) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes)
@@ -44,11 +46,15 @@ public abstract class AbstractAuthenticationSuccessEventHandler implements Appli
         }
         HttpServletRequest request = requestAttributes.getRequest();
         HttpServletResponse response = requestAttributes.getResponse();
-
         Authentication authentication = (Authentication) event.getSource();
-        if (CollUtil.isNotEmpty(authentication.getAuthorities())) {
+        if (isUserAuthentication(authentication)) {
             handle(authentication, request, response);
         }
+    }
+
+    private boolean isUserAuthentication(Authentication authentication) {
+        return authentication.getPrincipal() instanceof ITIUserDetails
+                || CollUtil.isNotEmpty(authentication.getAuthorities());
     }
 
     /**

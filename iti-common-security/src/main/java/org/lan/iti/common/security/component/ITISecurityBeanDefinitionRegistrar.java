@@ -18,11 +18,12 @@ package org.lan.iti.common.security.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.constants.SecurityConstants;
-import org.lan.iti.common.security.config.ITIResourceServerConfiguration;
+import org.lan.iti.common.security.config.ITIResourceServerConfigurerAdapter;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.lang.NonNull;
 
 /**
  * 资源注册
@@ -33,15 +34,17 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 @Slf4j
 public class ITISecurityBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+
     @Override
-    public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+    public void registerBeanDefinitions(@NonNull AnnotationMetadata importingClassMetadata,
+                                        BeanDefinitionRegistry registry) {
         if (registry.isBeanNameInUse(SecurityConstants.RESOURCE_SERVER_CONFIGURER)) {
             log.warn("本地存在资源服务器配置，覆盖默认配置:" + SecurityConstants.RESOURCE_SERVER_CONFIGURER);
             return;
         }
 
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-        beanDefinition.setBeanClass(ITIResourceServerConfiguration.class);
+        beanDefinition.setBeanClass(ITIResourceServerConfigurerAdapter.class);
         registry.registerBeanDefinition(SecurityConstants.RESOURCE_SERVER_CONFIGURER, beanDefinition);
     }
 }

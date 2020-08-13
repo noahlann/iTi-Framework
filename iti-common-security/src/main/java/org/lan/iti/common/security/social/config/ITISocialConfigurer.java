@@ -18,8 +18,7 @@
 
 package org.lan.iti.common.security.social.config;
 
-import org.lan.iti.common.security.social.service.SocialAuthenticationServiceRegistry;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.lan.iti.common.security.social.service.SocialAuthenticationServiceConfigurer;
 
 /**
  * 配置 TokenGranter
@@ -31,14 +30,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 public interface ITISocialConfigurer {
 
     /**
-     * 设置 AuthenticationManager
-     */
-    void setAuthenticationManager(AuthenticationManager authenticationManager);
-
-    /**
-     * 添加AuthenticationService
+     * 配置社交服务
      *
-     * @param registry 注册表
+     * @param social 配置器
      */
-    void addAuthenticationServices(SocialAuthenticationServiceRegistry registry);
+    void configure(SocialAuthenticationServiceConfigurer social) throws Exception;
 }

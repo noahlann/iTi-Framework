@@ -18,6 +18,7 @@ package org.lan.iti.common.core.base;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.lan.iti.common.core.interfaces.IFunction;
+import org.lan.iti.common.core.util.LambdaUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -33,7 +34,9 @@ import java.util.Collection;
  * @author NorthLan
  * @date 2020/02/20
  * @url https://noahlan.com
+ * @deprecated 下一版本将取消所有在Service层中与DAO层重复的方法，例如save / saveBatch，转而使用DAO层（即Mapper的方法insert / insertBatch）
  */
+@Deprecated
 public interface BaseService<T> extends IService<T> {
 
     /**
@@ -46,7 +49,7 @@ public interface BaseService<T> extends IService<T> {
      */
     @Transactional(rollbackFor = Exception.class)
     default <I> Boolean saveOrUpdateBatch(Collection<T> entityList, IFunction<I, ?> getter) {
-        String mappedName = getter.getImplFieldName();
+        String mappedName = LambdaUtils.getFieldName(getter);
         if (!StringUtils.hasText(mappedName)) {
             throw new IllegalArgumentException("getter传入错误,请检查代码");
         }

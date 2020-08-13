@@ -16,21 +16,32 @@
  *
  */
 
-package org.lan.iti.common.security.util;
+package org.lan.iti.common.core.util.support;
 
-import lombok.experimental.UtilityClass;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.io.Serializable;
 
 /**
- * Domain(域)工具类
+ * 属性缓存
  *
  * @author NorthLan
- * @date 2020-04-08
+ * @date 2020-07-25
  * @url https://noahlan.com
  */
-@UtilityClass
-public class DomainUtils {
+@Data
+@AllArgsConstructor
+public class FieldCache implements Serializable {
+    private static final long serialVersionUID = -143072666671492108L;
 
-    public String from(String system, String module, String accountType) {
-        return "";
-    }
+    /**
+     * 属性
+     */
+    private String field;
+
+    /**
+     * 下划线类型属性
+     */
+    private String camelField;
 }

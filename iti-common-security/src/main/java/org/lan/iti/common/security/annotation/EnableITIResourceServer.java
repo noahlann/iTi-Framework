@@ -17,7 +17,6 @@
 package org.lan.iti.common.security.annotation;
 
 import org.lan.iti.common.security.component.ITISecurityBeanDefinitionRegistrar;
-import org.lan.iti.common.security.config.ITIResourceServerAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -36,7 +35,7 @@ import java.lang.annotation.*;
 @EnableResourceServer
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-//@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-@Import({ITIResourceServerAutoConfiguration.class, ITISecurityBeanDefinitionRegistrar.class})
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@Import(ITISecurityBeanDefinitionRegistrar.class)
 public @interface EnableITIResourceServer {
 }

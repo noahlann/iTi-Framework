@@ -20,7 +20,7 @@ package org.lan.iti.common.core.enums;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.lan.iti.common.core.interfaces.Value;
+import lombok.Getter;
 
 /**
  * 错误类型枚举
@@ -30,16 +30,12 @@ import org.lan.iti.common.core.interfaces.Value;
  * @url https://noahlan.com
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum ErrorTypeEnum implements Value<Integer> {
+@Getter
+public enum ErrorTypeEnum {
     FRAMEWORK(1), // 框架内部错误
     EXT(2), // 框架扩展错误
     BIZ(3), // 业务错误
     THIRD_PARTY(4) // 第三方错误
     ;
-    private int value;
-
-    @Override
-    public Integer getValue() {
-        return this.value;
-    }
+    private final int value;
 }

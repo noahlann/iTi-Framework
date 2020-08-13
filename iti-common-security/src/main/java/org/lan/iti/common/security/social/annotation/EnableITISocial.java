@@ -18,10 +18,7 @@
 
 package org.lan.iti.common.security.social.annotation;
 
-import org.lan.iti.common.security.social.config.DefaultSocialConfiguration;
-import org.lan.iti.common.security.social.config.SocialAuthorizationConfiguration;
 import org.lan.iti.common.security.social.config.SocialSecurityConfiguration;
-import org.lan.iti.common.security.social.service.SocialAuthenticationServiceRegistry;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -36,9 +33,6 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import({SocialAuthenticationServiceRegistry.class,
-        SocialSecurityConfiguration.class,
-        SocialAuthorizationConfiguration.class,
-        DefaultSocialConfiguration.class})
+@Import({SocialSecurityConfiguration.class})
 public @interface EnableITISocial {
 }

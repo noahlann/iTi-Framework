@@ -31,8 +31,9 @@ import javax.sql.DataSource;
  * @date 2020-02-27
  * @url https://noahlan.com
  */
-public class ITIClientDetailsService extends JdbcClientDetailsService {
-    public ITIClientDetailsService(DataSource dataSource) {
+public class ITIClientDetailsServiceImpl extends JdbcClientDetailsService {
+
+    public ITIClientDetailsServiceImpl(DataSource dataSource) {
         super(dataSource);
     }
 

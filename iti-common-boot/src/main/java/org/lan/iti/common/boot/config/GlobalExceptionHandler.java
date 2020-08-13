@@ -30,17 +30,16 @@ import org.lan.iti.common.core.exception.AbstractException;
 import org.lan.iti.common.core.properties.ErrorCodeProperties;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.model.response.ArgumentInvalidResult;
-import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,28 +53,26 @@ import java.util.List;
  */
 @Slf4j
 @RestControllerAdvice
-@Order(OrderConstants.ITI_EXCEPTION_HANDLER_ORDER)
+@Order(OrderConstants.GLOBAL_EXCEPTION_HANDLER)
 @AllArgsConstructor
-public class ITIExceptionHandler {
+public class GlobalExceptionHandler {
     private final ErrorCodeProperties properties;
 
-    private int getMark() {
-        return properties.getMark();
-    }
-
-    private boolean isErrorCodeEnabled() {
-        return properties.isEnabled();
-    }
-
+    /**
+     * 框架服务异常处理
+     *
+     * @param e 异常信息
+     * @return 错误消息
+     */
     @ExceptionHandler(AbstractException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<?> handleServiceException(AbstractException e) {
+    public ApiResult<String> handleServiceException(AbstractException e) {
         log.error("服务具体异常：", e);
         String errorCode = String.valueOf(e.getCode());
-        if (isErrorCodeEnabled()) {
+        if (properties.isEnabled()) {
             errorCode = ErrorCode.builder()
                     .version(e.getVersion())
-                    .mark(getMark())
+                    .mark(properties.getMark())
                     .type(e.getType())
                     .level(e.getLevel())
                     .code(e.getCode())
@@ -85,22 +82,22 @@ public class ITIExceptionHandler {
         return ApiResult.error(errorCode, e.getMessage());
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    /**
+     * 参数验证异常处理 request body | param
+     *
+     * @param e 异常信息
+     * @return 转换后可识别的验证列表
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResult<?> handleBodyValidException(MethodArgumentNotValidException e) {
-        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
-        List<ArgumentInvalidResult> results = new ArrayList<>();
-        fieldErrors.forEach(it -> results.add(new ArgumentInvalidResult(
-                it.getDefaultMessage(),
-                it.getObjectName(),
-                it.getField(),
-                it.getRejectedValue())));
+        List<ArgumentInvalidResult> results = getBindingResult(e.getBindingResult());
         log.error("参数验证错误, {}", results.toString());
         String errorCode = String.valueOf(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode());
-        if (isErrorCodeEnabled()) {
+        if (properties.isEnabled()) {
             errorCode = ErrorCode.builder()
                     .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
-                    .mark(getMark())
+                    .mark(properties.getMark())
                     .type(ErrorTypeEnum.BIZ.getValue())
                     .level(ErrorLevelEnum.PRIMARY.getValue())
                     .code(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode())
@@ -111,49 +108,64 @@ public class ITIExceptionHandler {
                 results);
     }
 
-    @ExceptionHandler(SQLException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<?> handleSQLException(SQLException e) {
-        log.error("数据库异常：", e);
-        String errorCode = String.valueOf(e.getErrorCode());
-        if (isErrorCodeEnabled()) {
+    /**
+     * 参数验证异常处理 form-data
+     *
+     * @param e 异常信息
+     * @return 转换后可识别的验证列表
+     */
+    @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResult<List<ArgumentInvalidResult>> handleBindException(BindException e) {
+        List<ArgumentInvalidResult> results = getBindingResult(e);
+        log.error("参数验证错误, {}", results.toString());
+        String errorCode = String.valueOf(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode());
+        if (properties.isEnabled()) {
             errorCode = ErrorCode.builder()
                     .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
-                    .mark(getMark())
-                    .type(ErrorTypeEnum.EXT.getValue())
-                    .level(ErrorLevelEnum.IMPORTANT.getValue())
-                    .code(e.getErrorCode())
+                    .mark(properties.getMark())
+                    .type(ErrorTypeEnum.BIZ.getValue())
+                    .level(ErrorLevelEnum.PRIMARY.getValue())
+                    .code(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode())
                     .build().toString();
         }
-        return ApiResult.error(errorCode, e.getMessage());
+        return ApiResult.error(errorCode,
+                ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMsg(),
+                results);
     }
 
-    @ExceptionHandler(BadSqlGrammarException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<?> handleBadSQLException(BadSqlGrammarException e) {
-        log.error("SQL异常：", e);
-        String errorCode = String.valueOf(ITIExceptionEnum.BAD_SQL.getCode());
-        if (isErrorCodeEnabled()) {
-            errorCode = ErrorCode.builder()
-                    .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
-                    .mark(getMark())
-                    .type(ErrorTypeEnum.EXT.getValue())
-                    .level(ErrorLevelEnum.IMPORTANT.getValue())
-                    .code(ITIExceptionEnum.BAD_SQL.getCode())
-                    .build().toString();
-        }
-        return ApiResult.error(errorCode, ITIExceptionEnum.BAD_SQL.getMsg());
+    /**
+     * 转换为参数错误列表
+     *
+     * @param bindingResult 绑定结果对象
+     * @return 具体参数错误列表
+     */
+    private List<ArgumentInvalidResult> getBindingResult(BindingResult bindingResult) {
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        List<ArgumentInvalidResult> results = new ArrayList<>();
+        fieldErrors.forEach(it -> results.add(new ArgumentInvalidResult(
+                it.getDefaultMessage(),
+                it.getObjectName(),
+                it.getField(),
+                it.getRejectedValue())));
+        return results;
     }
 
+    /**
+     * 运行时异常处理,一般用作未知异常的处理器
+     *
+     * @param e 异常信息
+     * @return 错误消息
+     */
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<?> handleException(RuntimeException e) {
+    public ApiResult<String> handleException(RuntimeException e) {
         log.error("运行时异常，未知错误：", e);
         String errorCode = String.valueOf(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode());
-        if (isErrorCodeEnabled()) {
+        if (properties.isEnabled()) {
             errorCode = ErrorCode.builder()
                     .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
-                    .mark(getMark())
+                    .mark(properties.getMark())
                     .type(ErrorTypeEnum.EXT.getValue())
                     .level(ErrorLevelEnum.IMPORTANT.getValue())
                     .code(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode())

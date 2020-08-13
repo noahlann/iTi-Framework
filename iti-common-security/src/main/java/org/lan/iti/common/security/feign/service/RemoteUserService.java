@@ -20,6 +20,7 @@ import feign.Headers;
 import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.model.SecurityUser;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,10 +43,10 @@ public interface RemoteUserService {
      * @return 用户安全信息
      */
     @Headers(SecurityConstants.HEADER_FROM_IN)
-    @GetMapping(value = "security/user")
+    @GetMapping(value = "security/user", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResult<SecurityUser<?>> getSecurityUser(@RequestParam("providerId") String providerId,
-                                                   @RequestParam("principal") String principal,
-                                                   @RequestParam("domain") String domain);
+                                               @RequestParam("principal") String principal,
+                                               @RequestParam("domain") String domain);
 
 
     /**
@@ -56,8 +57,8 @@ public interface RemoteUserService {
      * @param credentials 凭证
      * @return 用户安全信息(非完整)
      */
-    @PostMapping(value = "security/user/{principal}")
     @Headers(SecurityConstants.HEADER_FROM_IN)
+    @PostMapping(value = "security/user/{principal}", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResult<SecurityUser<?>> register(@PathVariable("principal") String principal,
                                         @RequestParam("type") String type,
                                         @RequestParam(value = "credentials", required = false) String credentials);

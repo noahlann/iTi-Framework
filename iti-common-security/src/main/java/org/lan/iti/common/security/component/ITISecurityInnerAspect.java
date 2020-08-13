@@ -25,6 +25,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.security.annotation.Inner;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -41,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @Aspect
+@Component
 public class ITISecurityInnerAspect {
 
     @SneakyThrows

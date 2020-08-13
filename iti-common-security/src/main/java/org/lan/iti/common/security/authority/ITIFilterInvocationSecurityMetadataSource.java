@@ -61,9 +61,9 @@ public class ITIFilterInvocationSecurityMetadataSource implements FilterInvocati
     @Value("${spring.application.name:_SELF_}")
     private String applicationName;
 
-    private AntPathMatcher antPathMatcher = new AntPathMatcher();
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-    private UrlPathHelper pathHelper = new UrlPathHelper();
+    private final UrlPathHelper pathHelper = new UrlPathHelper();
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {

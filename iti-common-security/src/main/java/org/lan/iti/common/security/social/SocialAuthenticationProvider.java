@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.security.service.ITIUserDetailsService;
 import org.lan.iti.common.security.social.service.SocialAuthenticationService;
-import org.lan.iti.common.security.social.service.SocialAuthenticationServiceRegistry;
+import org.lan.iti.common.security.social.service.SocialAuthenticationServiceConfigurer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.*;
@@ -48,7 +48,7 @@ public class SocialAuthenticationProvider implements AuthenticationProvider, Ini
     @Setter
     private ITIUserDetailsService userDetailsService;
     @Setter
-    private SocialAuthenticationServiceRegistry registry;
+    private SocialAuthenticationServiceConfigurer registry;
 
     // checks
     private final UserDetailsChecker authenticationChecks = new DefaultAuthenticationChecks();

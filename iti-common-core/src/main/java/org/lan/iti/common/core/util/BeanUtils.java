@@ -18,17 +18,18 @@
 
 package org.lan.iti.common.core.util;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Bean 工具类
@@ -42,88 +43,59 @@ import java.util.*;
  */
 @SuppressWarnings("unchecked")
 @Slf4j
-public class BeanUtils extends org.springframework.beans.BeanUtils {
+public class BeanUtils {
+    private static final Map<AbstractMap.SimpleEntry<Class<?>, Class<?>>, BeanCopier> COPIER_MAP = new ConcurrentHashMap<>();
 
-    /**
-     * 连接符号
-     */
-    private static final String CHANGE_FLAG = "->";
+    @Deprecated
+    private static BeanCopier getBeanCopier(Class<?> source, Class<?> target, boolean useConvert) {
+        if (Objects.isNull(source) || Objects.isNull(target)) {
+            throw new IllegalArgumentException();
+        }
+        AbstractMap.SimpleEntry<Class<?>, Class<?>> key = new AbstractMap.SimpleEntry<>(source, target);
+        return COPIER_MAP.computeIfAbsent(key, k -> BeanCopier.create(k.getKey(), k.getValue(), useConvert));
+    }
 
-    /**
-     * 忽略对比的字段
-     */
-    private static final Set<String> IGNORE_FIELDS = CollUtil.newHashSet("createTime");
-
+    public static void copyProperties(Object source, Object target) {
+        // getBeanCopier(source.getClass(), target.getClass(), false).copy(source, target, null);
+        // 因为使用了链式调用,BeanCopier无法复制属性(cglib使用方法签名),在写出更好的方法之前,暂时使用Spring BeanUtils
+        org.springframework.beans.BeanUtils.copyProperties(source, target);
+    }
 
     /***
      * 将对象转换为另外的对象实例
      * @param source 源对象
-     * @param clazz 目标对象类
+     * @param target 目标对象类
      * @param <T> 泛型
      */
-    public static <T> T convert(Object source, Class<T> clazz) {
+    public static <T> T convert(Object source, Class<T> target) {
         if (source == null) {
             return null;
         }
-        T target = null;
+        T result = null;
         try {
-            target = clazz.getConstructor().newInstance();
-            copyProperties(source, target);
+            result = target.getConstructor().newInstance();
+            copyProperties(source, result);
         } catch (Exception e) {
-            log.warn("对象转换异常, class=" + clazz.getName());
+            log.warn("对象转换异常, class=" + target.getName());
         }
-        return target;
+        return result;
     }
 
     /***
      * 将对象转换为另外的对象实例
      * @param sourceList 源对象列表
-     * @param clazz 目标对象类型
+     * @param target 目标对象类型
      * @param <T> 对象泛型
      */
-    public static <T> List<T> convertList(List<?> sourceList, Class<T> clazz) {
+    public static <T> List<T> convertList(List<?> sourceList, Class<T> target) {
         if (CollectionUtils.isEmpty(sourceList)) {
             return Collections.emptyList();
         }
-        List<T> resultList = new ArrayList<>();
-        // 类型相同，直接跳过
-        if (clazz.getName().equals(sourceList.get(0).getClass().getName())) {
-            return (List<T>) sourceList;
-        }
-        // 不同，则转换
-        try {
-            for (Object source : sourceList) {
-                T target = clazz.getConstructor().newInstance();
-                copyProperties(source, target);
-                resultList.add(target);
-            }
-        } catch (Exception e) {
-            log.warn("对象转换异常, class: {}, error: {}", clazz.getName(), e.getMessage());
-        }
-        return resultList;
+        return Optional.of(sourceList)
+                .orElse(new ArrayList<>())
+                .stream().map(m -> convert(m, target))
+                .collect(Collectors.toList());
     }
-
-//    /***
-//     * 附加Map中的属性值到Model
-//     */
-//    public static void bindProperties(Object model, Map<String, Object> propMap) {
-//        if (CollectionUtils.isEmpty(propMap)) {
-//            return;
-//        }
-//        List<Field> fields = extractAllFields(model.getClass());
-//        Map<String, Field> fieldNameMaps = convertToStringKeyObjectMap(fields, "name");
-//        for (Map.Entry<String, Object> entry : propMap.entrySet()) {
-//            Field field = fieldNameMaps.get(entry.getKey());
-//            if (field != null) {
-//                try {
-//                    Object value = convertValueToFieldType(entry.getValue(), field);
-//                    setProperty(model, entry.getKey(), value);
-//                } catch (Exception e) {
-//                    log.warn("复制属性{}.{}异常: {}", model.getClass().getSimpleName(), entry.getKey(), e.getMessage());
-//                }
-//            }
-//        }
-//    }
 
     /***
      * 获取对象的属性值
@@ -176,87 +148,6 @@ public class BeanUtils extends org.springframework.beans.BeanUtils {
             return DateUtils.fuzzyConvert(StringUtils.valueOf(value));
         }
         return value;
-    }
-
-    /***
-     * Key-Object对象Map
-     */
-    public static <T> Map<String, T> convertToStringKeyObjectMap(List<T> allLists, String... fields) {
-        if (allLists == null || allLists.isEmpty()) {
-            return Collections.EMPTY_MAP;
-        }
-        Map<String, T> allListMap = new LinkedHashMap<>(allLists.size());
-        // 转换为map
-        try {
-            for (T model : allLists) {
-                String key = null;
-                if (ValidationUtils.isEmpty(fields)) {
-                    //未指定字段，以id为key
-                    key = getStringProperty(model, "id");
-                }
-                // 指定了一个字段，以该字段为key，类型同该字段
-                else if (fields.length == 1) {
-                    key = getStringProperty(model, fields[0]);
-                } else { // 指定了多个字段，以字段S.join的结果为key，类型为String
-                    List<Object> list = new ArrayList<>();
-                    for (String fld : fields) {
-                        list.add(getProperty(model, fld));
-                    }
-                    key = StrUtil.join(",", list);
-                }
-                if (key != null) {
-                    allListMap.put(key, model);
-                } else {
-                    log.warn(model.getClass().getName() + " 的属性 " + fields[0] + " 值存在 null，转换结果需要确认!");
-                }
-            }
-        } catch (Exception e) {
-            log.warn("转换key-model异常", e);
-        }
-        return allListMap;
-    }
-
-    /***
-     * Key-Object-List列表Map
-     * @param allLists
-     * @param fields
-     * @param <T>
-     * @return
-     */
-    public static <T> Map<String, List<T>> convertToStringKeyObjectListMap(List<T> allLists, String... fields) {
-        if (allLists == null || allLists.isEmpty()) {
-            return null;
-        }
-        Map<String, List<T>> allListMap = new LinkedHashMap<>(allLists.size());
-        // 转换为map
-        try {
-            for (T model : allLists) {
-                String key = null;
-                if (ValidationUtils.isEmpty(fields)) {
-                    //未指定字段，以id为key
-                    key = getStringProperty(model, "id");
-                }
-                // 指定了一个字段，以该字段为key，类型同该字段
-                else if (fields.length == 1) {
-                    key = getStringProperty(model, fields[0]);
-                } else { // 指定了多个字段，以字段S.join的结果为key，类型为String
-                    List<Object> list = new ArrayList<>();
-                    for (String fld : fields) {
-                        list.add(getProperty(model, fld));
-                    }
-                    key = StrUtil.join(",", list);
-                }
-                if (key != null) {
-                    List<T> list = allListMap.computeIfAbsent(key, k -> new ArrayList<>());
-                    list.add(model);
-                } else {
-                    log.warn(model.getClass().getName() + " 的属性 " + fields[0] + " 值存在 null，转换结果需要确认!");
-                }
-            }
-        } catch (Exception e) {
-            log.warn("转换key-model-list异常", e);
-        }
-        return allListMap;
     }
 
     /**

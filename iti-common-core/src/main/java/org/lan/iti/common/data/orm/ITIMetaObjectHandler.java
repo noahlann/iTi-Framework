@@ -23,14 +23,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
+ * 属性注入
+ *
  * @author NorthLan
  * @date 2020-03-20
  * @url https://noahlan.com
  */
 @Slf4j
 public abstract class ITIMetaObjectHandler implements MetaObjectHandler {
+
     @Override
     public void insertFill(MetaObject metaObject) {
         Object createTime = getFieldValByName(getCreateTimeFieldName(), metaObject);
@@ -40,7 +44,8 @@ public abstract class ITIMetaObjectHandler implements MetaObjectHandler {
         Object createBy = getFieldValByName(getCreateByFieldName(), metaObject);
         if (createBy == null) {
             try {
-                setFieldValByName(getCreateByFieldName(), innerUserId(), metaObject);
+                Optional.ofNullable(getUserId())
+                        .ifPresent(it -> setFieldValByName(getCreateByFieldName(), it, metaObject));
             } catch (Throwable e) {
                 log.warn("createBy设定异常，请检查MetaObjectHandler相关代码 {}", e.getMessage());
             }
@@ -51,49 +56,39 @@ public abstract class ITIMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         setFieldValByName(getUpdateTimeFieldName(), LocalDateTime.now(), metaObject);
         try {
-            setFieldValByName(getUpdateByFieldName(), innerUserId(), metaObject);
+            Optional.ofNullable(getUserId())
+                    .ifPresent(it -> setFieldValByName(getUpdateByFieldName(), it, metaObject));
         } catch (Throwable e) {
             log.warn("updateBy设定异常，请检查MetaObjectHandler相关代码 {}", e.getMessage());
         }
     }
 
     /**
-     * 获取创建时间字段名 (若业务与此不一致,重写此方法)
+     * 获取创建时间属性名 (若业务与此不一致,重写此方法)
      */
     protected String getCreateTimeFieldName() {
         return "createTime";
     }
 
     /**
-     * 获取创建人字段名 (若业务与此不一致,重写此方法)
+     * 获取创建人属性名 (若业务与此不一致,重写此方法)
      */
     protected String getCreateByFieldName() {
         return "createBy";
     }
 
     /**
-     * 获取更新时间字段名 (若业务与此不一致,重写此方法)
+     * 获取更新时间属性名 (若业务与此不一致,重写此方法)
      */
     protected String getUpdateTimeFieldName() {
         return "updateTime";
     }
 
     /**
-     * 获取更新人字段名 (若业务与此不一致,重写此方法)
+     * 获取更新人属性名 (若业务与此不一致,重写此方法)
      */
     protected String getUpdateByFieldName() {
         return "updateBy";
-    }
-
-    /**
-     * 获取用户唯一ID
-     */
-    private Object innerUserId() {
-        Object ret = getUserId();
-        if (ret == null) {
-            return -1L;
-        }
-        return ret;
     }
 
     /**

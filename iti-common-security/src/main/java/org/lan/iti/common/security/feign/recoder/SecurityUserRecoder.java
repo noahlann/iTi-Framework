@@ -19,6 +19,7 @@ package org.lan.iti.common.security.feign.recoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.feign.recoder.ApiResultGenericRecoder;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.model.SecurityUser;
@@ -36,6 +37,7 @@ import java.util.Optional;
  */
 @Component
 @AllArgsConstructor
+@Slf4j
 public class SecurityUserRecoder implements ApiResultGenericRecoder {
     private final ObjectMapper objectMapper;
 
@@ -55,8 +57,8 @@ public class SecurityUserRecoder implements ApiResultGenericRecoder {
                 try {
                     typedObject = Class.forName(it);
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    // TODO 异常处理
+                    log.error("未找到指定类: [{}]", it);
+                    // do nothing...
                 }
                 Object accountInfo = ((SecurityUser<Object>) data).getAccountInfo();
                 ((SecurityUser<Object>) data).setAccountInfo(objectMapper.convertValue(accountInfo, typedObject));

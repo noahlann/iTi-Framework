@@ -18,10 +18,9 @@
 
 package org.lan.iti.common.core.interfaces;
 
-import org.lan.iti.common.core.util.PropertyNamer;
-
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
@@ -37,33 +36,14 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface IFunction<T, R> extends Function<T, R>, Serializable {
 
-    default SerializedLambda getSerializedLambda() throws Exception {
+    default SerializedLambda getSerializedLambda() throws
+            NoSuchMethodException,
+            SecurityException,
+            IllegalAccessException,
+            IllegalArgumentException,
+            InvocationTargetException {
         Method write = getClass().getDeclaredMethod("writeReplace");
         write.setAccessible(true);
         return (SerializedLambda) write.invoke(this);
-    }
-
-    default String getImplClass() {
-        try {
-            return getSerializedLambda().getImplClass();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    default String getImplFieldName() {
-        String methodName = getImplMethodName();
-        if (methodName == null) {
-            return null;
-        }
-        return PropertyNamer.methodToProperty(methodName, false);
-    }
-
-    default String getImplMethodName() {
-        try {
-            return getSerializedLambda().getImplMethodName();
-        } catch (Exception e) {
-            return null;
-        }
     }
 }

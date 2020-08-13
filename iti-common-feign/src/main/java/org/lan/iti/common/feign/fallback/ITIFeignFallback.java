@@ -18,11 +18,15 @@
 
 package org.lan.iti.common.feign.fallback;
 
+import com.netflix.client.ClientException;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.lan.iti.common.core.util.Formatter;
+import org.lan.iti.common.model.response.ApiResult;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -43,13 +47,16 @@ public class ITIFeignFallback<T> implements MethodInterceptor {
 
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-        String errorMessage = cause.getMessage();
-        log.error("ITIFeignFallback [{}.{}] serviceId [{}] message [{}]", targetType.getName(), method.getName(), targetName, errorMessage);
+        String errorMessage = cause.getLocalizedMessage();
         if (!(cause instanceof FeignException)) {
-            throw cause;
+            if (cause.getCause() instanceof ClientException) {
+                errorMessage = cause.getCause().getLocalizedMessage();
+            }
         }
-        // TODO 完成异常处理
-//        FeignException exception = (FeignException) cause;
+        log.error("ITIFeignFallback [{}.{}] serviceId [{}] message [{}]", targetType.getName(), method.getName(), targetName, errorMessage);
+        if (ApiResult.class == method.getReturnType()) {
+            return ApiResult.error(HttpStatus.SERVICE_UNAVAILABLE, Formatter.format("自动降级,服务间调用异常: [{}]", errorMessage), cause);
+        }
         throw cause;
     }
 

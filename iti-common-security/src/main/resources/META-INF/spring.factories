@@ -1,7 +1,12 @@
 # AutoConfiguration
+# org.lan.iti.common.security.component.ITIResourceServerTokenRelayAutoConfiguration,\
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.lan.iti.common.security.properties.SecurityProperties,\
+org.lan.iti.common.security.properties.OAuth2ClientDetailsProperties,\
 org.lan.iti.common.security.config.SecurityAutoConfiguration,\
-org.lan.iti.common.security.feign.recoder.SecurityUserRecoder,\
-org.lan.iti.common.security.component.ITISecurityInnerAspect,\
 org.lan.iti.common.security.config.SecurityFeignAutoConfiguration,\
+org.lan.iti.common.security.component.PermitAllUrlProperties,\
+org.lan.iti.common.security.component.ITISecurityInnerAspect,\
+org.lan.iti.common.security.component.DefaultTokenEnhancer,\
+org.lan.iti.common.security.feign.recoder.SecurityUserRecoder,\
 org.lan.iti.common.security.jackson.SecurityJacksonConfig

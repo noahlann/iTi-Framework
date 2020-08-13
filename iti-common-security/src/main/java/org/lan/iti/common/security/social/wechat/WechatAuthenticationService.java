@@ -29,7 +29,6 @@ import org.lan.iti.common.security.feign.service.RemoteSocialService;
 import org.lan.iti.common.security.model.SecuritySocialDetails;
 import org.lan.iti.common.security.social.AbstractSocialTokenGranter;
 import org.lan.iti.common.security.social.SocialAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,14 +50,15 @@ import java.util.Map;
 public class WechatAuthenticationService extends AbstractSocialTokenGranter {
     public static final String GRANT_TYPE = "wechat";
 
-    @Autowired
-    private RemoteSocialService remoteSocialService;
+    private final RemoteSocialService remoteSocialService;
 
-    public WechatAuthenticationService(AuthenticationManager authenticationManager,
+    public WechatAuthenticationService(RemoteSocialService remoteSocialService,
+                                       AuthenticationManager authenticationManager,
                                        AuthorizationServerTokenServices tokenServices,
                                        ClientDetailsService clientDetailsService,
                                        OAuth2RequestFactory requestFactory) {
         super(authenticationManager, tokenServices, clientDetailsService, requestFactory, GRANT_TYPE);
+        this.remoteSocialService = remoteSocialService;
     }
 
     @Override

@@ -16,13 +16,18 @@
 
 package org.lan.iti.common.security.feign.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import feign.Headers;
 import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.model.page.PageParameter;
-import org.lan.iti.common.model.response.ApiResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.lan.iti.common.security.model.SecurityUser;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 远程token调用
@@ -34,11 +39,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface RemoteTokenService {
 
     /**
-     * 分页查询 token 信息
+     * 获取当前所有缓存的token信息
+     *
+     * @return Token信息列表
      */
     @Headers(SecurityConstants.HEADER_FROM_IN)
-    @GetMapping(value = "/token/page")
-    ApiResult<Object> tokenPage(PageParameter parameter);
+    @GetMapping(value = "/token/list")
+    List<OAuth2AccessToken> tokenList();
+
+    /**
+     * 获取在线的userId-tokens列表
+     *
+     * @return userId:[tokens] map
+     */
+    @Headers(SecurityConstants.HEADER_FROM_IN)
+    @GetMapping(value = "/token/user/list")
+    Map<String, List<String>> userIdList();
 
     /**
      * 删除 token
@@ -47,5 +63,39 @@ public interface RemoteTokenService {
      */
     @Headers(SecurityConstants.HEADER_FROM_IN)
     @DeleteMapping(value = "/token/{token}")
-    ApiResult<Boolean> removeToken(@PathVariable("token") String token);
+    Boolean delToken(@PathVariable("token") String token);
+
+    /**
+     * 更新token数据,包括UserDetails
+     *
+     * @param token        此用户的token
+     * @param securityUser 此用户的新信息
+     */
+    @Headers(SecurityConstants.HEADER_FROM_IN)
+    @PutMapping(value = "/token/{token}")
+    void updateToken(@PathVariable("token") String token,
+                     @RequestBody SecurityUser<?> securityUser);
+
+    /**
+     * 分页查询 token 信息
+     */
+    @Headers(SecurityConstants.HEADER_FROM_IN)
+    @GetMapping(value = "/token/page")
+    Page<OAuth2AccessToken> tokenPage(PageParameter parameter);
+
+    //-------------------------------//
+    //---------TokenEndpoint---------//
+    //-------------------------------//
+
+//    /**
+//     * 获取 token
+//     *
+//     * @param parameters 参数
+//     * @return token
+//     */
+//    @GetMapping(value = "/oauth/token")
+//    ResponseEntity<OAuth2AccessToken> getAccessToken(@RequestParam Map<String, String> parameters);
+//
+//    @PostMapping(value = "/oauth/token")
+//    ResponseEntity<OAuth2AccessToken> postAccessToken(@RequestParam Map<String, String> parameters);
 }

@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -45,7 +45,7 @@ public class FormAuthenticationFailureHandler implements AuthenticationFailureHa
         Optional<HttpServletResponse> responseOptional = WebUtils.getCurrentResponse();
         if (responseOptional.isPresent()) {
             responseOptional.get().sendRedirect(String.format("/token/login?error=%s"
-                    , HttpUtil.encodeParams(exception.getMessage(), Charset.defaultCharset())));
+                    , HttpUtil.encodeParams(exception.getMessage(), StandardCharsets.UTF_8)));
         }
     }
 }

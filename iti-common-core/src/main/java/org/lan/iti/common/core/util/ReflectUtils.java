@@ -41,7 +41,7 @@ public class ReflectUtils {
     /**
      * 方法缓存
      */
-    private static final SimpleCache<Class<?>, Method[]> METHODS_CACHE = new SimpleCache<>();
+    private final SimpleCache<Class<?>, Method[]> METHODS_CACHE = new SimpleCache<>();
 
     /**
      * 按照方法名查找指定方法名的方法，只返回匹配到的第一个方法，如果找不到对应的方法则返回<code>null</code>
@@ -54,7 +54,7 @@ public class ReflectUtils {
      * @param methodName 方法名，如果为空字符串返回{@code null}
      * @return 方法
      */
-    public static Method getMethodByName(Class<?> clazz, String methodName) {
+    public Method getMethodByName(Class<?> clazz, String methodName) {
         return getMethodByName(clazz, false, methodName);
     }
 
@@ -69,7 +69,7 @@ public class ReflectUtils {
      * @param methodName 方法名，如果为空字符串返回{@code null}
      * @return 方法
      */
-    public static Method getMethodByNameIgnoreCase(Class<?> clazz, String methodName) {
+    public Method getMethodByNameIgnoreCase(Class<?> clazz, String methodName) {
         return getMethodByName(clazz, true, methodName);
     }
 
@@ -85,7 +85,7 @@ public class ReflectUtils {
      * @param methodName 方法名，如果为空字符串返回{@code null}
      * @return 方法
      */
-    public static Method getMethodByName(Class<?> clazz, boolean ignoreCase, String methodName) {
+    public Method getMethodByName(Class<?> clazz, boolean ignoreCase, String methodName) {
         if (null == clazz || StrUtil.isBlank(methodName)) {
             return null;
         }
@@ -107,7 +107,7 @@ public class ReflectUtils {
      * @param beanClass 类
      * @return 方法列表
      */
-    public static Method[] getMethods(Class<?> beanClass) {
+    public Method[] getMethods(Class<?> beanClass) {
         Method[] allMethods = METHODS_CACHE.get(beanClass);
         if (null != allMethods) {
             return allMethods;

@@ -18,63 +18,19 @@
 
 package org.lan.iti.common.security.social.config;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
-import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
-import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+import org.lan.iti.common.security.social.service.SocialAuthenticationServiceConfigurer;
 
 /**
- * 适配器
+ * 适配器基类,不做任何配置
  *
  * @author NorthLan
  * @date 2020-05-25
  * @url https://noahlan.com
  */
-public abstract class ITISocialAdapter implements ITISocialConfigurer, ApplicationContextAware {
-    private AuthorizationServerTokenServices tokenServices;
-    private ClientDetailsService clientDetailsService;
-    private OAuth2RequestFactory oAuth2RequestFactory;
-
-    private ApplicationContext applicationContext;
-    private AuthenticationManager authenticationManager;
+public class ITISocialAdapter implements ITISocialConfigurer {
 
     @Override
-    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
-    protected AuthenticationManager getAuthenticationManager() {
-        return authenticationManager;
-    }
-
-    protected AuthorizationServerTokenServices getAuthorizationServerTokenServices() {
-        if (tokenServices == null) {
-            tokenServices = applicationContext.getBean(AuthorizationServerTokenServices.class);
-        }
-        return tokenServices;
-    }
-
-    protected ClientDetailsService getClientDetailsService() {
-        if (clientDetailsService == null) {
-            clientDetailsService = applicationContext.getBean(ClientDetailsService.class);
-        }
-        return clientDetailsService;
-    }
-
-    protected OAuth2RequestFactory getOAuth2RequestFactory() {
-        if (oAuth2RequestFactory == null) {
-            oAuth2RequestFactory = new DefaultOAuth2RequestFactory(getClientDetailsService());
-        }
-        return oAuth2RequestFactory;
+    public void configure(SocialAuthenticationServiceConfigurer registry) throws Exception {
+        // do nothing...
     }
 }

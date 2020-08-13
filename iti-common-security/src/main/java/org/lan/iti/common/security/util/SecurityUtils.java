@@ -18,10 +18,19 @@
 
 package org.lan.iti.common.security.util;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.util.ReflectUtil;
 import lombok.experimental.UtilityClass;
+import org.lan.iti.common.core.util.LambdaUtils;
 import org.lan.iti.common.security.model.ITIUserDetails;
+import org.lan.iti.common.security.social.SocialAuthenticationToken;
+import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Collections;
 
 /**
  * 安全工具类
@@ -47,6 +56,7 @@ public class SecurityUtils {
      *
      * @return iTi定义的用户信息
      */
+    @Nullable
     public ITIUserDetails getUser(Authentication authentication) {
         Object principal = authentication.getPrincipal();
         if (principal instanceof ITIUserDetails) {
@@ -58,7 +68,42 @@ public class SecurityUtils {
     /**
      * 获取当前登录用户
      */
+    @Nullable
     public ITIUserDetails getUser() {
         return getUser(getAuthentication());
+    }
+
+    /**
+     * 设置当前线程下的authentication对象
+     *
+     * @param authentication 登录信息
+     */
+    public void setAuthentication(Authentication authentication) {
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+
+    /**
+     * 设置当前线程下的用户信息
+     *
+     * @param userDetails iTi定义用户安全信息
+     */
+    public void setUserDetails(ITIUserDetails userDetails) {
+        Authentication userAuthentication = getAuthentication();
+        ITIUserDetails existingUser = getUser(userAuthentication);
+        if (existingUser == null) {
+            return;
+        }
+        BeanUtil.copyProperties(userDetails, existingUser, CopyOptions.create(ITIUserDetails.class, true,
+                LambdaUtils.getFieldName(ITIUserDetails::getUserId),
+                LambdaUtils.getFieldName(ITIUserDetails::getDomain),
+                LambdaUtils.getFieldName(ITIUserDetails::getProviderId),
+                LambdaUtils.getFieldName(ITIUserDetails::getTenantId)));
+        // authorities
+        if (userAuthentication instanceof UsernamePasswordAuthenticationToken || userAuthentication instanceof SocialAuthenticationToken) {
+            ReflectUtil.setFieldValue(userAuthentication,
+                    LambdaUtils.getFieldName(Authentication::getAuthorities),
+                    Collections.unmodifiableCollection(userDetails.getAuthorities()));
+        }
     }
 }

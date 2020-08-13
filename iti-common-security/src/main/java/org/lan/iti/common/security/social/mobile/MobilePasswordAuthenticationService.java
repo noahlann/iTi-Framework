@@ -24,7 +24,6 @@ import org.lan.iti.common.core.constants.CacheConstants;
 import org.lan.iti.common.security.exception.InvalidException;
 import org.lan.iti.common.security.social.AbstractSocialTokenGranter;
 import org.lan.iti.common.security.social.SocialAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -55,16 +54,17 @@ import java.util.Map;
 public class MobilePasswordAuthenticationService extends AbstractSocialTokenGranter {
     public static final String GRANT_TYPE = "mobile";
 
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    private PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    public MobilePasswordAuthenticationService(AuthenticationManager authenticationManager,
+    public MobilePasswordAuthenticationService(RedisTemplate<String, String> redisTemplate,
+                                               AuthenticationManager authenticationManager,
                                                AuthorizationServerTokenServices tokenServices,
                                                ClientDetailsService clientDetailsService,
                                                OAuth2RequestFactory requestFactory) {
         super(authenticationManager, tokenServices, clientDetailsService, requestFactory, GRANT_TYPE);
+        this.redisTemplate = redisTemplate;
     }
 
     @Override

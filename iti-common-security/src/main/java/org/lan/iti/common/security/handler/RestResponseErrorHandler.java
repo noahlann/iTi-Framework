@@ -16,18 +16,28 @@
  *
  */
 
-package org.lan.iti.common.core.interfaces;
+package org.lan.iti.common.security.handler;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+
+import java.io.IOException;
 
 /**
- * 值 接口
+ * Rest请求响应失败处理,不将400错误视为异常
  *
  * @author NorthLan
- * @date 2020-05-14
+ * @date 2020-07-30
  * @url https://noahlan.com
  */
-public interface Value<V> {
-    /**
-     * 获取值
-     */
-    V getValue();
+public class RestResponseErrorHandler extends DefaultResponseErrorHandler {
+
+    @Override
+    public void handleError(@NonNull ClientHttpResponse response) throws IOException {
+        if (response.getRawStatusCode() != HttpStatus.BAD_REQUEST.value()) {
+            super.handleError(response);
+        }
+    }
 }

@@ -16,6 +16,7 @@
 
 package org.lan.iti.common.model.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -195,5 +196,14 @@ public class ApiResult<T> implements Serializable {
         return new ApiResult<>();
     }
 
+    /**
+     * 是否为成功消息
+     *
+     * @return 通过返回状态判断是否成功
+     */
+    @JsonIgnore
+    public boolean isSuccess() {
+        return ReturnStatusEnum.SUCCESS.getValue().equals(status);
+    }
     // endregion
 }

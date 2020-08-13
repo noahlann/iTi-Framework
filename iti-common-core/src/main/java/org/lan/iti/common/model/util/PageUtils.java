@@ -81,7 +81,7 @@ public class PageUtils {
      * @param <R>         目标对象类型
      */
     public <T, R> IPage<R> convert(IPage<T> source, Function<T, R> convertFunc) {
-        IPage<R> result = new Page<>(source.getCurrent(), source.getSize(), source.getTotal(), source.isSearchCount());
+        Page<R> result = new Page<>(source.getCurrent(), source.getSize(), source.getTotal(), source.isSearchCount());
         List<R> resultRecords = new ArrayList<>(source.getRecords().size());
         // 转换
         source.getRecords().forEach(it -> resultRecords.add(convertFunc.apply(it)));

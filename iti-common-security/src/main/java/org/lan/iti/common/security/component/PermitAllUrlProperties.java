@@ -19,11 +19,11 @@ package org.lan.iti.common.security.component;
 import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.security.annotation.Inner;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -48,20 +48,20 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 @ConditionalOnExpression("!'${security.oauth2.client.ignore-urls}'.isEmpty()")
 @ConfigurationProperties(prefix = "security.oauth2.client")
 public class PermitAllUrlProperties implements InitializingBean {
     private static final Pattern PATTERN = Pattern.compile("\\{(.*?)}");
 
-    @Autowired
-    private WebApplicationContext applicationContext;
+    private final WebApplicationContext applicationContext;
 
     @Getter
     @Setter
     private List<String> ignoreUrls = new ArrayList<>();
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         RequestMappingHandlerMapping mapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
         Map<RequestMappingInfo, HandlerMethod> map = mapping.getHandlerMethods();
 

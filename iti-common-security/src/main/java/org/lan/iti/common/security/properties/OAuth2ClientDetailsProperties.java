@@ -20,6 +20,7 @@ package org.lan.iti.common.security.properties;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 客户端信息
@@ -29,6 +30,7 @@ import lombok.Data;
  * @url https://noahlan.com
  */
 @Data
+@ConfigurationProperties("iti.security.client")
 public class OAuth2ClientDetailsProperties {
 
     // region default

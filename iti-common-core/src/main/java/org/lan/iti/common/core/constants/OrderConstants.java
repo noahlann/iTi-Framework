@@ -28,9 +28,14 @@ package org.lan.iti.common.core.constants;
  */
 public final class OrderConstants {
     /**
-     * ExceptionHandler的Aop顺序
+     * GlobalExceptionHandler
      */
-    public static final int ITI_EXCEPTION_HANDLER_ORDER = 200;
+    public static final int GLOBAL_EXCEPTION_HANDLER = 200;
+
+    /**
+     * SQLExceptionHandler
+     */
+    public static final int SQL_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 1;
 
     /**
      * 临时保存RequestData的aop

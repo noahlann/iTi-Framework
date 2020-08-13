@@ -38,6 +38,11 @@ public class IFunctionTest {
         Assert.assertEquals("clazz", result);
     }
 
+    @Test
+    public void test2() {
+        System.out.println(LambdaUtils.getFieldName(Niu::getClazz));
+    }
+
     @Data
     static class Niu {
         private String clazz;
@@ -48,6 +53,6 @@ public class IFunctionTest {
     }
 
     private <T> String fieldName(IFunction<T, ?> function) {
-        return function.getImplFieldName();
+        return LambdaUtils.getFieldName(function);
     }
 }

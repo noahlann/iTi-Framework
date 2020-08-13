@@ -32,7 +32,9 @@ import java.util.Collection;
  * @author NorthLan
  * @date 2020-03-20
  * @url https://noahlan.com
+ * @deprecated 下一版本将做重大更新 {@link BaseService}
  */
+@Deprecated
 public class BaseServiceImpl<M extends BaseMapper<T>, T> extends ServiceImpl<M, T> implements BaseService<T> {
     @Override
     public Boolean saveOrUpdateBatch(Collection<T> entityList, String mappedName, int batchSize) {

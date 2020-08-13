@@ -47,7 +47,17 @@ public class ITIWebResponseExceptionTranslator implements WebResponseExceptionTr
     public ResponseEntity<OAuth2Exception> translate(Exception e) {
         // Try to extract a SpringSecurityException from the stacktrace
         Throwable[] causeChain = throwableAnalyzer.determineCauseChain(e);
-        Exception ase = (AuthenticationException) throwableAnalyzer.getFirstThrowableOfType(AuthenticationException.class,
+        Exception ase = (ServiceUnavailableException) throwableAnalyzer
+                .getFirstThrowableOfType(ServiceUnavailableException.class, causeChain);
+
+        // ServiceUnavailableException
+        // 优先第一处理是因为在DaoAuthenticationProvider#retrieve中如果抛出自定义异常将会被包装，其堆栈信息将会排序后置
+        // 如果使用Internal异常,将会翻译为401且其header会填入异常message(不支持中文)
+        if (ase != null) {
+            return handleOAuth2Exception(new ServiceUnavailableException(e.getMessage(), e));
+        }
+
+        ase = (AuthenticationException) throwableAnalyzer.getFirstThrowableOfType(AuthenticationException.class,
                 causeChain);
         if (ase != null) {
             return handleOAuth2Exception(new UnauthorizedException(e.getMessage(), e));

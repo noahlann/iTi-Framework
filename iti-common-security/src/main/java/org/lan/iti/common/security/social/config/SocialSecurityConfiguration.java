@@ -18,53 +18,66 @@
 
 package org.lan.iti.common.security.social.config;
 
+import lombok.RequiredArgsConstructor;
 import org.lan.iti.common.security.service.ITIUserDetailsService;
 import org.lan.iti.common.security.social.SocialAuthenticationProvider;
-import org.lan.iti.common.security.social.service.SocialAuthenticationServiceRegistry;
+import org.lan.iti.common.security.social.service.SocialAuthenticationServiceConfigurer;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.util.Assert;
 
+import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * 社交登录Web配置
+ * 社交安全配置
  *
  * @author NorthLan
- * @date 2020-05-25
+ * @date 2020-08-08
  * @url https://noahlan.com
  */
-@Order(100 + 10)
+@Configuration
+@RequiredArgsConstructor
+@Order(2)
 public class SocialSecurityConfiguration extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
-    @Autowired
-    private ITIUserDetailsService userDetailsService;
+    private final ITIUserDetailsService userDetailsService;
+    private final ClientDetailsService clientDetailsService;
+    private final ApplicationContext applicationContext;
+    private final ObjectProvider<AuthenticationManager> authenticationManager;
+
+    private final SocialAuthenticationServiceConfigurer configurer = new SocialAuthenticationServiceConfigurer();
 
     @Autowired
-    private SocialAuthenticationServiceRegistry registry;
+    private List<ITISocialAdapter> socialAdapters = Collections.emptyList();
 
-    private List<ITISocialConfigurer> socialConfigurers;
+    @PostConstruct
+    public void init() throws Exception {
+        configurer.setApplicationContext(applicationContext);
+        configurer.setAuthenticationManager(authenticationManager.getIfAvailable());
+        configurer.setClientDetailsService(clientDetailsService);
 
-    @Autowired
-    public void setSocialConfigurers(List<ITISocialConfigurer> socialConfigurers) {
-        Assert.notNull(socialConfigurers, "At least one configuration class must implement SocialConfigurer (or subclass SocialConfigurerAdapter)");
-        Assert.notEmpty(socialConfigurers, "At least one configuration class must implement SocialConfigurer (or subclass SocialConfigurerAdapter)");
-        this.socialConfigurers = socialConfigurers;
+        for (ITISocialAdapter socialAdapter : socialAdapters) {
+            socialAdapter.configure(configurer);
+        }
     }
 
     @Override
     public void configure(HttpSecurity http) {
-        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-        for (ITISocialConfigurer configurer : socialConfigurers) {
-            configurer.setAuthenticationManager(authenticationManager);
-            configurer.addAuthenticationServices(registry);
-        }
         SocialAuthenticationProvider provider = new SocialAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        provider.setRegistry(registry);
+        provider.setRegistry(configurer);
         http.authenticationProvider(provider);
+    }
+
+    public SocialAuthenticationServiceConfigurer getSocialConfigurer() {
+        return this.configurer;
     }
 }

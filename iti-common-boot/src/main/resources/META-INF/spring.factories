@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.lan.iti.common.boot.config.ITIExceptionHandler
+org.lan.iti.common.boot.config.ITIExceptionHandlerAutoConfiguration
