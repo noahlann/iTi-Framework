@@ -24,7 +24,7 @@ import org.lan.iti.common.core.constants.ITIConstants;
 import org.lan.iti.common.core.enums.ErrorLevelEnum;
 import org.lan.iti.common.core.enums.ErrorTypeEnum;
 import org.lan.iti.common.core.error.ErrorCode;
-import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.lan.iti.common.core.properties.ErrorProperties;
 import org.lan.iti.common.core.util.SpringContextHolder;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.exception.ITIAuth2Exception;
@@ -50,9 +50,9 @@ public class ITIAuth2ExceptionSerializer extends StdSerializer<ITIAuth2Exception
     public void serialize(ITIAuth2Exception value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         // status errorCode msg data -> ApiResult
         // 获取配置
-        ErrorCodeProperties properties = SpringContextHolder.getBeanOfNull(ErrorCodeProperties.class);
+        ErrorProperties properties = SpringContextHolder.getBeanOfNull(ErrorProperties.class);
         if (properties == null) {
-            log.warn("无法读取异常配置[{}],将不再按照异常规范返回", ErrorCodeProperties.PREFIX);
+            log.warn("无法读取异常配置[{}],将不再按照异常规范返回", ErrorProperties.PREFIX);
             gen.writeObject(ApiResult.error(value.getErrorCode(), value.getMessage()));
         } else {
             if (properties.isEnabled()) {

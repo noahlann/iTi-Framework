@@ -35,7 +35,7 @@ import org.springframework.core.env.Environment;
 @Slf4j
 public class PropertiesUtils {
 
-    private static Environment environment;
+    private Environment environment;
 
     /**
      * 获取配置
