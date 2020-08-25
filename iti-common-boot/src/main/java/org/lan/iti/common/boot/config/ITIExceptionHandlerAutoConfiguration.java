@@ -19,13 +19,14 @@
 package org.lan.iti.common.boot.config;
 
 import lombok.AllArgsConstructor;
-import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.lan.iti.common.core.properties.ErrorProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import javax.validation.ConstraintViolationException;
 import java.sql.SQLException;
 
 /**
@@ -38,10 +39,10 @@ import java.sql.SQLException;
 @Configuration
 @AllArgsConstructor
 public class ITIExceptionHandlerAutoConfiguration {
-    private final ErrorCodeProperties properties;
+    private final ErrorProperties properties;
 
     @Bean
-    @ConditionalOnClass(MethodArgumentNotValidException.class)
+    @ConditionalOnClass({MethodArgumentNotValidException.class, ConstraintViolationException.class})
     public GlobalExceptionHandler globalExceptionHandler() {
         return new GlobalExceptionHandler(properties);
     }

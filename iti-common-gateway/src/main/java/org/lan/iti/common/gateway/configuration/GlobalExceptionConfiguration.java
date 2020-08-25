@@ -26,7 +26,7 @@ import org.lan.iti.common.core.constants.ITIConstants;
 import org.lan.iti.common.core.enums.ErrorLevelEnum;
 import org.lan.iti.common.core.enums.ErrorTypeEnum;
 import org.lan.iti.common.core.error.ErrorCode;
-import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.lan.iti.common.core.properties.ErrorProperties;
 import org.lan.iti.common.model.response.ApiResult;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +51,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 @RequiredArgsConstructor
 public class GlobalExceptionConfiguration implements ErrorWebExceptionHandler {
-    private final ErrorCodeProperties properties;
+    private final ErrorProperties properties;
     private final ObjectMapper objectMapper;
 
     @NonNull

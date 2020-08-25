@@ -26,7 +26,7 @@ import org.lan.iti.common.core.enums.ErrorLevelEnum;
 import org.lan.iti.common.core.enums.ErrorTypeEnum;
 import org.lan.iti.common.core.enums.ITIExceptionEnum;
 import org.lan.iti.common.core.error.ErrorCode;
-import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.lan.iti.common.core.properties.ErrorProperties;
 import org.lan.iti.common.model.response.ApiResult;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -49,7 +49,7 @@ import java.sql.SQLException;
 @Order(OrderConstants.SQL_EXCEPTION_HANDLER)
 @AllArgsConstructor
 public class SqlExceptionHandler {
-    private final ErrorCodeProperties properties;
+    private final ErrorProperties properties;
 
     @ExceptionHandler(SQLException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

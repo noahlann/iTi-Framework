@@ -24,7 +24,7 @@ import org.lan.iti.common.core.enums.ErrorLevelEnum;
 import org.lan.iti.common.core.enums.ErrorTypeEnum;
 import org.lan.iti.common.core.enums.ITIExceptionEnum;
 import org.lan.iti.common.core.error.ErrorCode;
-import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.lan.iti.common.core.properties.ErrorProperties;
 import org.lan.iti.common.model.response.ApiResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -45,7 +45,7 @@ import java.util.Map;
  */
 public class GlobalErrorView implements View {
     @Autowired
-    private ErrorCodeProperties properties;
+    private ErrorProperties properties;
 
     @Override
     public String getContentType() {

@@ -27,7 +27,7 @@ import org.lan.iti.common.core.enums.ErrorTypeEnum;
 import org.lan.iti.common.core.enums.ITIExceptionEnum;
 import org.lan.iti.common.core.error.ErrorCode;
 import org.lan.iti.common.core.exception.AbstractException;
-import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.lan.iti.common.core.properties.ErrorProperties;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.model.response.ArgumentInvalidResult;
 import org.springframework.core.annotation.Order;
@@ -36,12 +36,15 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -56,7 +59,7 @@ import java.util.List;
 @Order(OrderConstants.GLOBAL_EXCEPTION_HANDLER)
 @AllArgsConstructor
 public class GlobalExceptionHandler {
-    private final ErrorCodeProperties properties;
+    private final ErrorProperties properties;
 
     /**
      * 框架服务异常处理
@@ -83,7 +86,8 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 参数验证异常处理 request body | param
+     * 参数验证异常处理
+     * requestBody | post
      *
      * @param e 异常信息
      * @return 转换后可识别的验证列表
@@ -91,33 +95,36 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResult<?> handleBodyValidException(MethodArgumentNotValidException e) {
-        List<ArgumentInvalidResult> results = getBindingResult(e.getBindingResult());
-        log.error("参数验证错误, {}", results.toString());
-        String errorCode = String.valueOf(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode());
-        if (properties.isEnabled()) {
-            errorCode = ErrorCode.builder()
-                    .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
-                    .mark(properties.getMark())
-                    .type(ErrorTypeEnum.BIZ.getValue())
-                    .level(ErrorLevelEnum.PRIMARY.getValue())
-                    .code(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode())
-                    .build().toString();
-        }
-        return ApiResult.error(errorCode,
-                ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMsg(),
-                results);
+        return handleArgumentResult(getBindingResult(e.getBindingResult()));
     }
 
     /**
-     * 参数验证异常处理 form-data
+     * 参数验证异常处理
+     * get请求
      *
      * @param e 异常信息
      * @return 转换后可识别的验证列表
      */
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult<List<ArgumentInvalidResult>> handleBindException(BindException e) {
-        List<ArgumentInvalidResult> results = getBindingResult(e);
+    public ApiResult<?> handleBindException(BindException e) {
+        return handleArgumentResult(getBindingResult(e));
+    }
+
+    /**
+     * 参数验证异常处理
+     * RequestParam
+     *
+     * @param e 异常信息
+     * @return 转换后可识别的验证列表
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResult<?> handleViolationException(ConstraintViolationException e) {
+        return handleArgumentResult(getViolationResults(e));
+    }
+
+    private ApiResult<?> handleArgumentResult(List<ArgumentInvalidResult> results) {
         log.error("参数验证错误, {}", results.toString());
         String errorCode = String.valueOf(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode());
         if (properties.isEnabled()) {
@@ -129,9 +136,15 @@ public class GlobalExceptionHandler {
                     .code(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode())
                     .build().toString();
         }
-        return ApiResult.error(errorCode,
-                ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMsg(),
-                results);
+        if (properties.isArgumentsImplicitMode()) {
+            return ApiResult.error(errorCode,
+                    ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMsg(),
+                    results.stream().map(ArgumentInvalidResult::getDefaultMessage).collect(Collectors.joining("|")));
+        } else {
+            return ApiResult.error(errorCode,
+                    ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMsg(),
+                    results);
+        }
     }
 
     /**
@@ -149,6 +162,48 @@ public class GlobalExceptionHandler {
                 it.getField(),
                 it.getRejectedValue())));
         return results;
+    }
+
+    /**
+     * 转换异常内参数为错误信息
+     *
+     * @param e 参数验证异常
+     * @return 具体参数错误列表
+     */
+    private List<ArgumentInvalidResult> getViolationResults(ConstraintViolationException e) {
+        List<ArgumentInvalidResult> results = new ArrayList<>();
+        e.getConstraintViolations().forEach(it -> {
+            results.add(new ArgumentInvalidResult(
+                    it.getMessage(),
+                    it.getRootBeanClass().getSimpleName(),
+                    it.getPropertyPath().toString(),
+                    it.getInvalidValue()
+            ));
+        });
+        return results;
+    }
+
+    /**
+     * 请求参数缺失异常转换处理
+     *
+     * @param e 异常
+     * @return 转换后可识别的验证列表
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResult<String> handleMissingParameterException(MissingServletRequestParameterException e) {
+        log.error("缺少请求参数：", e);
+        String errorCode = String.valueOf(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode());
+        if (properties.isEnabled()) {
+            errorCode = ErrorCode.builder()
+                    .version(ITIConstants.EXCEPTION_ERROR_CODE_VERSION)
+                    .mark(properties.getMark())
+                    .type(ErrorTypeEnum.EXT.getValue())
+                    .level(ErrorLevelEnum.IMPORTANT.getValue())
+                    .code(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode())
+                    .build().toString();
+        }
+        return ApiResult.error(errorCode, e.getMessage());
     }
 
     /**

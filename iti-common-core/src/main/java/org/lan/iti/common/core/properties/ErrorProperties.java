@@ -29,9 +29,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @url https://noahlan.com
  */
 @Data
-@ConfigurationProperties(prefix = ErrorCodeProperties.PREFIX)
-public class ErrorCodeProperties {
-    public static final String PREFIX = "iti.error-code";
+@ConfigurationProperties(prefix = ErrorProperties.PREFIX)
+public class ErrorProperties {
+    public static final String PREFIX = "iti.error";
 
     /**
      * 是否开启全局统一异常码规范
@@ -42,4 +42,9 @@ public class ErrorCodeProperties {
      * 固定标识
      */
     private Integer mark = 0;
+
+    /**
+     * 参数错误简化模式
+     */
+    private boolean argumentsImplicitMode = true;
 }
