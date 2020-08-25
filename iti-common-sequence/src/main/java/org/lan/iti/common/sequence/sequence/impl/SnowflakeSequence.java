@@ -30,7 +30,7 @@ import org.lan.iti.common.sequence.sequence.Sequence;
  * @url https://noahlan.com
  */
 public class SnowflakeSequence implements Sequence {
-    private Snowflake snowflake;
+    private final Snowflake snowflake;
 
     public SnowflakeSequence(long workerId, long dataCenterId) {
         this.snowflake = new Snowflake(workerId, dataCenterId, true);
@@ -48,5 +48,10 @@ public class SnowflakeSequence implements Sequence {
     @Override
     public String nextStr() throws SequenceException {
         return String.valueOf(next());
+    }
+
+    @Override
+    public String nextStr(String format) throws SequenceException {
+        return String.format(format, next());
     }
 }

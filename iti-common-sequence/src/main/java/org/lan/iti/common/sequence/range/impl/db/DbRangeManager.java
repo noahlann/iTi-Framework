@@ -88,7 +88,7 @@ public class DbRangeManager implements RangeManager {
      * 真实表名称
      */
     private String realTableName;
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public DbRangeManager(DataSource dataSource) {
         Assert.notNull(dataSource, "DataSource required");
@@ -110,7 +110,7 @@ public class DbRangeManager implements RangeManager {
             }
             newValue = oldValue + step;
             if (updateRange(name, newValue, oldValue)) {
-                return new Range(oldValue, newValue);
+                return new Range(oldValue + 1, newValue);
             }
         }
         throw new SequenceException(Formatter.format("Retried too many times, retryTimes = {}", retryTimes));

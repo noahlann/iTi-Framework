@@ -114,4 +114,9 @@ public class DefaultRangeSequence implements RangeSequence {
     public String nextStr() throws SequenceException {
         return String.format("%s%05d", DateUtil.format(new Date(), DatePattern.PURE_DATE_FORMAT), next());
     }
+
+    @Override
+    public String nextStr(String format) throws SequenceException {
+        return String.format(format, next());
+    }
 }

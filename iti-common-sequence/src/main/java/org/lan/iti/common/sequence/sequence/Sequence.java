@@ -43,4 +43,13 @@ public interface Sequence {
      * @throws SequenceException 生成异常
      */
     String nextStr() throws SequenceException;
+
+    /**
+     * 生成下一个序列号（带格式 String.format）
+     *
+     * @param format 格式
+     * @return 带格式的序列号
+     * @throws SequenceException 生成异常
+     */
+    String nextStr(String format) throws SequenceException;
 }
