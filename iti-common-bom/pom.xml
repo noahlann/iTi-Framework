@@ -22,7 +22,7 @@
     <groupId>org.lan</groupId>
     <artifactId>iti-common-bom</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.0</version>
+    <version>1.6.2</version>
 
     <description>common公共核心依赖管理</description>
 
@@ -34,14 +34,14 @@
         <spring-cloud-alibaba.version>2.2.1.RELEASE</spring-cloud-alibaba.version>
         <security.oauth.version>2.3.6.RELEASE</security.oauth.version>
         <jasypt.version>2.1.1</jasypt.version>
-        <hutool.version>5.3.1</hutool.version>
+        <hutool.version>5.4.0</hutool.version>
         <ttl.version>2.11.4</ttl.version>
         <spring-boot-admin.version>2.2.2</spring-boot-admin.version>
         <swagger.core.version>1.5.22</swagger.core.version>
         <swagger.fox.version>2.9.2</swagger.fox.version>
         <mybatis-plus.version>3.3.2</mybatis-plus.version>
         <minio.version>6.0.13</minio.version>
-        <knife4j.version>2.0.2</knife4j.version>
+        <knife4j.version>2.0.4</knife4j.version>
         <hikari.version>3.4.2</hikari.version>
         <findbugs.version>3.0.1</findbugs.version>
         <snakeyml.version>1.26</snakeyml.version>
