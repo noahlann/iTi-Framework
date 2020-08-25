@@ -18,14 +18,17 @@
 
 package org.lan.iti.common.core.config;
 
-import org.lan.iti.common.core.properties.ErrorCodeProperties;
+import org.lan.iti.common.core.constants.ITIConstants;
+import org.lan.iti.common.core.properties.ErrorProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
+
 
 /**
  * iTi 配置
@@ -35,8 +38,8 @@ import org.springframework.web.client.RestTemplate;
  * @url https://noahlan.com
  */
 @Configuration(proxyBeanMethods = false)
-@Order(Integer.MIN_VALUE)
-@EnableConfigurationProperties(ErrorCodeProperties.class)
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@EnableConfigurationProperties(ErrorProperties.class)
 public class ITIConfiguration {
 
     /**
@@ -46,7 +49,7 @@ public class ITIConfiguration {
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource
                 = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:i18n/messages");
+        messageSource.setBasename(ITIConstants.DEFAULT_MESSAGES);
         return messageSource;
     }
 

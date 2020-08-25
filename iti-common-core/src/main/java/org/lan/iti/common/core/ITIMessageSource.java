@@ -18,6 +18,7 @@
 
 package org.lan.iti.common.core;
 
+import org.lan.iti.common.core.constants.ITIConstants;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
@@ -31,7 +32,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 public class ITIMessageSource extends ReloadableResourceBundleMessageSource {
 
     public ITIMessageSource() {
-        setBasename("classpath:i18n/messages");
+        setBasename(ITIConstants.DEFAULT_MESSAGES);
     }
 
     public static MessageSourceAccessor getAccessor() {

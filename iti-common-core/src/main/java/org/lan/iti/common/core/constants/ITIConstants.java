@@ -88,4 +88,19 @@ public final class ITIConstants {
      * 异常编码版本号
      */
     public static final int EXCEPTION_ERROR_CODE_VERSION = 1;
+
+    /**
+     * 默认消息源
+     */
+    public static final String DEFAULT_MESSAGES = "classpath:i18n/messages";
+
+    /**
+     * 默认数据验证消息源
+     */
+    public static final String DEFAULT_VALIDATOR_MESSAGES = "i18n/validation/ValidationMessages";
+
+    /**
+     * 参数验证消息源bean名称
+     */
+    public static final String VALIDATION_MESSAGE_SOURCE_BEAN_NAME = "validationMessageSource";
 }
