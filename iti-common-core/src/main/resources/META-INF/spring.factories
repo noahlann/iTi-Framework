@@ -1,11 +1,11 @@
 # AutoConfiguration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.lan.iti.common.core.config.ITIConfiguration,\
 org.lan.iti.common.core.util.SpringContextHolder,\
 org.lan.iti.common.core.xss.RequestWrapperFilter,\
 org.lan.iti.common.data.orm.MPDefaultConfigurationImporter,\
 org.lan.iti.common.data.filter.ContextHolderFilter,\
 org.lan.iti.common.core.config.ITIWebMvcConfiguration,\
-org.lan.iti.common.core.config.ITIConfiguration,\
 org.lan.iti.common.core.config.ITIMultipartAutoConfiguration,\
 org.lan.iti.common.data.orm.MPAutoConfiguration,\
 org.lan.iti.common.data.cache.config.CacheManagerCustomizersConfig,\

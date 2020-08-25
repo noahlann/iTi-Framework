@@ -20,7 +20,6 @@ package org.lan.iti.common.security.config;
 
 import feign.RequestInterceptor;
 import org.lan.iti.common.security.interceptor.ITIFeignClientInterceptor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.security.oauth2.client.AccessTokenContextRelay;
@@ -31,14 +30,14 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
 
 /**
  * Feign 安全自动配置
+ * TODO 其中过时的方法替换官方没有更新，待更新后重构
  *
  * @author NorthLan
  * @date 2020-04-09
  * @url https://noahlan.com
  */
 @Configuration
-@ConditionalOnClass({OAuth2ClientContext.class, OAuth2ProtectedResourceDetails.class})
-@ConditionalOnBean(AccessTokenContextRelay.class)
+@ConditionalOnClass({OAuth2ClientContext.class, OAuth2ProtectedResourceDetails.class, AccessTokenContextRelay.class})
 @ConditionalOnProperty("security.oauth2.client.client-id")
 public class SecurityFeignAutoConfiguration {
 
