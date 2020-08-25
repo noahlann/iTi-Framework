@@ -21,9 +21,7 @@ import feign.Headers;
 import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.model.page.PageParameter;
 import org.lan.iti.common.security.model.SecurityUser;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -79,7 +77,6 @@ public interface RemoteTokenService {
     /**
      * 分页查询 token 信息
      */
-    @Headers(SecurityConstants.HEADER_FROM_IN)
     @GetMapping(value = "/token/page")
     Page<OAuth2AccessToken> tokenPage(PageParameter parameter);
 
