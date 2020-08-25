@@ -17,7 +17,6 @@
 package org.lan.iti.common.security.handler;
 
 import cn.hutool.http.HttpUtil;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.WebUtils;
 import org.springframework.security.core.AuthenticationException;
@@ -25,6 +24,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
@@ -38,9 +38,8 @@ import java.util.Optional;
 @Slf4j
 public class FormAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
-    @SneakyThrows
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         log.debug("表单登录失败: {}", exception.getLocalizedMessage());
         Optional<HttpServletResponse> responseOptional = WebUtils.getCurrentResponse();
         if (responseOptional.isPresent()) {

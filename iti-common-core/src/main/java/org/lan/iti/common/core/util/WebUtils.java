@@ -20,7 +20,6 @@ import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.exception.CheckedException;
@@ -209,8 +208,7 @@ public class WebUtils extends org.springframework.web.util.WebUtils {
     /**
      * 从request 获取CLIENT_ID
      */
-    @SneakyThrows
-    public String[] getClientId(ServerHttpRequest request) {
+    public String[] getClientId(ServerHttpRequest request) throws CheckedException {
         String header = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
         if (header == null || !header.startsWith(BASIC_)) {

@@ -21,7 +21,6 @@ package org.lan.iti.common.data.orm.binding.parser;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.arithmetic.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -60,8 +59,7 @@ public class ConditionParser implements ExpressionVisitor, ItemsListVisitor {
         }
     }
 
-    @SneakyThrows
-    public List<Expression> getExpressList() {
+    public List<Expression> getExpressList() throws Exception {
         if (CollUtil.isEmpty(expressList)) {
             throw new Exception(ArrayUtil.join(errorMsgList, "; "));
         }

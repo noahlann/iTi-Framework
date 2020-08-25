@@ -17,7 +17,6 @@
 package org.lan.iti.common.security.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.exception.ServiceUnavailableException;
@@ -55,7 +54,6 @@ public class ITIUserDetailsServiceImpl implements ITIUserDetailsService {
         return buildUserDetails(user, providerId, domain);
     }
 
-    @SneakyThrows
     private UserDetails buildUserDetails(ApiResult<SecurityUser<?>> result, String providerId, String domain) {
         if (!result.isSuccess()) {
             throw new ServiceUnavailableException("内部调用异常，请联系管理员");

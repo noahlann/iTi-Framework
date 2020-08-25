@@ -17,7 +17,6 @@
 package org.lan.iti.common.security.component;
 
 import cn.hutool.core.util.StrUtil;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -45,9 +44,8 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class ITISecurityInnerAspect {
 
-    @SneakyThrows
     @Around("@annotation(inner)")
-    public Object around(ProceedingJoinPoint point, Inner inner) {
+    public Object around(ProceedingJoinPoint point, Inner inner) throws Throwable {
         HttpServletRequest request = null;
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (attributes instanceof ServletRequestAttributes) {

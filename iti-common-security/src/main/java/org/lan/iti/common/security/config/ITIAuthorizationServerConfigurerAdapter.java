@@ -19,7 +19,6 @@
 package org.lan.iti.common.security.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.lan.iti.common.security.component.pkce.InMemoryPkceAuthorizationCodeServices;
 import org.lan.iti.common.security.component.pkce.PkceAuthorizationCodeTokenGranter;
 import org.lan.iti.common.security.properties.OAuth2ClientDetailsProperties;
@@ -90,7 +89,6 @@ public class ITIAuthorizationServerConfigurerAdapter extends AuthorizationServer
         clients.withClientDetails(itiClientDetailsService());
     }
 
-    @SneakyThrows
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         // tokenGranter调用顺序必须位于authorizationCodeServices后

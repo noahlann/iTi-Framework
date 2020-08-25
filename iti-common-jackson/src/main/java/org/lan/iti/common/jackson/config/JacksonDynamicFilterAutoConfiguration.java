@@ -18,7 +18,6 @@ package org.lan.iti.common.jackson.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.lan.iti.common.jackson.dynamicfilter.properties.JacksonDynamicFilterProperties;
@@ -70,8 +69,7 @@ public class JacksonDynamicFilterAutoConfiguration implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnMissingBean
-    @SneakyThrows
-    public DynamicFilterResponseBodyAdvice dynamicFilterResponseBodyAdvice() {
+    public DynamicFilterResponseBodyAdvice dynamicFilterResponseBodyAdvice() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         DynamicFilterResponseBodyAdvice advice = new DynamicFilterResponseBodyAdvice();
         String[] classNames = properties.getResolver().getClassNames();
         for (String name : classNames) {

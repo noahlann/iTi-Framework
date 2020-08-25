@@ -19,7 +19,6 @@
 package org.lan.iti.common.core.config;
 
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.lan.iti.common.core.properties.MultipartProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -32,6 +31,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.MultipartConfigElement;
+import java.io.IOException;
 
 /**
  * @author NorthLan
@@ -56,10 +56,9 @@ public class ITIMultipartAutoConfiguration {
     /**
      * CommonsMultipartResolver
      */
-    @SneakyThrows
     @Bean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
     @Primary
-    public CommonsMultipartResolver multipartResolver() {
+    public CommonsMultipartResolver multipartResolver() throws IOException {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setResolveLazily(properties.isResolveLazily());
         resolver.setDefaultEncoding(properties.getDefaultEncoding());
