@@ -41,12 +41,12 @@ public class ConditionManager {
     /**
      * 表达式缓存Map
      */
-    private static Map<String, List<Expression>> expressionParseResultMap = new ConcurrentHashMap<>();
+    private final Map<String, List<Expression>> expressionParseResultMap = new ConcurrentHashMap<>();
 
     /**
      * 获取解析后的Expression列表
      */
-    private static List<Expression> getExpressionList(String condition) {
+    private List<Expression> getExpressionList(String condition) {
         if (StringUtils.isEmpty(condition)) {
             return null;
         }
