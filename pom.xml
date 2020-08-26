@@ -67,6 +67,7 @@
         <module>iti-common-scanner</module>
         <module>iti-common-sentinel</module>
         <module>iti-common-security</module>
+        <module>iti-common-pay</module>
     </modules>
 
     <dependencyManagement>
