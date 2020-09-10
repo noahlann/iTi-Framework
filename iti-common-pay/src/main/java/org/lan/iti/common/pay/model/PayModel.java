@@ -20,10 +20,9 @@ public class PayModel {
     public Map<String, Object> toMap() throws IllegalArgumentException, IllegalAccessException {
         HashMap<String, Object> map = new HashMap();
         Field[] var2 = this.getClass().getFields();
-        int var3 = var2.length;
 
         for (Field field : var2) {
-            NameInMap anno = (NameInMap) field.getAnnotation(NameInMap.class);
+            NameInMap anno = field.getAnnotation(NameInMap.class);
             String key;
             if (anno == null) {
                 key = field.getName();

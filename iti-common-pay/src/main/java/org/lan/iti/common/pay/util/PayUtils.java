@@ -2,27 +2,29 @@ package org.lan.iti.common.pay.util;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.StrUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Map;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.*;
 
 /**
  * @author I'm
  * @since 2020/8/25
  * description 支付工具
  */
+@UtilityClass
+@Slf4j
 public class PayUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PayUtils.class);
-
-    public static String sign(String content, String privateKeyPem) {
+    public String sign(String content, String privateKeyPem) {
         try {
             byte[] encodedKey = privateKeyPem.getBytes();
             encodedKey = Base64.decode(encodedKey);
@@ -34,22 +36,71 @@ public class PayUtils {
             return Base64.encode(signed);
         } catch (Exception var7) {
             String errorMessage = "签名遭遇异常，content=" + content + " privateKeySize=" + privateKeyPem.length() + " reason=" + var7.getMessage();
-            LOGGER.error(errorMessage, var7);
+            log.error(errorMessage, var7);
             throw new RuntimeException(errorMessage, var7);
         }
     }
 
-    public static String parseSignContent(Map<String, Object> map) {
-        StringBuilder content = new StringBuilder();
-        int index = 0;
-
-        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
-            Map.Entry<String, String> pair = (Map.Entry) stringObjectEntry;
-            if (StrUtil.isNotBlank(pair.getKey()) && StrUtil.isNotBlank(Convert.toStr(pair.getValue()))) {
-                content.append(index == 0 ? "" : "&").append(pair.getKey()).append("=").append(Convert.toStr(pair.getValue()));
-                ++index;
-            }
+    public boolean verifySign(String content, String sign, String publicKeyPem) {
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            byte[] encodedKey = publicKeyPem.getBytes();
+            encodedKey = Base64.decode(encodedKey);
+            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(encodedKey));
+            Signature signature = Signature.getInstance("SHA256WithRSA");
+            signature.initVerify(publicKey);
+            signature.update(content.getBytes(StandardCharsets.UTF_8));
+            return signature.verify(Base64.decode(sign.getBytes()));
+        } catch (Exception var7) {
+            String errorMessage = "验签遭遇异常，content=" + content + " sign=" + sign + " publicKey=" + publicKeyPem + " reason=" + var7.getMessage();
+            log.error(errorMessage, var7);
+            throw new RuntimeException(errorMessage, var7);
         }
-        return content.toString();
     }
+
+    public boolean verify(Map<String, Object> parameters, String publicKey) {
+        String sign = Convert.toStr(parameters.get("sign"));
+        parameters.remove("sign");
+        String content = getSignCheckContent(parameters);
+        return verifySign(content, sign, publicKey);
+    }
+
+    /**
+     * 将异步通知的参数转化为Map
+     *
+     * @param request {HttpServletRequest}
+     * @return 转化后的Map
+     */
+    public Map<String, String> toMap(HttpServletRequest request) {
+        Map<String, String> params = new HashMap<>();
+        Map<String, String[]> requestParams = request.getParameterMap();
+        for (String name : requestParams.keySet()) {
+            String[] values = requestParams.get(name);
+            String valueStr = "";
+            for (int i = 0; i < values.length; i++) {
+                valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+            }
+            params.put(name, valueStr);
+        }
+        return params;
+    }
+
+    public String getSignCheckContent(Map<String, Object> params) {
+        if (params == null) {
+            return null;
+        } else {
+            StringBuilder content = new StringBuilder();
+            List<String> keys = new ArrayList(params.keySet());
+            Collections.sort(keys);
+
+            for (int i = 0; i < keys.size(); ++i) {
+                String key = keys.get(i);
+                Object value = params.get(key);
+                content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
+            }
+            return content.toString();
+        }
+    }
+
+
 }

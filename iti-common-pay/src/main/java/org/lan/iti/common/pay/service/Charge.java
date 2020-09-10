@@ -32,8 +32,8 @@ public class Charge {
 
     public String createCharge(Map<String, Object> map) throws BindException {
         ValidationUtils.validate(config, (Object) null);
-        map.put("appId",config.get("appId"));
-        String sign = PayUtils.sign(PayUtils.parseSignContent(map), Convert.toStr(getConfig("privateKey")));
+        map.put("appId", config.get("appId"));
+        String sign = PayUtils.sign(PayUtils.getSignCheckContent(map), Convert.toStr(getConfig("privateKey")));
         HttpRequest request = HttpUtil.createPost(Convert.toStr(getConfig("gatewayHost")) + "?" + "&appId=" + Convert.toStr(getConfig("appId")));
         request.contentType("application/json");
         map.put("sign", sign);
