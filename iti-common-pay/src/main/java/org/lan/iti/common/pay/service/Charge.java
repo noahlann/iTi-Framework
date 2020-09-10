@@ -24,13 +24,13 @@ import java.util.Map;
 @Slf4j
 public class Charge {
 
-    private Map<String, Object> config;
+    private Map<String, String> config;
 
     public void setOptions(PayConfig payConfig) throws IllegalArgumentException, IllegalAccessException {
         config = PayModel.buildMap(payConfig);
     }
 
-    public String createCharge(Map<String, Object> map) throws BindException {
+    public String createCharge(Map<String, String> map) throws BindException {
         ValidationUtils.validate(config, (Object) null);
         map.put("appId", config.get("appId"));
         String sign = PayUtils.sign(PayUtils.getSignCheckContent(map), Convert.toStr(getConfig("privateKey")));
@@ -44,6 +44,11 @@ public class Charge {
             throw new RuntimeException(jsonProcessingException.getMessage(), jsonProcessingException);
         }
         return request.execute(true).body();
+    }
+
+    public Map<String,String> queryChargeByOrderNo(String url, String orderNo){
+        String res = HttpUtil.get(url + "?orderNo=" + orderNo);
+        return null;
     }
 
     private String getConfig(String key) {

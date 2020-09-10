@@ -1,5 +1,6 @@
 package org.lan.iti.common.pay.model;
 
+import cn.hutool.core.convert.Convert;
 import org.lan.iti.common.pay.annotation.NameInMap;
 
 import java.lang.reflect.Field;
@@ -17,8 +18,8 @@ import java.util.Map;
  */
 public class PayModel {
 
-    public Map<String, Object> toMap() throws IllegalArgumentException, IllegalAccessException {
-        HashMap<String, Object> map = new HashMap();
+    public Map<String, String> toMap() throws IllegalArgumentException, IllegalAccessException {
+        HashMap<String, String> map = new HashMap();
         Field[] var2 = this.getClass().getFields();
 
         for (Field field : var2) {
@@ -44,26 +45,26 @@ public class PayModel {
 
                 for (Object o : arrayField) {
                     if (null != itemType && PayModel.class.isAssignableFrom(itemType)) {
-                        Map<String, Object> fields = ((PayModel) o).toMap();
+                        Map<String, String> fields = ((PayModel) o).toMap();
                         fieldList.add(fields);
                     } else {
                         fieldList.add(o);
                     }
                 }
 
-                map.put(key, fieldList);
+                map.put(key, Convert.toStr(fieldList));
             } else if (null != field.get(this) && PayModel.class.isAssignableFrom(field.get(this).getClass())) {
                 PayModel payModel = (PayModel) field.get(this);
-                map.put(key, payModel.toMap());
+                map.put(key, Convert.toStr(payModel.toMap()));
             } else {
-                map.put(key, field.get(this));
+                map.put(key, Convert.toStr(field.get(this)));
             }
         }
 
         return map;
     }
 
-    public static Map<String, Object> buildMap(PayModel payModel) throws IllegalAccessException {
+    public static Map<String, String> buildMap(PayModel payModel) throws IllegalAccessException {
         return null == payModel ? null : payModel.toMap();
     }
 }

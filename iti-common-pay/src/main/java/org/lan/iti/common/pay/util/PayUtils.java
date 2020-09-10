@@ -58,7 +58,7 @@ public class PayUtils {
         }
     }
 
-    public boolean verify(Map<String, Object> parameters, String publicKey) {
+    public boolean verify(Map<String, String> parameters, String publicKey) {
         String sign = Convert.toStr(parameters.get("sign"));
         parameters.remove("sign");
         String content = getSignCheckContent(parameters);
@@ -85,7 +85,7 @@ public class PayUtils {
         return params;
     }
 
-    public String getSignCheckContent(Map<String, Object> params) {
+    public String getSignCheckContent(Map<String, String> params) {
         if (params == null) {
             return null;
         } else {
