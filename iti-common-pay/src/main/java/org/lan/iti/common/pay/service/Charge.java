@@ -1,19 +1,16 @@
 package org.lan.iti.common.pay.service;
 
-import cn.hutool.core.convert.Convert;
-import cn.hutool.http.HttpRequest;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.ValidationUtils;
-import org.lan.iti.common.pay.config.PayConfig;
 import org.lan.iti.common.pay.model.PayModel;
 import org.lan.iti.common.pay.util.PayUtils;
 import org.springframework.validation.BindException;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author I'm
@@ -24,35 +21,30 @@ import java.util.Map;
 @Slf4j
 public class Charge {
 
-    private Map<String, String> config;
+    private Map<String, String> param;
 
-    public void setOptions(PayConfig payConfig) throws IllegalArgumentException, IllegalAccessException {
-        config = PayModel.buildMap(payConfig);
+    public void setOptions(PayModel payModel) throws BindException {
+        ValidationUtils.validate(payModel, (Object) null);
+        param = payModel.toMap();
     }
 
-    public String createCharge(Map<String, String> map) throws BindException {
-        ValidationUtils.validate(config, (Object) null);
-        map.put("appId", config.get("appId"));
-        String sign = PayUtils.sign(PayUtils.getSignCheckContent(map), Convert.toStr(getConfig("privateKey")));
-        HttpRequest request = HttpUtil.createPost(Convert.toStr(getConfig("gatewayHost")) + "?" + "&appId=" + Convert.toStr(getConfig("appId")));
-        request.contentType("application/json");
-        map.put("sign", sign);
-        try {
-            request.body(new ObjectMapper().writeValueAsString(map));
-        } catch (JsonProcessingException jsonProcessingException) {
-            log.error(jsonProcessingException.getMessage(), jsonProcessingException);
-            throw new RuntimeException(jsonProcessingException.getMessage(), jsonProcessingException);
+    public String createCharge() {
+        param.put("sign", PayUtils.sign(PayUtils.getSignCheckContent(param), getParam("privateKey")));
+        String res = HttpUtil.post(Objects.requireNonNull(getParam("gatewayHost")), PayUtils.getRequestParamString(param, null));
+        return StrUtil.isBlank(res) ? null : res;
+    }
+
+    public String queryChargeByOrderNo() {
+        if (StrUtil.isBlank(param.get("orderNo")) || StrUtil.isBlank(param.get("gatewayHost"))) {
+            return "参数有误";
         }
-        return request.execute(true).body();
+        param.put("sign", PayUtils.sign(PayUtils.getSignCheckContent(param), getParam("privateKey")));
+        String res = HttpUtil.post(Objects.requireNonNull(getParam("gatewayHost")), PayUtils.getRequestParamString(param, null));
+        return StrUtil.isBlank(res) ? null : res;
     }
 
-    public Map<String,String> queryChargeByOrderNo(String url, String orderNo){
-        String res = HttpUtil.get(url + "?orderNo=" + orderNo);
-        return null;
-    }
-
-    private String getConfig(String key) {
-        return Convert.toStr(config.get(key));
+    private String getParam(String key) {
+        return param.containsKey(key) && StrUtil.isNotBlank(param.get(key)) ? param.get(key) : null;
     }
 
 }

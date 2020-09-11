@@ -6,6 +6,8 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -100,6 +102,35 @@ public class PayUtils {
             }
             return content.toString();
         }
+    }
+
+    /**
+     * 将Map存储的对象，转换为key=value&key=value的字符
+     *
+     * @param requestParam 待转换map
+     * @param coder        编码
+     * @return 转换后的字符
+     */
+    public String getRequestParamString(Map<String, String> requestParam, String coder) {
+        if (null == coder || "".equals(coder)) {
+            coder = "UTF-8";
+        }
+        StringBuilder sf = new StringBuilder();
+        String reqstr = "";
+        if (null != requestParam && 0 != requestParam.size()) {
+            for (Map.Entry<String, String> en : requestParam.entrySet()) {
+                try {
+                    sf.append(en.getKey()).append("=").append(null == en.getValue() || "".equals(en.getValue()) ? "" : URLEncoder
+                            .encode(en.getValue(), coder)).append("&");
+                } catch (UnsupportedEncodingException e) {
+                    log.error(e.getMessage(), e);
+                    return "";
+                }
+            }
+            reqstr = sf.substring(0, sf.length() - 1);
+        }
+        log.debug("Request Message:[" + reqstr + "]");
+        return reqstr;
     }
 
 

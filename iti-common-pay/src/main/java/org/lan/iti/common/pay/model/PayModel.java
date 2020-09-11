@@ -1,70 +1,35 @@
 package org.lan.iti.common.pay.model;
 
-import cn.hutool.core.convert.Convert;
-import org.lan.iti.common.pay.annotation.NameInMap;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.Getter;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author I'm
  * @since 2020/8/25
- * description 支付模型
+ * description 支付配置
  */
-public class PayModel {
+@Getter
+public class PayModel extends BaseModel {
 
-    public Map<String, String> toMap() throws IllegalArgumentException, IllegalAccessException {
-        HashMap<String, String> map = new HashMap();
-        Field[] var2 = this.getClass().getFields();
+    @NotBlank(message = "appId不能为空！")
+    @Pattern(regexp = "^[0-9]+$", message = "appId格式有误！")
+    public String appId;
 
-        for (Field field : var2) {
-            NameInMap anno = field.getAnnotation(NameInMap.class);
-            String key;
-            if (anno == null) {
-                key = field.getName();
-            } else {
-                key = anno.value();
-            }
+    @NotBlank(message = "应用私钥不能为空！")
+    public String privateKey;
 
-            if (null != field.get(this) && List.class.isAssignableFrom(field.get(this).getClass())) {
-                ParameterizedType listGenericType = (ParameterizedType) field.getGenericType();
-                Type[] listActualTypeArguments = listGenericType.getActualTypeArguments();
-                Type listActualTypeArgument = listActualTypeArguments[0];
-                Class<?> itemType = null;
-                if (listActualTypeArgument instanceof Class) {
-                    itemType = (Class) listActualTypeArgument;
-                }
+    @NotBlank(message = "接口网关不能为空！")
+    public String gatewayHost;
 
-                ArrayList<Object> arrayField = (ArrayList) field.get(this);
-                ArrayList<Object> fieldList = new ArrayList();
+    public String orderNo;
 
-                for (Object o : arrayField) {
-                    if (null != itemType && PayModel.class.isAssignableFrom(itemType)) {
-                        Map<String, String> fields = ((PayModel) o).toMap();
-                        fieldList.add(fields);
-                    } else {
-                        fieldList.add(o);
-                    }
-                }
+    public String amount;
 
-                map.put(key, Convert.toStr(fieldList));
-            } else if (null != field.get(this) && PayModel.class.isAssignableFrom(field.get(this).getClass())) {
-                PayModel payModel = (PayModel) field.get(this);
-                map.put(key, Convert.toStr(payModel.toMap()));
-            } else {
-                map.put(key, Convert.toStr(field.get(this)));
-            }
-        }
+    public String subject;
 
-        return map;
-    }
+    public String body;
 
-    public static Map<String, String> buildMap(PayModel payModel) throws IllegalAccessException {
-        return null == payModel ? null : payModel.toMap();
-    }
 }
