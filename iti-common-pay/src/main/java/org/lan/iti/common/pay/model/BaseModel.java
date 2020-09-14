@@ -1,7 +1,6 @@
 package org.lan.iti.common.pay.model;
 
 import cn.hutool.core.util.StrUtil;
-import lombok.Getter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

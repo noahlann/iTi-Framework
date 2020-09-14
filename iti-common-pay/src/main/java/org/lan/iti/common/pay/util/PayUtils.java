@@ -26,6 +26,13 @@ import java.util.*;
 @Slf4j
 public class PayUtils {
 
+    /**
+     * 签名
+     *
+     * @param content       验证签名的参数 形式为 a=x b=y
+     * @param privateKeyPem 私钥签名
+     * @return 签名串
+     */
     public String sign(String content, String privateKeyPem) {
         try {
             byte[] encodedKey = privateKeyPem.getBytes();
@@ -43,6 +50,14 @@ public class PayUtils {
         }
     }
 
+    /**
+     * 验签
+     *
+     * @param content      验证签名的参数 形为 a=x&b=y
+     * @param sign         content使用私钥签名的签名串
+     * @param publicKeyPem 公钥验签
+     * @return 验签结果
+     */
     public boolean verifySign(String content, String sign, String publicKeyPem) {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -60,6 +75,13 @@ public class PayUtils {
         }
     }
 
+    /**
+     * 应用调用api验签方法
+     *
+     * @param parameters 请求参数
+     * @param publicKey  验签公钥
+     * @return 验签结果
+     */
     public boolean verify(Map<String, String> parameters, String publicKey) {
         String sign = Convert.toStr(parameters.get("sign"));
         parameters.remove("sign");
@@ -87,6 +109,12 @@ public class PayUtils {
         return params;
     }
 
+    /**
+     * 签名
+     *
+     * @param params 待签名的集合
+     * @return 验证签名的参数 形式为 a=x b=y
+     */
     public String getSignCheckContent(Map<String, String> params) {
         if (params == null) {
             return null;

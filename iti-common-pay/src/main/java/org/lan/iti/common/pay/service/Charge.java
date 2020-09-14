@@ -23,28 +23,67 @@ public class Charge {
 
     private Map<String, String> param;
 
+    /**
+     * 设置配置信息
+     *
+     * @param payModel 支付模型
+     */
     public void setOptions(PayModel payModel) throws BindException {
         ValidationUtils.validate(payModel, (Object) null);
         param = payModel.toMap();
     }
 
+    /**
+     * 创建支付请求
+     *
+     * @return 支付请求地址
+     */
     public String createCharge() {
         param.put("sign", PayUtils.sign(PayUtils.getSignCheckContent(param), getParam("privateKey")));
         String res = HttpUtil.post(Objects.requireNonNull(getParam("gatewayHost")), PayUtils.getRequestParamString(param, null));
         return StrUtil.isBlank(res) ? null : res;
     }
 
-    public String queryChargeByOrderNo() {
+    /**
+     * 查询支付凭据
+     *
+     * @return 支付凭据
+     */
+    public String query() {
+        return api();
+    }
+
+    /**
+     * 退款
+     *
+     * @return 退款信息
+     */
+    public String refund() {
+        return api();
+    }
+
+    /**
+     * 获取参数值
+     *
+     * @param key 关键信息
+     * @return 参数值
+     */
+    private String getParam(String key) {
+        return param.containsKey(key) && StrUtil.isNotBlank(param.get(key)) ? param.get(key) : null;
+    }
+
+    /**
+     * 接口调用
+     *
+     * @return 返回结果
+     */
+    private String api() {
         if (StrUtil.isBlank(param.get("orderNo")) || StrUtil.isBlank(param.get("gatewayHost"))) {
             return "参数有误";
         }
         param.put("sign", PayUtils.sign(PayUtils.getSignCheckContent(param), getParam("privateKey")));
         String res = HttpUtil.post(Objects.requireNonNull(getParam("gatewayHost")), PayUtils.getRequestParamString(param, null));
         return StrUtil.isBlank(res) ? null : res;
-    }
-
-    private String getParam(String key) {
-        return param.containsKey(key) && StrUtil.isNotBlank(param.get(key)) ? param.get(key) : null;
     }
 
 }
