@@ -63,6 +63,15 @@ public class Charge {
     }
 
     /**
+     * 退款查询
+     *
+     * @return 退款查询结果信息
+     */
+    public String refundQuery() {
+        return api();
+    }
+
+    /**
      * 获取参数值
      *
      * @param key 关键信息
@@ -78,8 +87,8 @@ public class Charge {
      * @return 返回结果
      */
     private String api() {
-        if (StrUtil.isBlank(param.get("orderNo")) || StrUtil.isBlank(param.get("gatewayHost"))) {
-            return "参数有误";
+        if ((StrUtil.isBlank(param.get("orderNo")) && StrUtil.isBlank(param.get("refundNo"))) || StrUtil.isBlank(param.get("gatewayHost"))) {
+            return "参数有误!";
         }
         param.put("sign", PayUtils.sign(PayUtils.getSignCheckContent(param), getParam("privateKey")));
         String res = HttpUtil.post(Objects.requireNonNull(getParam("gatewayHost")), PayUtils.getRequestParamString(param, null));
