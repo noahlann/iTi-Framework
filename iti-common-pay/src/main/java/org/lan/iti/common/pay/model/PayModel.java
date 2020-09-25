@@ -63,4 +63,9 @@ public class PayModel extends BaseModel {
      */
     public String refundNo;
 
+    /**
+     * 退款描述
+     */
+    public String refundDescription;
+
 }
