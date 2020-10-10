@@ -34,9 +34,9 @@ public class PayModel extends BaseModel {
     public String gatewayHost;
 
     /**
-     * 订单号
+     * 商户订单号
      */
-    public String orderNo;
+    public String outOrderNo;
 
     /**
      * 金额
@@ -53,19 +53,35 @@ public class PayModel extends BaseModel {
      */
     public String body;
 
+
+    /**
+     * 商户退款编号
+     */
+    public String outRefundNo;
+
     /**
      * 退款金额
      */
     public String refundAmount;
 
     /**
-     * 退款编号
-     */
-    public String outRefundNo;
-
-    /**
      * 退款描述
      */
     public String refundDescription;
+
+    /**
+     * 商户转账订单号
+     */
+    public String outFundNo;
+
+    /**
+     * 转账金额
+     */
+    public String fundAmount;
+
+    /**
+     * 转账描述
+     */
+    public String fundDescription;
 
 }

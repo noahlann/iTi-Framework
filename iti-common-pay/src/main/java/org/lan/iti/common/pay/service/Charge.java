@@ -5,6 +5,7 @@ import cn.hutool.http.HttpUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.ValidationUtils;
+import org.lan.iti.common.pay.constants.PayConstants;
 import org.lan.iti.common.pay.model.PayModel;
 import org.lan.iti.common.pay.util.PayUtils;
 import org.springframework.validation.BindException;
@@ -39,9 +40,7 @@ public class Charge {
      * @return 支付请求地址
      */
     public String createCharge() {
-        param.put("sign", PayUtils.sign(PayUtils.getSignCheckContent(param), getParam("privateKey")));
-        String res = HttpUtil.post(Objects.requireNonNull(getParam("gatewayHost")), PayUtils.getRequestParamString(param, null));
-        return StrUtil.isBlank(res) ? null : res;
+        return api(PayConstants.BIZ_CODE_CREATE_CHARGE);
     }
 
     /**
@@ -50,16 +49,16 @@ public class Charge {
      * @return 支付凭据
      */
     public String query() {
-        return api();
+        return api(PayConstants.BIZ_CODE_QUERY);
     }
 
     /**
-     * 退款
+     * 申请退款
      *
-     * @return 退款信息
+     * @return 申请退款
      */
     public String refund() {
-        return api();
+        return api(PayConstants.BIZ_CODE_REFUND);
     }
 
     /**
@@ -68,7 +67,25 @@ public class Charge {
      * @return 退款查询结果信息
      */
     public String refundQuery() {
-        return api();
+        return api(PayConstants.BIZ_CODE_REFUND_QUERY);
+    }
+
+    /**
+     * 转账
+     *
+     * @return 转账
+     */
+    public String fund() {
+        return api(PayConstants.BIZ_CODE_FUND);
+    }
+
+    /**
+     * 转账查询
+     *
+     * @return 转账查询结果信息
+     */
+    public String fundQuery() {
+        return api(PayConstants.BIZ_CODE_FUND_QUERY);
     }
 
     /**
@@ -86,12 +103,46 @@ public class Charge {
      *
      * @return 返回结果
      */
-    private String api() {
-        if ((StrUtil.isBlank(param.get("orderNo")) && StrUtil.isBlank(param.get("refundNo"))) || StrUtil.isBlank(param.get("gatewayHost"))) {
-            return "参数有误!";
+    private String api(String bizCode) {
+        if (StrUtil.isBlank(param.get(PayConstants.GATEWAY_HOST))) {
+            return PayConstants.PARAM_ERROR;
         }
-        param.put("sign", PayUtils.sign(PayUtils.getSignCheckContent(param), getParam("privateKey")));
-        String res = HttpUtil.post(Objects.requireNonNull(getParam("gatewayHost")), PayUtils.getRequestParamString(param, null));
+        switch (bizCode) {
+            case PayConstants.BIZ_CODE_CREATE_CHARGE:
+                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) || StrUtil.isBlank(PayConstants.AMOUNT) || StrUtil.isBlank(PayConstants.SUBJECT)) {
+                    return PayConstants.PARAM_ERROR;
+                }
+                break;
+            case PayConstants.BIZ_CODE_QUERY:
+                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO)) {
+                    return PayConstants.PARAM_ERROR;
+                }
+                break;
+            case PayConstants.BIZ_CODE_REFUND:
+                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) || StrUtil.isBlank(PayConstants.OUT_REFUND_NO) || StrUtil.isBlank(PayConstants.REFUND_AMOUNT)) {
+                    return PayConstants.PARAM_ERROR;
+                }
+                break;
+            case PayConstants.BIZ_CODE_REFUND_QUERY:
+                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) || StrUtil.isBlank(PayConstants.OUT_REFUND_NO)) {
+                    return PayConstants.PARAM_ERROR;
+                }
+                break;
+            case PayConstants.BIZ_CODE_FUND:
+                if (StrUtil.isBlank(PayConstants.OUT_FUND_NO) || StrUtil.isBlank(PayConstants.FUND_AMOUNT)) {
+                    return PayConstants.PARAM_ERROR;
+                }
+                break;
+            case PayConstants.BIZ_CODE_FUND_QUERY:
+                if (StrUtil.isBlank(PayConstants.OUT_FUND_NO)) {
+                    return PayConstants.PARAM_ERROR;
+                }
+                break;
+            default:
+                break;
+        }
+        param.put(PayConstants.SIGN, PayUtils.sign(PayUtils.getSignCheckContent(param), getParam(PayConstants.PRIVATE_KEY)));
+        String res = HttpUtil.post(Objects.requireNonNull(getParam(PayConstants.GATEWAY_HOST)), PayUtils.getRequestParamString(param, null));
         return StrUtil.isBlank(res) ? null : res;
     }
 
