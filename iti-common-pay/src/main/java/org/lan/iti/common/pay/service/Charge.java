@@ -109,7 +109,9 @@ public class Charge {
         }
         switch (bizCode) {
             case PayConstants.BIZ_CODE_CREATE_CHARGE:
-                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) || StrUtil.isBlank(PayConstants.AMOUNT) || StrUtil.isBlank(PayConstants.SUBJECT)) {
+                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) ||
+                        StrUtil.isBlank(PayConstants.AMOUNT) ||
+                        StrUtil.isBlank(PayConstants.SUBJECT)) {
                     return PayConstants.PARAM_ERROR;
                 }
                 break;
@@ -119,22 +121,32 @@ public class Charge {
                 }
                 break;
             case PayConstants.BIZ_CODE_REFUND:
-                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) || StrUtil.isBlank(PayConstants.OUT_REFUND_NO) || StrUtil.isBlank(PayConstants.REFUND_AMOUNT)) {
+                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) ||
+                        StrUtil.isBlank(PayConstants.OUT_REFUND_NO) ||
+                        StrUtil.isBlank(PayConstants.REFUND_AMOUNT)) {
                     return PayConstants.PARAM_ERROR;
                 }
                 break;
             case PayConstants.BIZ_CODE_REFUND_QUERY:
-                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) || StrUtil.isBlank(PayConstants.OUT_REFUND_NO)) {
+                if (StrUtil.isBlank(PayConstants.OUT_ORDER_NO) ||
+                        StrUtil.isBlank(PayConstants.OUT_REFUND_NO)) {
                     return PayConstants.PARAM_ERROR;
                 }
                 break;
             case PayConstants.BIZ_CODE_FUND:
-                if (StrUtil.isBlank(PayConstants.OUT_FUND_NO) || StrUtil.isBlank(PayConstants.FUND_AMOUNT)) {
+                if (StrUtil.isBlank(PayConstants.OUT_FUND_NO) ||
+                        StrUtil.isBlank(PayConstants.FUND_AMOUNT) ||
+                        StrUtil.isBlank(PayConstants.ACCOUNT_ID) ||
+                        StrUtil.isBlank(PayConstants.ACCOUNT_TYPE) ||
+                        StrUtil.isBlank(PayConstants.ACCOUNT_NAME) ||
+                        StrUtil.isBlank(PayConstants.FUND_CHANNEL)
+                ) {
                     return PayConstants.PARAM_ERROR;
                 }
                 break;
             case PayConstants.BIZ_CODE_FUND_QUERY:
-                if (StrUtil.isBlank(PayConstants.OUT_FUND_NO)) {
+                if (StrUtil.isBlank(PayConstants.OUT_FUND_NO)
+                ) {
                     return PayConstants.PARAM_ERROR;
                 }
                 break;

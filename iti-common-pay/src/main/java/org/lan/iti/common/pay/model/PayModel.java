@@ -75,13 +75,33 @@ public class PayModel extends BaseModel {
     public String outFundNo;
 
     /**
+     * 转账到账用户标识
+     */
+    public String accountId;
+
+    /**
+     * 转账到账用户类型
+     */
+    public String accountType;
+
+    /**
      * 转账金额
      */
     public String fundAmount;
 
     /**
+     * 转账渠道
+     */
+    public String fundChannel;
+
+    /**
      * 转账描述
      */
     public String fundDescription;
+
+    /**
+     * 收款方姓名
+     */
+    public String accountName;
 
 }

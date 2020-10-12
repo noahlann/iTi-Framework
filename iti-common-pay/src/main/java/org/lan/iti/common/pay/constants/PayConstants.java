@@ -55,7 +55,7 @@ public interface PayConstants {
     /**
      * outFundNo 商户转账订单号
      */
-    String OUT_FUND_NO = "outRefundNo";
+    String OUT_FUND_NO = "outFundNo";
 
     /**
      * 订单标题
@@ -73,6 +73,22 @@ public interface PayConstants {
      * 转账金额
      */
     String FUND_AMOUNT = "fundAmount";
+    /**
+     * 转账到账用户类型
+     */
+    String ACCOUNT_ID = "accountId";
+    /**
+     * 转账到账用户标识
+     */
+    String ACCOUNT_TYPE = "accountType";
+    /**
+     * 收款方姓名
+     */
+    String ACCOUNT_NAME = "accountName";
+    /**
+     * 转账渠道
+     */
+    String FUND_CHANNEL = "fundChannel";
 
     /**
      * 参数错误
