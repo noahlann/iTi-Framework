@@ -53,6 +53,9 @@ public class InMemoryPkceAuthorizationCodeServices extends PkceRandomValueAuthor
     protected OAuth2Authentication remove(String code, String codeVerifier) {
         // code仅允许使用一次
         PkceProtectedAuthentication auth = authorizationCodeStore.remove(code);
+        if (auth == null) {
+            throw new InvalidRequestException("invalid authorization_code");
+        }
         return auth.getOAuth2Authentication(codeVerifier);
     }
 

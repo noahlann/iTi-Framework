@@ -30,8 +30,10 @@ import org.apache.ibatis.reflection.MetaObject;
  * @author NorthLan
  * @date 2020-07-02
  * @url https://noahlan.com
+ * @deprecated 将取消mybatis-plus
  */
 @AllArgsConstructor
+@Deprecated
 public class DynamicTableHandler implements ITableNameHandler {
     private static final String PREFIX_TABLE_NAME = "delegate.boundSql.parameterObject.ew.tablePrefix";
     private static final String SUFFIX_TABLE_NAME = "delegate.boundSql.parameterObject.ew.tableSuffix";

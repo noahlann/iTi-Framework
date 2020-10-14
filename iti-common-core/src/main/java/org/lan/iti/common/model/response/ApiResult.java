@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,26 +54,26 @@ public class ApiResult<T> implements Serializable {
      * 框架：成功标记=1，失败标记=0
      * </p>
      */
-    @ApiModelProperty(value = "返回标记：成功标记=1，失败标记=0")
+    @ApiModelProperty("返回标记：成功标记=1，失败标记=0")
     private Integer status = ReturnStatusEnum.SUCCESS.getValue();
 
     /**
      * 错误码，当且仅当status=0时有效
      */
-    @ApiModelProperty(value = "错误码：当且仅当status=0时有效")
+    @ApiModelProperty("错误码：当且仅当status=0时有效")
     private Object errorCode = null;
 
     /**
      * 消息描述以及说明
      * TODO 服务端多语言设定
      */
-    @ApiModelProperty(value = "消息描述以及说明")
+    @ApiModelProperty("消息描述以及说明")
     private Object msg = "成功";
 
     /**
      * 结果集
      */
-    @ApiModelProperty(value = "结果集：数据")
+    @ApiModelProperty("结果集：数据")
     private T data = null;
 
     // region Static-method

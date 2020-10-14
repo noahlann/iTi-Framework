@@ -22,6 +22,7 @@ package org.lan.iti.common.core.constants;
  * @author NorthLan
  * @date 2020-02-20
  * @url https://noahlan.com
+ * TODO 待优化,将所有prefix集中?
  */
 public final class PrefixConstants {
     /**

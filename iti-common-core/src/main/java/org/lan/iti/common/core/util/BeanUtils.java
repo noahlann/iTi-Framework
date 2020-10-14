@@ -21,10 +21,12 @@ package org.lan.iti.common.core.util;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.util.CollectionUtils;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.*;
@@ -53,6 +55,23 @@ public class BeanUtils {
         }
         AbstractMap.SimpleEntry<Class<?>, Class<?>> key = new AbstractMap.SimpleEntry<>(source, target);
         return COPIER_MAP.computeIfAbsent(key, k -> BeanCopier.create(k.getKey(), k.getValue(), useConvert));
+    }
+
+    public static void copyPropertiesNonNull(Object source, Object target) {
+        org.springframework.beans.BeanUtils.copyProperties(source, target, getNullPropertyNames(source));
+    }
+
+    public static String[] getNullPropertyNames(Object source) {
+        final BeanWrapper wrapper = new BeanWrapperImpl(source);
+        PropertyDescriptor[] pds = wrapper.getPropertyDescriptors();
+        Set<String> nullProperties = new HashSet<>();
+        for (PropertyDescriptor pd : pds) {
+            Object srcValue = wrapper.getPropertyValue(pd.getName());
+            if (srcValue == null) {
+                nullProperties.add(pd.getName());
+            }
+        }
+        return nullProperties.toArray(new String[]{});
     }
 
     public static void copyProperties(Object source, Object target) {

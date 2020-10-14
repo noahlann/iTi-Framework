@@ -27,10 +27,13 @@ import java.io.IOException;
 
 /**
  * 请求过滤器
+ *
  * @author NorthLan
  * @date 2020-02-23
  * @url https://noahlan.com
+ * @deprecated 需修改 {@link RequestWrapper}
  */
+@Deprecated
 public class RequestWrapperFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {

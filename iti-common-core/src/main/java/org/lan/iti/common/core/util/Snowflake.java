@@ -18,8 +18,7 @@
 
 package org.lan.iti.common.core.util;
 
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -229,7 +228,7 @@ public class Snowflake implements Serializable {
         StringBuilder mpid = new StringBuilder();
         mpid.append(dataCenterId);
         String name = ManagementFactory.getRuntimeMXBean().getName();
-        if (StringUtils.isNotBlank(name)) {
+        if (StrUtil.isNotBlank(name)) {
             /*
              * GET jvmPid
              */

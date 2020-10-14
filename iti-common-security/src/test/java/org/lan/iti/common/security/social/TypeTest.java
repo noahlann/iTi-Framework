@@ -36,7 +36,7 @@ public class TypeTest {
     @Test
     public void test() {
         List<SocialAuthenticationService> services = new ArrayList<>();
-        services.add(new MobilePasswordAuthenticationService(null, null, null, null));
+        services.add(new MobilePasswordAuthenticationService(null, null, null, null, null));
         for (SocialAuthenticationService service : services) {
             if (service instanceof TokenGranter) {
                 System.out.println(true);

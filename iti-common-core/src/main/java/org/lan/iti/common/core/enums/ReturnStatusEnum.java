@@ -18,6 +18,7 @@
 
 package org.lan.iti.common.core.enums;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -29,12 +30,12 @@ import lombok.Getter;
  * @url https://noahlan.com
  */
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ReturnStatusEnum {
     // return status
     SUCCESS(1, "成功"),
     FAIL(0, "失败");
 
-    private Integer value;
-    private String desc;
+    private final Integer value;
+    private final String desc;
 }

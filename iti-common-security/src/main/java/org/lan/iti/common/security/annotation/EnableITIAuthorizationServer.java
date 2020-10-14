@@ -16,7 +16,7 @@
 
 package org.lan.iti.common.security.annotation;
 
-import org.lan.iti.common.security.config.ITIAuthorizationServerConfigurerAdapter;
+import org.lan.iti.common.security.autoconfigure.ITIAuthorizationServerConfigurerAdapter;
 import org.lan.iti.common.security.service.ITIUserDetailsServiceImpl;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;

@@ -18,6 +18,7 @@ package org.lan.iti.common.core.xss;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.ReadListener;
@@ -37,10 +38,13 @@ import java.io.InputStreamReader;
  * @author NorthLan
  * @date 2020-02-23
  * @url https://noahlan.com
+ * 
+ * @deprecated 可使用此类替代, 需读懂代码先 {@link ContentCachingRequestWrapper}
  */
 @Slf4j
+@Deprecated
 public class RequestWrapper extends HttpServletRequestWrapper {
-    private byte[] body;
+    private final byte[] body;
 
     /**
      * Constructs a request object wrapping the given request.

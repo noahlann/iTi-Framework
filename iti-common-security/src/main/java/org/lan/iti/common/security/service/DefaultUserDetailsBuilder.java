@@ -30,6 +30,7 @@ import org.lan.iti.common.security.model.ITIUserDetails;
 public class DefaultUserDetailsBuilder extends AbstractUserDetailsBuilder {
 
     @Override
-    protected void build(ITIUserDetails details, Object user, String providerId, String domain) {
+    protected ITIUserDetails build(Object user, String providerId, String domain) {
+        return new ITIUserDetails();
     }
 }

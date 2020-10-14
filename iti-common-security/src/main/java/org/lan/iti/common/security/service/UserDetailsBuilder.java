@@ -17,7 +17,6 @@
 package org.lan.iti.common.security.service;
 
 import org.lan.iti.common.security.model.ITIUserDetails;
-import org.lan.iti.common.security.model.SecurityUser;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
@@ -37,7 +36,7 @@ public interface UserDetailsBuilder {
      *
      * @param user 安全用户信息
      */
-    ITIUserDetails from(SecurityUser<?> user, String providerId, String domain);
+    ITIUserDetails from(Object user, String providerId, String domain);
 
     /**
      * 从Authentication构建

@@ -20,9 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.exception.ServiceUnavailableException;
-import org.lan.iti.common.security.feign.service.RemoteUserService;
-import org.lan.iti.common.security.model.SecurityUser;
-import org.springframework.cache.CacheManager;
+import org.lan.iti.common.security.feign.RemoteUserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -38,28 +36,27 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class ITIUserDetailsServiceImpl implements ITIUserDetailsService {
-    private final CacheManager cacheManager;
     private final RemoteUserService remoteUserService;
     private final UserDetailsBuilder userDetailsBuilder;
 
     @Override
     public UserDetails loadUser(String principal, String providerId, String domain) throws UsernameNotFoundException {
-        ApiResult<SecurityUser<?>> user = remoteUserService.getSecurityUser(providerId, principal, domain);
+        ApiResult<Object> user = remoteUserService.getSecurityUser(providerId, principal, domain);
         return buildUserDetails(user, providerId, domain);
     }
 
     @Override
     public UserDetails register(String principal, String providerId, String domain, String credentials, Map<String, String> extra) {
-        ApiResult<SecurityUser<?>> user = remoteUserService.register(principal, providerId, credentials);
+        ApiResult<Object> user = remoteUserService.register(principal, providerId, credentials);
         return buildUserDetails(user, providerId, domain);
     }
 
-    private UserDetails buildUserDetails(ApiResult<SecurityUser<?>> result, String providerId, String domain) {
+    private UserDetails buildUserDetails(ApiResult<Object> result, String providerId, String domain) {
         if (!result.isSuccess()) {
             throw new ServiceUnavailableException("内部调用异常，请联系管理员");
         }
 
-        SecurityUser<?> securityUser = result.getData();
+        Object securityUser = result.getData();
         if (securityUser == null) {
             throw new UsernameNotFoundException("用户不存在");
         }

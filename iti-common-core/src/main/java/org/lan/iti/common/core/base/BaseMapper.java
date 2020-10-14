@@ -47,6 +47,7 @@ import java.util.function.BiConsumer;
  * @author NorthLan
  * @date 2020/02/20
  * @url https://noahlan.com
+ * @deprecated 下一版本将取消 mybatis-plus (2.1.0) -> 使用 jpa
  */
 public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.BaseMapper<T> {
     Logger log = LoggerFactory.getLogger(BaseMapper.class);

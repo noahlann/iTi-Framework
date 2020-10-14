@@ -22,6 +22,7 @@ package org.lan.iti.common.core.constants;
  * @author NorthLan
  * @date 2020-02-20
  * @url https://noahlan.com
+ * TODO 取消很多无用的constants
  */
 public final class SecurityConstants {
     /**

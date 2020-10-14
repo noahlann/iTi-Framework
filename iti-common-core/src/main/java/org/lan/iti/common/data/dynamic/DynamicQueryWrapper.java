@@ -27,7 +27,9 @@ import lombok.Getter;
  * @author NorthLan
  * @date 2020-07-02
  * @url https://noahlan.com
+ * @deprecated 将取消mybatis-plus
  */
+@Deprecated
 public class DynamicQueryWrapper<T> extends QueryWrapper<T> {
     private static final long serialVersionUID = 4801991259985053801L;
 

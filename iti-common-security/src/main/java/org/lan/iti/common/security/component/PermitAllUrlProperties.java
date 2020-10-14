@@ -17,11 +17,11 @@
 package org.lan.iti.common.security.component;
 
 import cn.hutool.core.util.ReUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.lan.iti.common.core.util.StringPool;
 import org.lan.iti.common.security.annotation.Inner;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;

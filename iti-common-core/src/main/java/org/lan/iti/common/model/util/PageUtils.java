@@ -37,8 +37,10 @@ import java.util.function.Function;
  * @author NorthLan
  * @date 2020-04-10
  * @url https://noahlan.com
+ * @deprecated 将使用jpa的分页器直接替代 {@link org.springframework.data.domain.PageRequest}
  */
 @UtilityClass
+@Deprecated
 public class PageUtils {
 
     /**

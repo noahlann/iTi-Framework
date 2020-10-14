@@ -18,7 +18,6 @@ package org.lan.iti.common.security.handler;
 
 import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.core.util.WebUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -26,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 /**
  * 表单登录失败处理逻辑
@@ -41,10 +39,6 @@ public class FormAuthenticationFailureHandler implements AuthenticationFailureHa
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         log.debug("表单登录失败: {}", exception.getLocalizedMessage());
-        Optional<HttpServletResponse> responseOptional = WebUtils.getCurrentResponse();
-        if (responseOptional.isPresent()) {
-            responseOptional.get().sendRedirect(String.format("/token/login?error=%s"
-                    , HttpUtil.encodeParams(exception.getMessage(), StandardCharsets.UTF_8)));
-        }
+        response.sendRedirect(String.format("/token/login?error=%s", HttpUtil.encodeParams(exception.getMessage(), StandardCharsets.UTF_8)));
     }
 }

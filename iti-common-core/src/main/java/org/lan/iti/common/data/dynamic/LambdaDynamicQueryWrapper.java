@@ -27,7 +27,9 @@ import lombok.Getter;
  * @author NorthLan
  * @date 2020-07-02
  * @url https://noahlan.com
+ * @deprecated 将取消mybatis-plus
  */
+@Deprecated
 public class LambdaDynamicQueryWrapper<T> extends LambdaQueryWrapper<T> {
     private static final long serialVersionUID = -1068655342484783766L;
 

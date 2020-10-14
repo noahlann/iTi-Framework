@@ -35,10 +35,12 @@ import java.util.List;
  * @author NorthLan
  * @date 2020-04-10
  * @url https://noahlan.com
+ * @deprecated 将直接使用jpa中的pageable替代
  */
 @Data
 @Accessors(chain = true)
 @Validated
+@Deprecated
 public class PageParameter implements Serializable {
     private static final long serialVersionUID = -8857063986322273205L;
 

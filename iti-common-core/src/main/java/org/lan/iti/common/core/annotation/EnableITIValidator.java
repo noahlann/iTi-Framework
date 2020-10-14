@@ -18,7 +18,7 @@
 
 package org.lan.iti.common.core.annotation;
 
-import org.lan.iti.common.core.config.ValidatorConfiguration;
+import org.lan.iti.common.core.autoconfigure.ITIValidatorAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -34,6 +34,6 @@ import java.lang.annotation.*;
 @Inherited
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import(ValidatorConfiguration.class)
+@Import(ITIValidatorAutoConfiguration.class)
 public @interface EnableITIValidator {
 }

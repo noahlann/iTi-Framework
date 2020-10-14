@@ -33,6 +33,7 @@ import java.util.List;
  */
 @Data
 @ConfigurationProperties(prefix = DynamicTableProperties.PREFIX)
+@Deprecated
 public class DynamicTableProperties {
     public static final String PREFIX = "iti.dynamic.table-name";
 

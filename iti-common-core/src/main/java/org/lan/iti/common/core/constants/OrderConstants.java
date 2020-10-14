@@ -36,29 +36,4 @@ public final class OrderConstants {
      * SQLExceptionHandler
      */
     public static final int SQL_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 1;
-
-    /**
-     * 临时保存RequestData的aop
-     */
-    public static final int REQUEST_DATA_AOP_SORT = 500;
-
-    /**
-     * 参数校验为空的aop
-     */
-    public static final int PARAM_VALIDATE_AOP_SORT = 510;
-
-    /**
-     * 控制器调用链的aop
-     */
-    public static final int CHAIN_ON_CONTROLLER_SORT = 600;
-
-    /**
-     * provider的调用链aop
-     */
-    public static final int CHAIN_ON_PROVIDER_SORT = 610;
-
-    /**
-     * consumer的调用链aop
-     */
-    public static final int CHAIN_ON_CONSUMMER_SORT = 620;
 }

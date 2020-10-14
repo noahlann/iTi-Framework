@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -35,6 +36,7 @@ import java.time.LocalDateTime;
  * @author NorthLan
  * @date 2020/02/20
  * @url https://noahlan.com
+ * @deprecated 下一版本将取消 mybatis-plus (2.1.0) -> 使用 jpa
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

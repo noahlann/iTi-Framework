@@ -25,12 +25,12 @@ import lombok.experimental.UtilityClass;
 import org.lan.iti.common.core.util.LambdaUtils;
 import org.lan.iti.common.security.model.ITIUserDetails;
 import org.lan.iti.common.security.social.SocialAuthenticationToken;
-import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * 安全工具类
@@ -56,20 +56,19 @@ public class SecurityUtils {
      *
      * @return iTi定义的用户信息
      */
-    @Nullable
-    public ITIUserDetails getUser(Authentication authentication) {
+    public Optional<ITIUserDetails> getUser(Authentication authentication) {
+        ITIUserDetails details = null;
         Object principal = authentication.getPrincipal();
         if (principal instanceof ITIUserDetails) {
-            return (ITIUserDetails) principal;
+            details = (ITIUserDetails) principal;
         }
-        return null;
+        return Optional.ofNullable(details);
     }
 
     /**
      * 获取当前登录用户
      */
-    @Nullable
-    public ITIUserDetails getUser() {
+    public Optional<ITIUserDetails> getUser() {
         return getUser(getAuthentication());
     }
 
@@ -90,20 +89,19 @@ public class SecurityUtils {
      */
     public void setUserDetails(ITIUserDetails userDetails) {
         Authentication userAuthentication = getAuthentication();
-        ITIUserDetails existingUser = getUser(userAuthentication);
-        if (existingUser == null) {
-            return;
-        }
-        BeanUtil.copyProperties(userDetails, existingUser, CopyOptions.create(ITIUserDetails.class, true,
-                LambdaUtils.getFieldName(ITIUserDetails::getUserId),
-                LambdaUtils.getFieldName(ITIUserDetails::getDomain),
-                LambdaUtils.getFieldName(ITIUserDetails::getProviderId),
-                LambdaUtils.getFieldName(ITIUserDetails::getTenantId)));
-        // authorities
-        if (userAuthentication instanceof UsernamePasswordAuthenticationToken || userAuthentication instanceof SocialAuthenticationToken) {
-            ReflectUtil.setFieldValue(userAuthentication,
-                    LambdaUtils.getFieldName(Authentication::getAuthorities),
-                    Collections.unmodifiableCollection(userDetails.getAuthorities()));
-        }
+        Optional<ITIUserDetails> existingUser = getUser(userAuthentication);
+        existingUser.ifPresent(it -> {
+            BeanUtil.copyProperties(userDetails, it, CopyOptions.create(ITIUserDetails.class, true,
+                    LambdaUtils.getFieldName(ITIUserDetails::getUserId),
+                    LambdaUtils.getFieldName(ITIUserDetails::getDomain),
+                    LambdaUtils.getFieldName(ITIUserDetails::getProviderId),
+                    LambdaUtils.getFieldName(ITIUserDetails::getTenantId)));
+            // authorities
+            if (userAuthentication instanceof UsernamePasswordAuthenticationToken || userAuthentication instanceof SocialAuthenticationToken) {
+                ReflectUtil.setFieldValue(userAuthentication,
+                        LambdaUtils.getFieldName(Authentication::getAuthorities),
+                        Collections.unmodifiableCollection(userDetails.getAuthorities()));
+            }
+        });
     }
 }

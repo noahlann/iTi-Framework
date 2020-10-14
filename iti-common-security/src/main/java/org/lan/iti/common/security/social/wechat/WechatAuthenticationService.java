@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.Formatter;
 import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.exception.ITIAuth2Exception;
-import org.lan.iti.common.security.feign.service.RemoteSocialService;
+import org.lan.iti.common.security.feign.RemoteSocialService;
 import org.lan.iti.common.security.model.SecuritySocialDetails;
 import org.lan.iti.common.security.social.AbstractSocialTokenGranter;
 import org.lan.iti.common.security.social.SocialAuthenticationToken;

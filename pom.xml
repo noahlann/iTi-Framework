@@ -22,7 +22,7 @@
 
     <groupId>org.lan</groupId>
     <artifactId>iti-common</artifactId>
-    <version>1.6.2</version>
+    <version>2.0.0</version>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     <developers>
@@ -63,7 +63,7 @@
         <module>iti-common-generator</module>
         <module>iti-common-minio</module>
         <module>iti-common-sequence</module>
-        <module>iti-common-swagger</module>
+        <module>iti-common-doc</module>
         <module>iti-common-scanner</module>
         <module>iti-common-sentinel</module>
         <module>iti-common-security</module>
@@ -93,6 +93,11 @@
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!--监控-->
         <dependency>

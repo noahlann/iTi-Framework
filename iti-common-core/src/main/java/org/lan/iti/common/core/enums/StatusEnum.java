@@ -16,6 +16,7 @@
 
 package org.lan.iti.common.core.enums;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -30,7 +31,7 @@ import lombok.Getter;
  * @url https://noahlan.com
  */
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum StatusEnum {
     // status flag
     NORMAL(1, "正常"),
