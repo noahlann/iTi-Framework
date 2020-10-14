@@ -139,7 +139,7 @@ public class Charge {
                         StrUtil.isBlank(PayConstants.ACCOUNT_ID) ||
                         StrUtil.isBlank(PayConstants.ACCOUNT_TYPE) ||
                         StrUtil.isBlank(PayConstants.ACCOUNT_NAME) ||
-                        StrUtil.isBlank(PayConstants.FUND_CHANNEL)
+                        StrUtil.isBlank(PayConstants.TO_BANK)
                 ) {
                     return PayConstants.PARAM_ERROR;
                 }

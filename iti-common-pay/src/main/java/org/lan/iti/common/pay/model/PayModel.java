@@ -104,4 +104,9 @@ public class PayModel extends BaseModel {
      */
     public String accountName;
 
+    /**
+     * 是否转账到银行卡（Y:是；N:否）
+     */
+    public String toBank;
+
 }

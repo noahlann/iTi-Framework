@@ -89,6 +89,14 @@ public interface PayConstants {
      * 转账渠道
      */
     String FUND_CHANNEL = "fundChannel";
+    /**
+     * 银行编号
+     */
+    String BANK_CODE = "bankCode";
+    /**
+     * 是否转账到银行卡（Y:是；N:否）
+     */
+    String TO_BANK = "toBank";
 
     /**
      * 参数错误
