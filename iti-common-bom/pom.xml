@@ -167,6 +167,11 @@
                 <artifactId>iti-common-doc</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.lan</groupId>
+                <artifactId>iti-common-pay</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- mybatis plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
