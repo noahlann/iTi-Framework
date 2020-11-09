@@ -16,83 +16,67 @@
  *
  */
 
-package org.lan.iti.common.security.endpoint;
+package org.lan.iti.common.security.endpoint.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.model.response.ApiResult;
-import org.lan.iti.common.security.annotation.Inner;
+import org.lan.iti.common.security.endpoint.constants.PassportConstants;
+import org.lan.iti.common.security.endpoint.service.AbstractPassportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+import static org.lan.iti.common.security.endpoint.constants.PassportConstants.PREFIX_PASSPORT_SERVICE;
+
 /**
- * sso端点
- * 使用OAuth2协议 授权码模式
+ * Token 服务（内部使用）
  *
  * @author NorthLan
- * @date 2020-08-03
+ * @date 2020-11-09
  * @url https://noahlan.com
  */
-@Slf4j
-@RestController
-@RequestMapping("sso/v1")
-public class SsoEndpoint {
-    private final static String REDIRECT_URI = "redirect_uri";
-
-    @Autowired
-    private RestTemplate restTemplate;
+@Service(PREFIX_PASSPORT_SERVICE + AuthorizationCodePassportService.GRANT_TYPE)
+public class AuthorizationCodePassportService extends AbstractPassportService {
+    public static final String GRANT_TYPE = "authorization_code";
 
     @Autowired
     private AuthorizationCodeResourceDetails details;
 
-    @GetMapping("login")
-    @Inner(false)
-
-    public ApiResult<?> getLogin(@RequestParam Map<String, String> params) {
-        return postLogin(params);
-    }
-
-    @PostMapping("login")
-    @Inner(false)
-    public ApiResult<?> postLogin(@RequestParam Map<String, String> params) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Map<String, Object> innerGrant(Map<String, String> params) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.set("client_id", details.getClientId());
-        map.set("client_secret", details.getClientSecret());
-        map.set("grant_type", details.getGrantType());
+        map.set(PassportConstants.CLIENT_ID, details.getClientId());
+        map.set(PassportConstants.CLIENT_SECRET, details.getClientSecret());
+        map.set(PassportConstants.GRANT_TYPE, details.getGrantType());
         String redirectUri;
         if (details.isUseCurrentUri()) {
             // 优先使用请求中的 redirect_uri
-            redirectUri = params.remove(REDIRECT_URI);
+            redirectUri = params.remove(PassportConstants.REDIRECT_URI);
             if (StrUtil.isBlank(redirectUri)) {
                 redirectUri = details.getPreEstablishedRedirectUri();
             }
         } else {
-            params.remove(REDIRECT_URI);
+            params.remove(PassportConstants.REDIRECT_URI);
             redirectUri = details.getPreEstablishedRedirectUri();
         }
         if (StrUtil.isNotBlank(redirectUri)) {
-            map.set(REDIRECT_URI, redirectUri);
+            map.set(PassportConstants.REDIRECT_URI, redirectUri);
         }
 
         params.forEach(map::set);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
 
-        Map<String, Object> token = restTemplate.postForObject(details.getAccessTokenUri(),
+        return restTemplate.postForObject(details.getAccessTokenUri(),
                 requestEntity, Map.class);
-
-        return ApiResult.ok(token);
     }
 }

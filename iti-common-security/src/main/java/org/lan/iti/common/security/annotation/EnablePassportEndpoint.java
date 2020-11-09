@@ -18,7 +18,7 @@
 
 package org.lan.iti.common.security.annotation;
 
-import org.lan.iti.common.security.endpoint.SsoEndpoint;
+import org.lan.iti.common.security.endpoint.FrameworkPassportEndpoint;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -34,6 +34,6 @@ import java.lang.annotation.*;
 @Inherited
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import(SsoEndpoint.class)
-public @interface EnableITISsoEndpoint {
+@Import(FrameworkPassportEndpoint.class)
+public @interface EnablePassportEndpoint {
 }
