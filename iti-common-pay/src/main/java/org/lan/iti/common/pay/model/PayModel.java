@@ -109,4 +109,14 @@ public class PayModel extends BaseModel {
      */
     public String toBank;
 
+    /**
+     * 授权码
+     */
+    public String authCode;
+
+    /**
+     * 渠道编码 支付宝：alipay 微信：wx 银联：upacp
+     */
+    public String channel;
+
 }

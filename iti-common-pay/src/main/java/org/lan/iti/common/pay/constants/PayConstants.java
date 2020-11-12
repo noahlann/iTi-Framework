@@ -30,6 +30,10 @@ public interface PayConstants {
      * bizCode fundQuery 转账查询
      */
     String BIZ_CODE_FUND_QUERY = "fundQuery";
+    /**
+     * bizCode oAuthGetToken 获取渠道用户信息
+     */
+    String BIZ_CODE_OAUTH_GET_TOKEN = "oAuthGetToken";
 
     /**
      * privateKey 私钥
@@ -97,10 +101,20 @@ public interface PayConstants {
      * 是否转账到银行卡（Y:是；N:否）
      */
     String TO_BANK = "toBank";
+    /**
+     * 授权码
+     */
+    String AUTH_CODE = "authCode";
 
     /**
      * 参数错误
      */
     String PARAM_ERROR = "参数错误";
+
+    /**
+     * 渠道编码
+     */
+    String CHANNEL = "channel";
+
 
 }
