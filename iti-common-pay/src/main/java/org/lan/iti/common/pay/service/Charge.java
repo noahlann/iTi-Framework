@@ -89,6 +89,15 @@ public class Charge {
     }
 
     /**
+     * 获取渠道用户信息
+     *
+     * @return 渠道用户唯一标识
+     */
+    public String oAuthGetToken() {
+        return api(PayConstants.BIZ_CODE_FUND_QUERY);
+    }
+
+    /**
      * 获取参数值
      *
      * @param key 关键信息
@@ -146,6 +155,13 @@ public class Charge {
                 break;
             case PayConstants.BIZ_CODE_FUND_QUERY:
                 if (StrUtil.isBlank(PayConstants.OUT_FUND_NO)
+                ) {
+                    return PayConstants.PARAM_ERROR;
+                }
+                break;
+            case PayConstants.BIZ_CODE_OAUTH_GET_TOKEN:
+                if (StrUtil.isBlank(PayConstants.AUTH_CODE) ||
+                        StrUtil.isBlank(PayConstants.CHANNEL)
                 ) {
                     return PayConstants.PARAM_ERROR;
                 }
