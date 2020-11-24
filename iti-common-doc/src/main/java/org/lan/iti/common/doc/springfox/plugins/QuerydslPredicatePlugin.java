@@ -31,7 +31,6 @@ import org.springframework.data.util.CastUtils;
 import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import springfox.documentation.builders.RequestParameterBuilder;
 import springfox.documentation.service.ParameterType;
 import springfox.documentation.service.RequestParameter;
@@ -54,7 +53,6 @@ import static springfox.documentation.builders.BuilderDefaults.nullToEmptyList;
  * @date 2020-09-20
  * @url https://noahlan.com
  */
-@Component
 @Order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER)
 @Slf4j
 @AllArgsConstructor

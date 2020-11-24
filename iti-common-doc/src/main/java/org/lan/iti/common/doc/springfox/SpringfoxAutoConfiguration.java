@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.lan.iti.common.doc.properties.SpringfoxProperties;
 import org.lan.iti.common.doc.springfox.plugins.QuerydslPredicatePlugin;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,11 +64,17 @@ public class SpringfoxAutoConfiguration {
     private static final List<String> DEFAULT_EXCLUDE_PATH = Arrays.asList("/error", "/actuator/**");
     private static final String BASE_PATH = "/**";
 
-    @Bean
-    @ConditionalOnBean(QuerydslBindingsFactory.class)
-    public OperationBuilderPlugin querydslPredicatePlugin(QuerydslBindingsFactory factory) {
-        return new QuerydslPredicatePlugin(factory);
+    @Configuration
+    @ConditionalOnClass(QuerydslBindingsFactory.class)
+    public class QueryDslPluginsConfiguration {
+
+        @Bean
+        @ConditionalOnBean(QuerydslBindingsFactory.class)
+        public OperationBuilderPlugin querydslPredicatePlugin(QuerydslBindingsFactory factory) {
+            return new QuerydslPredicatePlugin(factory);
+        }
     }
+
 
     /**
      * 注入优先级调整
