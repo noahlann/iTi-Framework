@@ -27,10 +27,7 @@ import org.lan.iti.common.model.response.ApiResult;
 import org.lan.iti.common.security.annotation.Inner;
 import org.lan.iti.common.security.endpoint.constants.PassportConstants;
 import org.lan.iti.common.security.endpoint.service.PassportService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -42,6 +39,7 @@ import java.util.Map;
  * @url https://noahlan.com
  */
 @Slf4j
+@RestController
 @RequestMapping("passport")
 @AllArgsConstructor
 public class FrameworkPassportEndpoint {
@@ -60,10 +58,28 @@ public class FrameworkPassportEndpoint {
         if (StrUtil.isBlank(grantType)) {
             throw new ServiceException(1000, "未指定 grant_type,请检查！");
         }
-        PassportService passportService = passportServiceMap.get(grantType);
+        PassportService passportService = passportServiceMap.get(PassportConstants.PREFIX_PASSPORT_SERVICE + grantType);
         if (passportService == null) {
             throw new ServiceException(1001, Formatter.format("系统未实现类型为:[{}] 的登录方式,请检查！", grantType));
         }
         return ApiResult.ok(passportService.grant(params));
+    }
+
+    /**
+     * 刷新当前用户Token
+     *
+     * @return 新token
+     */
+    @PostMapping("refresh")
+    public ApiResult<?> refreshToken() {
+        PassportService passportService = null;
+        for (Map.Entry<String, PassportService> entry : passportServiceMap.entrySet()) {
+            passportService = entry.getValue();
+            break;
+        }
+        if (passportService == null) {
+            throw new ServiceException(1001, "系统未实现任何登录类型");
+        }
+        return ApiResult.ok(passportService.refreshToken());
     }
 }

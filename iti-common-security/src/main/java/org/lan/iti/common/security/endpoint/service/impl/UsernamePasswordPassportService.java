@@ -20,12 +20,10 @@ package org.lan.iti.common.security.endpoint.service.impl;
 
 import org.lan.iti.common.security.endpoint.constants.PassportConstants;
 import org.lan.iti.common.security.endpoint.service.AbstractPassportService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -38,19 +36,16 @@ import java.util.Map;
  * @date 2020-11-09
  * @url https://noahlan.com
  */
-@Service(PassportConstants.PREFIX_PASSPORT_SERVICE + UsernamePasswordPassportService.GRANT_TYPE)
+@Component(PassportConstants.PREFIX_PASSPORT_SERVICE + UsernamePasswordPassportService.GRANT_TYPE)
 public class UsernamePasswordPassportService extends AbstractPassportService {
     public static final String GRANT_TYPE = "password";
-
-    @Autowired
-    private ResourceOwnerPasswordResourceDetails details;
 
     @SuppressWarnings("unchecked")
     @Override
     protected Map<String, Object> innerGrant(Map<String, String> params) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.set(PassportConstants.CLIENT_ID, details.getClientId());
-        map.set(PassportConstants.CLIENT_SECRET, details.getClientSecret());
+        map.set(PassportConstants.CLIENT_ID, protectedResourceDetails.getClientId());
+        map.set(PassportConstants.CLIENT_SECRET, protectedResourceDetails.getClientSecret());
         map.set(PassportConstants.GRANT_TYPE, GRANT_TYPE);
 
         // set
@@ -60,7 +55,7 @@ public class UsernamePasswordPassportService extends AbstractPassportService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
 
-        return restTemplate.postForObject(details.getAccessTokenUri(),
+        return restTemplate.postForObject(protectedResourceDetails.getAccessTokenUri(),
                 requestEntity, Map.class);
     }
 }

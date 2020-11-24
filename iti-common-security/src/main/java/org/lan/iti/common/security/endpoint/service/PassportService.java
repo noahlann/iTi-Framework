@@ -36,4 +36,11 @@ public interface PassportService {
      * @return Token信息
      */
     Map<String, String> grant(Map<String, String> params);
+
+    /**
+     * 刷新当前登录用户的Token
+     *
+     * @return 新token
+     */
+    Map<String, String> refreshToken();
 }

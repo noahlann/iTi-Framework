@@ -26,7 +26,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -41,7 +41,7 @@ import static org.lan.iti.common.security.endpoint.constants.PassportConstants.P
  * @date 2020-11-09
  * @url https://noahlan.com
  */
-@Service(PREFIX_PASSPORT_SERVICE + AuthorizationCodePassportService.GRANT_TYPE)
+@Component(PREFIX_PASSPORT_SERVICE + AuthorizationCodePassportService.GRANT_TYPE)
 public class AuthorizationCodePassportService extends AbstractPassportService {
     public static final String GRANT_TYPE = "authorization_code";
 
@@ -52,8 +52,8 @@ public class AuthorizationCodePassportService extends AbstractPassportService {
     @Override
     protected Map<String, Object> innerGrant(Map<String, String> params) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.set(PassportConstants.CLIENT_ID, details.getClientId());
-        map.set(PassportConstants.CLIENT_SECRET, details.getClientSecret());
+        map.set(PassportConstants.CLIENT_ID, protectedResourceDetails.getClientId());
+        map.set(PassportConstants.CLIENT_SECRET, protectedResourceDetails.getClientSecret());
         map.set(PassportConstants.GRANT_TYPE, details.getGrantType());
         String redirectUri;
         if (details.isUseCurrentUri()) {
@@ -76,7 +76,7 @@ public class AuthorizationCodePassportService extends AbstractPassportService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
 
-        return restTemplate.postForObject(details.getAccessTokenUri(),
+        return restTemplate.postForObject(protectedResourceDetails.getAccessTokenUri(),
                 requestEntity, Map.class);
     }
 }
