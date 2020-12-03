@@ -2,6 +2,7 @@ package org.lan.iti.common.pay.util;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,6 +74,28 @@ public class PayUtils {
             log.error(errorMessage, var7);
             throw new RuntimeException(errorMessage, var7);
         }
+    }
+
+    /**
+     * 检查给定的key应用的value是否为空
+     *
+     * @param key map的指定key
+     * @param map map
+     * @return 验证结果
+     */
+    public boolean isKeyValueNotBlankOfMapString(Map<String, String> map, String key) {
+        return map.containsKey(key) && StrUtil.isNotBlank(key);
+    }
+
+    /**
+     * 检查给定的key应用的value是否为空
+     *
+     * @param key map的指定key
+     * @param map map
+     * @return 验证结果
+     */
+    public boolean isKeyValueBlankOfMapString(Map<String, String> map, String key) {
+        return !map.containsKey(key) || StrUtil.isBlank(key);
     }
 
     /**
