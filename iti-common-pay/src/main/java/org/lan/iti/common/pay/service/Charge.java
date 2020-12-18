@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * @author I'm
  * @since 2020/8/25
- * description 支付凭据
+ * description 支付订单
  */
 @UtilityClass
 @Slf4j
@@ -45,9 +45,9 @@ public class Charge {
     }
 
     /**
-     * 查询支付凭据
+     * 查询支付订单
      *
-     * @return 支付凭据
+     * @return 支付订单
      */
     public String query() {
         return api(PayConstants.BIZ_CODE_QUERY);
@@ -173,7 +173,7 @@ public class Charge {
             case PayConstants.BIZ_CODE_OAUTH_GET_TOKEN:
                 if (
                         PayUtils.isKeyValueBlankOfMapString(param, PayConstants.AUTH_CODE) ||
-                                PayUtils.isKeyValueBlankOfMapString(param, PayConstants.CHANNEL)
+                                PayUtils.isKeyValueBlankOfMapString(pasram, PayConstants.CHANNEL)
                 ) {
                     return PayConstants.PARAM_ERROR;
                 }

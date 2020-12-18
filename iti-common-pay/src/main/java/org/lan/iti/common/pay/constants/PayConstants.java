@@ -53,7 +53,7 @@ public interface PayConstants {
      */
     String OUT_ORDER_NO = "outOrderNo";
     /**
-     * outRefundNo 商户退款凭据号
+     * outRefundNo 商户退款订单号
      */
     String OUT_REFUND_NO = "outRefundNo";
     /**
