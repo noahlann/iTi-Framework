@@ -20,6 +20,9 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.util.ReflectUtil;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import org.lan.iti.common.jackson.dynamicfilter.support.DynamicFilterMixin;
+import org.lan.iti.common.jackson.dynamicfilter.support.DynamicFilterProvider;
 import org.lan.iti.common.jackson.module.ITIJavaTimeModule;
 import org.lan.iti.common.jackson.module.ITILongModule;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -45,7 +48,7 @@ import java.util.TimeZone;
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
 @AutoConfigureBefore(JacksonAutoConfiguration.class)
-public class JacksonConfig {
+public class ITIJacksonAutoConfiguration {
 
     @SuppressWarnings("unchecked")
     @Bean
@@ -54,6 +57,9 @@ public class JacksonConfig {
             builder.locale(Locale.CHINA);
             builder.timeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
             builder.simpleDateFormat(DatePattern.NORM_DATETIME_PATTERN);
+            // jackson-dynamic-filter
+            builder.mixIn(Object.class, DynamicFilterMixin.class);
+            builder.filters(new DynamicFilterProvider(null));
 
             // 由于builder.modules会覆盖原设置,通过反射获取builder原先modules值
             Object originalModulesObj = ReflectUtil.getFieldValue(builder, "modules");
@@ -63,7 +69,6 @@ public class JacksonConfig {
             }
             modules.add(new ITIJavaTimeModule());
             modules.add(new ITILongModule());
-
             builder.modules(modules);
         };
     }
