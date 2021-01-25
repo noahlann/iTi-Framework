@@ -22,10 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.lan.iti.common.jackson.dynamicfilter.properties.JacksonDynamicFilterProperties;
 import org.lan.iti.common.jackson.dynamicfilter.resolver.DynamicFilterResolver;
-import org.lan.iti.common.jackson.dynamicfilter.support.DynamicFilterMixin;
-import org.lan.iti.common.jackson.dynamicfilter.support.DynamicFilterProvider;
 import org.lan.iti.common.jackson.dynamicfilter.support.DynamicFilterResponseBodyAdvice;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,6 +46,7 @@ import java.util.List;
  */
 @Slf4j
 @Configuration
+@AutoConfigureAfter(ITIJacksonAutoConfiguration.class)
 @EnableConfigurationProperties(JacksonDynamicFilterProperties.class)
 @ConditionalOnClass(DynamicFilterResponseBodyAdvice.class)
 @ConditionalOnProperty(value = "iti.jackson.filter.enabled", havingValue = "true", matchIfMissing = true)
@@ -62,8 +62,8 @@ public class JacksonDynamicFilterAutoConfiguration implements WebMvcConfigurer {
     }
 
     private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-        objectMapper.addMixIn(Object.class, DynamicFilterMixin.class);
-        objectMapper.setFilterProvider(new DynamicFilterProvider(null));
+//        objectMapper.addMixIn(Object.class, DynamicFilterMixin.class);
+//        objectMapper.setFilterProvider(new DynamicFilterProvider(null));
         return new MappingJackson2HttpMessageConverter(objectMapper);
     }
 
