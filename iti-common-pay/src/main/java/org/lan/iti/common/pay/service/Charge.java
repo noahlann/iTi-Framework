@@ -173,7 +173,7 @@ public class Charge {
             case PayConstants.BIZ_CODE_OAUTH_GET_TOKEN:
                 if (
                         PayUtils.isKeyValueBlankOfMapString(param, PayConstants.AUTH_CODE) ||
-                                PayUtils.isKeyValueBlankOfMapString(pasram, PayConstants.CHANNEL)
+                                PayUtils.isKeyValueBlankOfMapString(param, PayConstants.CHANNEL)
                 ) {
                     return PayConstants.PARAM_ERROR;
                 }
