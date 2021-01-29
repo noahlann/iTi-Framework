@@ -13,6 +13,8 @@ import java.util.Map;
  * description
  */
 public class BaseModel {
+    HashMap<String, String> map = new HashMap<>();
+
     /**
      * 将建构的 builder 转为 Map
      *
@@ -20,7 +22,7 @@ public class BaseModel {
      */
     public Map<String, String> toMap() {
         String[] fieldNames = getFiledNames(this);
-        HashMap<String, String> map = new HashMap<>(fieldNames.length);
+        map.clear();
         for (String name : fieldNames) {
             String value = (String) getFieldValueByName(name, this);
             if (StrUtil.isNotEmpty(value)) {

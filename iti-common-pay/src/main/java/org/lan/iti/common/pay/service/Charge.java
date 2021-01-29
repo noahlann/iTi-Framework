@@ -11,6 +11,7 @@ import org.lan.iti.common.pay.model.PayModel;
 import org.lan.iti.common.pay.util.PayUtils;
 import org.springframework.validation.BindException;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ import java.util.Objects;
 @Slf4j
 public class Charge {
 
-    private Map<String, String> param;
+    private Map<String, String> param = new HashMap<>();
 
     /**
      * 设置配置信息
@@ -181,7 +182,11 @@ public class Charge {
             default:
                 break;
         }
-        param.put(PayConstants.SIGN, PayUtils.sign(PayUtils.getSignCheckContent(param), getParam(PayConstants.PRIVATE_KEY)));
+        String privateKey = param.get(PayConstants.PRIVATE_KEY);
+        param.remove(PayConstants.PRIVATE_KEY);
+        String sign = PayUtils.sign(PayUtils.getSignCheckContent(param), privateKey);
+//        log.debug("Charge.sign->{}",sign);
+        param.put(PayConstants.SIGN, sign);
         String res = HttpUtil.post(Objects.requireNonNull(getParam(PayConstants.GATEWAY_HOST)), PayUtils.getRequestParamString(param, null));
         return StrUtil.isBlank(res) ? null : res;
     }
