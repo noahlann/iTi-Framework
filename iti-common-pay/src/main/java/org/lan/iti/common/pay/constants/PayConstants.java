@@ -36,6 +36,11 @@ public interface PayConstants {
     String BIZ_CODE_OAUTH_GET_TOKEN = "oAuthGetToken";
 
     /**
+     * bizCode oAuthRequest 获取渠道用户信息的请求
+     */
+    String BIZ_CODE_OAUTH_REQUEST = "oAuthRequest";
+
+    /**
      * privateKey 私钥
      */
     String PRIVATE_KEY = "privateKey";

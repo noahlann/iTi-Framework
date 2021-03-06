@@ -91,6 +91,15 @@ public class Charge {
     }
 
     /**
+     * 获取渠道用户信息的请求
+     *
+     * @return 请求地址
+     */
+    public String oAuthRequest() {
+        return api(PayConstants.BIZ_CODE_OAUTH_REQUEST);
+    }
+
+    /**
      * 获取渠道用户信息
      *
      * @return 渠道用户唯一标识
