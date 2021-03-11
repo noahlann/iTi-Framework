@@ -11,9 +11,8 @@ import org.lan.iti.common.pay.model.PayModel;
 import org.lan.iti.common.pay.util.PayUtils;
 import org.springframework.validation.BindException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author I'm
@@ -24,16 +23,18 @@ import java.util.Objects;
 @Slf4j
 public class Charge {
 
-    private Map<String, String> param = new HashMap<>();
+    String PRIVATE_KEY = null;
 
     /**
      * 设置配置信息
      *
      * @param payModel 支付模型
      */
-    public void setOptions(PayModel payModel) throws BindException {
+    public ConcurrentHashMap<String, String> setOptions(PayModel payModel) throws BindException {
         ValidationUtils.validate(payModel, (Object) null);
-        param = payModel.toMap();
+        PRIVATE_KEY = payModel.privateKey;
+        payModel.privateKey = null;
+        return payModel.toMap();
     }
 
     /**
@@ -41,8 +42,8 @@ public class Charge {
      *
      * @return 支付请求地址
      */
-    public String createCharge() {
-        return api(PayConstants.BIZ_CODE_CREATE_CHARGE);
+    public String createCharge(ConcurrentHashMap<String, String> param) {
+        return api(PayConstants.BIZ_CODE_CREATE_CHARGE, param);
     }
 
     /**
@@ -50,8 +51,8 @@ public class Charge {
      *
      * @return 支付订单
      */
-    public String query() {
-        return api(PayConstants.BIZ_CODE_QUERY);
+    public String query(ConcurrentHashMap<String, String> param) {
+        return api(PayConstants.BIZ_CODE_QUERY, param);
     }
 
     /**
@@ -59,8 +60,8 @@ public class Charge {
      *
      * @return 申请退款
      */
-    public String refund() {
-        return api(PayConstants.BIZ_CODE_REFUND);
+    public String refund(ConcurrentHashMap<String, String> param) {
+        return api(PayConstants.BIZ_CODE_REFUND, param);
     }
 
     /**
@@ -68,8 +69,8 @@ public class Charge {
      *
      * @return 退款查询结果信息
      */
-    public String refundQuery() {
-        return api(PayConstants.BIZ_CODE_REFUND_QUERY);
+    public String refundQuery(ConcurrentHashMap<String, String> param) {
+        return api(PayConstants.BIZ_CODE_REFUND_QUERY, param);
     }
 
     /**
@@ -77,8 +78,8 @@ public class Charge {
      *
      * @return 转账
      */
-    public String fund() {
-        return api(PayConstants.BIZ_CODE_FUND);
+    public String fund(ConcurrentHashMap<String, String> param) {
+        return api(PayConstants.BIZ_CODE_FUND, param);
     }
 
     /**
@@ -86,8 +87,8 @@ public class Charge {
      *
      * @return 转账查询结果信息
      */
-    public String fundQuery() {
-        return api(PayConstants.BIZ_CODE_FUND_QUERY);
+    public String fundQuery(ConcurrentHashMap<String, String> param) {
+        return api(PayConstants.BIZ_CODE_FUND_QUERY, param);
     }
 
     /**
@@ -95,8 +96,8 @@ public class Charge {
      *
      * @return 请求地址
      */
-    public String oAuthRequest() {
-        return api(PayConstants.BIZ_CODE_OAUTH_REQUEST);
+    public String oAuthRequest(ConcurrentHashMap<String, String> param) {
+        return api(PayConstants.BIZ_CODE_OAUTH_REQUEST, param);
     }
 
     /**
@@ -104,8 +105,8 @@ public class Charge {
      *
      * @return 渠道用户唯一标识
      */
-    public String oAuthGetToken() {
-        return api(PayConstants.BIZ_CODE_OAUTH_GET_TOKEN);
+    public String oAuthGetToken(ConcurrentHashMap<String, String> param) {
+        return api(PayConstants.BIZ_CODE_OAUTH_GET_TOKEN, param);
     }
 
     /**
@@ -114,7 +115,7 @@ public class Charge {
      * @param key 关键信息
      * @return 参数值
      */
-    private String getParam(String key) {
+    private String getParam(String key, ConcurrentHashMap<String, String> param) {
         return param.containsKey(key) && StrUtil.isNotBlank(param.get(key)) ? param.get(key) : null;
     }
 
@@ -123,7 +124,7 @@ public class Charge {
      *
      * @return 返回结果
      */
-    private String api(String bizCode) {
+    private String api(String bizCode, ConcurrentHashMap<String, String> param) {
         if (StrUtil.isBlank(param.get(PayConstants.GATEWAY_HOST))) {
             return PayConstants.PARAM_ERROR;
         }
@@ -191,12 +192,9 @@ public class Charge {
             default:
                 break;
         }
-        String privateKey = param.get(PayConstants.PRIVATE_KEY);
-        param.remove(PayConstants.PRIVATE_KEY);
-        String sign = PayUtils.sign(PayUtils.getSignCheckContent(param), privateKey);
-//        log.debug("Charge.sign->{}",sign);
+        String sign = PayUtils.sign(PayUtils.getSignCheckContent(param), PRIVATE_KEY);
         param.put(PayConstants.SIGN, sign);
-        String res = HttpUtil.post(Objects.requireNonNull(getParam(PayConstants.GATEWAY_HOST)), PayUtils.getRequestParamString(param, null));
+        String res = HttpUtil.post(Objects.requireNonNull(getParam(PayConstants.GATEWAY_HOST, param)), PayUtils.getRequestParamString(param, null));
         return StrUtil.isBlank(res) ? null : res;
     }
 

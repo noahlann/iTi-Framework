@@ -4,8 +4,8 @@ import cn.hutool.core.util.StrUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author I'm
@@ -13,20 +13,20 @@ import java.util.Map;
  * description
  */
 public class BaseModel {
-    HashMap<String, String> map = new HashMap<>();
+    ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
 
     /**
      * 将建构的 builder 转为 Map
      *
      * @return 转化后的 Map
      */
-    public Map<String, String> toMap() {
-        String[] fieldNames = getFiledNames(this);
+    public ConcurrentHashMap<String, String> toMap() {
         map.clear();
+        String[] fieldNames = getFiledNames(this);
         for (String name : fieldNames) {
             String value = (String) getFieldValueByName(name, this);
             if (StrUtil.isNotEmpty(value)) {
-                map.put(name, value);
+                map.put(name, Objects.requireNonNull(value));
             }
         }
         return map;
