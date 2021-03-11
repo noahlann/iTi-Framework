@@ -13,11 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * @author I'm
@@ -117,7 +113,7 @@ public class PayUtils {
      * @param publicKey  验签公钥
      * @return 验签结果
      */
-    public boolean verify(ConcurrentHashMap<String, String> parameters, String publicKey) {
+    public boolean verify(Map<String, String> parameters, String publicKey) {
         String sign = Convert.toStr(parameters.get("sign"));
         parameters.remove("sign");
         String content = getSignCheckContent(parameters);
@@ -130,9 +126,9 @@ public class PayUtils {
      * @param request {HttpServletRequest}
      * @return 转化后的Map
      */
-    public ConcurrentHashMap<String, String> toMap(HttpServletRequest request) {
-        ConcurrentHashMap<String, String> params = new ConcurrentHashMap<>();
-        ConcurrentHashMap<String, String[]> requestParams = (ConcurrentHashMap) request.getParameterMap();
+    public Map<String, String> toMap(HttpServletRequest request) {
+        Map<String, String> params = new HashMap<>();
+        Map<String, String[]> requestParams = request.getParameterMap();
         for (String name : requestParams.keySet()) {
             String[] values = requestParams.get(name);
             String valueStr = "";
@@ -150,7 +146,7 @@ public class PayUtils {
      * @param params 待签名的集合
      * @return 验证签名的参数 形式为 a=x b=y
      */
-    public String getSignCheckContent(ConcurrentHashMap<String, String> params) {
+    public String getSignCheckContent(Map<String, String> params) {
         if (params == null) {
             return null;
         } else {

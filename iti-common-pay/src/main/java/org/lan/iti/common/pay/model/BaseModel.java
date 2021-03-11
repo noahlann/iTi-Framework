@@ -4,8 +4,9 @@ import cn.hutool.core.util.StrUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author I'm
@@ -13,14 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * description
  */
 public class BaseModel {
-    ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
+    Map<String, String> map = new HashMap<>();
 
     /**
      * 将建构的 builder 转为 Map
      *
      * @return 转化后的 Map
      */
-    public ConcurrentHashMap<String, String> toMap() {
+    public Map<String, String> toMap() {
         map.clear();
         String[] fieldNames = getFiledNames(this);
         for (String name : fieldNames) {
