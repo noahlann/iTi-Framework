@@ -147,7 +147,7 @@ public class Charge {
         if (StrUtil.isNotBlank(amount)) {
             BigDecimal amountBigDecimal = new BigDecimal(amount);
             BigDecimal bizAmountBigDecimal = new BigDecimal(bizAmount);
-            return amountBigDecimal.compareTo(bizAmountBigDecimal) < PayConstants.BIG_DECIMAL_GREATER_THAN;
+            return amountBigDecimal.compareTo(bizAmountBigDecimal) < PayConstants.BIG_DECIMAL_EQUALS;
         } else {
             return true;
         }
@@ -174,7 +174,8 @@ public class Charge {
                         StrUtil.isBlank(param.get(PayConstants.AMOUNT))) {
                     return AMOUNT_EMPTY;
                 }
-                if (checkAmount(param.get(PayConstants.AMOUNT), PayConstants.MIN_AMOUNT)) {
+                if (!ReUtil.isMatch(org.lan.iti.common.pay.util.PatternPool.MONEY, param.get(PayConstants.AMOUNT)) ||
+                        checkAmount(param.get(PayConstants.AMOUNT), PayConstants.MIN_AMOUNT)) {
                     return AMOUNT_PATTERN;
                 }
                 if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.SUBJECT)) {
@@ -197,7 +198,8 @@ public class Charge {
                         StrUtil.isBlank(param.get(PayConstants.REFUND_AMOUNT))) {
                     return AMOUNT_EMPTY;
                 }
-                if (checkAmount(param.get(PayConstants.REFUND_AMOUNT), PayConstants.MIN_AMOUNT)) {
+                if (!ReUtil.isMatch(org.lan.iti.common.pay.util.PatternPool.MONEY, param.get(PayConstants.REFUND_AMOUNT)) ||
+                        checkAmount(param.get(PayConstants.REFUND_AMOUNT), PayConstants.MIN_AMOUNT)) {
                     return AMOUNT_PATTERN;
                 }
                 break;
@@ -223,6 +225,9 @@ public class Charge {
                 if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.FUND_AMOUNT) ||
                         Convert.toFloat(param.get(PayConstants.FUND_AMOUNT)) == null) {
                     return AMOUNT_EMPTY;
+                }
+                if (!ReUtil.isMatch(org.lan.iti.common.pay.util.PatternPool.MONEY, param.get(PayConstants.FUND_AMOUNT))) {
+                    return AMOUNT_PATTERN;
                 }
                 if (StrUtil.equals(param.get(PayConstants.FUND_CHANNEL), PayChannelConstants.ALIPAY)) {
                     if (checkAmount(param.get(PayConstants.FUND_AMOUNT), PayConstants.ALIPAY_MIN_FUND_AMOUNT)) {

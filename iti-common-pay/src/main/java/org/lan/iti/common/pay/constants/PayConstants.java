@@ -150,6 +150,11 @@ public interface PayConstants {
     int BIG_DECIMAL_GREATER_THAN = 1;
 
     /**
+     * 金额比较结果为等于
+     */
+    int BIG_DECIMAL_EQUALS = 0;
+
+    /**
      * 金额比较结果为小于
      */
     int BIG_DECIMAL_LESS_THAN = -1;
