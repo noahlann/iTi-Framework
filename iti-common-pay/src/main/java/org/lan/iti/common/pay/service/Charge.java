@@ -1,18 +1,26 @@
 package org.lan.iti.common.pay.service;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.lang.PatternPool;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.lan.iti.common.core.enums.ErrorLevelEnum;
+import org.lan.iti.common.core.exception.ServiceException;
 import org.lan.iti.common.core.util.ValidationUtils;
+import org.lan.iti.common.pay.constants.PayChannelConstants;
 import org.lan.iti.common.pay.constants.PayConstants;
 import org.lan.iti.common.pay.model.PayModel;
 import org.lan.iti.common.pay.util.PayUtils;
 import org.springframework.validation.BindException;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
+
+import static org.lan.iti.common.pay.constants.PayParamErrorConstants.*;
 
 /**
  * @author I'm
@@ -120,73 +128,139 @@ public class Charge {
     }
 
     /**
+     * 检查Http URL格式
+     *
+     * @param httpUrl Http URL
+     * @return 检查结果
+     */
+    private boolean isHttpUrlPatternCorrect(String httpUrl) {
+        return ReUtil.isMatch(PatternPool.URL_HTTP, httpUrl);
+    }
+
+    /**
+     * 检查金额格式
+     *
+     * @param amount 金额
+     * @return 检查结果
+     */
+    private boolean checkAmount(String amount, String bizAmount) {
+        if (StrUtil.isNotBlank(amount)) {
+            BigDecimal amountBigDecimal = new BigDecimal(amount);
+            BigDecimal bizAmountBigDecimal = new BigDecimal(bizAmount);
+            return amountBigDecimal.compareTo(bizAmountBigDecimal) < PayConstants.BIG_DECIMAL_GREATER_THAN;
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * 接口调用
      *
      * @return 返回结果
      */
     private String api(String bizCode, Map<String, String> param) {
         if (StrUtil.isBlank(param.get(PayConstants.GATEWAY_HOST))) {
-            return PayConstants.PARAM_ERROR;
+            throw new ServiceException(600, ErrorLevelEnum.PRIMARY.getValue(), GATEWAY_HOST_EMPTY);
+        }
+        if (!isHttpUrlPatternCorrect(param.get(PayConstants.GATEWAY_HOST))) {
+            throw new ServiceException(600, ErrorLevelEnum.PRIMARY.getValue(), GATEWAY_HOST_PATTERN);
         }
         switch (bizCode) {
             case PayConstants.BIZ_CODE_CREATE_CHARGE:
-                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_ORDER_NO) ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.AMOUNT) ||
-                        Convert.toFloat(param.get(PayConstants.AMOUNT)) == null ||
-                        Convert.toFloat(param.get(PayConstants.AMOUNT)) <= 0 ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.SUBJECT)
-                ) {
-                    return PayConstants.PARAM_ERROR;
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_ORDER_NO)) {
+                    return OUT_ORDER_EMPTY;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.AMOUNT) ||
+                        StrUtil.isBlank(param.get(PayConstants.AMOUNT))) {
+                    return AMOUNT_EMPTY;
+                }
+                if (checkAmount(param.get(PayConstants.AMOUNT), PayConstants.MIN_AMOUNT)) {
+                    return AMOUNT_PATTERN;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.SUBJECT)) {
+                    return SUBJECT_EMPTY;
                 }
                 break;
             case PayConstants.BIZ_CODE_QUERY:
                 if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_ORDER_NO)) {
-                    return PayConstants.PARAM_ERROR;
+                    return OUT_ORDER_EMPTY;
                 }
                 break;
             case PayConstants.BIZ_CODE_REFUND:
-                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_ORDER_NO) ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_REFUND_NO) ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.REFUND_AMOUNT) ||
-                        Convert.toFloat(param.get(PayConstants.REFUND_AMOUNT)) == null ||
-                        Convert.toFloat(param.get(PayConstants.REFUND_AMOUNT)) <= 0
-                ) {
-                    return PayConstants.PARAM_ERROR;
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_ORDER_NO)) {
+                    return OUT_ORDER_EMPTY;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_REFUND_NO)) {
+                    return OUT_REFUND_EMPTY;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.REFUND_AMOUNT) ||
+                        StrUtil.isBlank(param.get(PayConstants.REFUND_AMOUNT))) {
+                    return AMOUNT_EMPTY;
+                }
+                if (checkAmount(param.get(PayConstants.REFUND_AMOUNT), PayConstants.MIN_AMOUNT)) {
+                    return AMOUNT_PATTERN;
                 }
                 break;
             case PayConstants.BIZ_CODE_REFUND_QUERY:
-                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_ORDER_NO) ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_REFUND_NO)
-                ) {
-                    return PayConstants.PARAM_ERROR;
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_REFUND_NO)) {
+                    return OUT_REFUND_EMPTY;
                 }
                 break;
             case PayConstants.BIZ_CODE_FUND:
-                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_FUND_NO) ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.FUND_AMOUNT) ||
-                        Convert.toFloat(param.get(PayConstants.FUND_AMOUNT)) == null ||
-                        Convert.toFloat(param.get(PayConstants.FUND_AMOUNT)) <= 0 ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.ACCOUNT_ID) ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.ACCOUNT_TYPE) ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.ACCOUNT_NAME) ||
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.TO_BANK)
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_FUND_NO)) {
+                    return OUT_FUND_EMPTY;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.FUND_CHANNEL)) {
+                    return FUND_CHANNEL_EMPTY;
+                }
+                if (!StrUtil.equals(param.get(PayConstants.FUND_CHANNEL), PayChannelConstants.ALIPAY) &&
+                        !StrUtil.equals(param.get(PayConstants.FUND_CHANNEL), PayChannelConstants.WX) &&
+                        !StrUtil.equals(param.get(PayConstants.FUND_CHANNEL), PayChannelConstants.UPACP)
                 ) {
-                    return PayConstants.PARAM_ERROR;
+                    return FUND_CHANNEL_ERROR;
+                }
+
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.FUND_AMOUNT) ||
+                        Convert.toFloat(param.get(PayConstants.FUND_AMOUNT)) == null) {
+                    return AMOUNT_EMPTY;
+                }
+                if (StrUtil.equals(param.get(PayConstants.FUND_CHANNEL), PayChannelConstants.ALIPAY)) {
+                    if (checkAmount(param.get(PayConstants.FUND_AMOUNT), PayConstants.ALIPAY_MIN_FUND_AMOUNT)) {
+                        return AMOUNT_PATTERN;
+                    }
+                } else if (StrUtil.equals(param.get(PayConstants.FUND_CHANNEL), PayChannelConstants.WX)) {
+                    if (checkAmount(param.get(PayConstants.FUND_AMOUNT), PayConstants.WX_MIN_FUND_AMOUNT)) {
+                        return AMOUNT_PATTERN;
+                    }
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.ACCOUNT_ID)) {
+                    return ACCOUNT_ID_EMPTY;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.ACCOUNT_TYPE)) {
+                    return ACCOUNT_TYPE_EMPTY;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.ACCOUNT_NAME)) {
+                    return ACCOUNT_NAME_EMPTY;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.TO_BANK)) {
+                    return TO_BANK_EMPTY;
+                }
+                if (StrUtil.equals(param.get(PayConstants.TO_BANK), PayConstants.TO_BANK_Y) ||
+                        StrUtil.equals(param.get(PayConstants.TO_BANK), PayConstants.TO_BANK_N)) {
+                    return TO_BANK_PATTERN;
                 }
                 break;
             case PayConstants.BIZ_CODE_FUND_QUERY:
-                if (
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_FUND_NO)
-                ) {
-                    return PayConstants.PARAM_ERROR;
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.OUT_FUND_NO)) {
+                    return OUT_FUND_EMPTY;
                 }
                 break;
             case PayConstants.BIZ_CODE_OAUTH_GET_TOKEN:
-                if (
-                        PayUtils.isKeyValueBlankOfMapString(param, PayConstants.AUTH_CODE) ||
-                                PayUtils.isKeyValueBlankOfMapString(param, PayConstants.CHANNEL)
-                ) {
-                    return PayConstants.PARAM_ERROR;
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.AUTH_CODE)) {
+                    return AUTH_CODE_EMPTY;
+                }
+                if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.CHANNEL)) {
+                    return CHANNEL_EMPTY;
                 }
                 break;
             default:

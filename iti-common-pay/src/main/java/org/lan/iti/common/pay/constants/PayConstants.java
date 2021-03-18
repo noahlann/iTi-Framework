@@ -3,7 +3,7 @@ package org.lan.iti.common.pay.constants;
 /**
  * @author I'm
  * @since 2020/10/10
- * description
+ * description 支付常量
  */
 public interface PayConstants {
     /**
@@ -107,6 +107,14 @@ public interface PayConstants {
      */
     String TO_BANK = "toBank";
     /**
+     * 是否转账到银行卡（Y:是；N:否） 是
+     */
+    String TO_BANK_Y = "Y";
+    /**
+     * 是否转账到银行卡（Y:是；N:否） 否
+     */
+    String TO_BANK_N = "N";
+    /**
      * 授权码
      */
     String AUTH_CODE = "authCode";
@@ -121,5 +129,28 @@ public interface PayConstants {
      */
     String CHANNEL = "channel";
 
+    /**
+     * 最小金额
+     */
+    String MIN_AMOUNT = "0.01";
 
+    /**
+     * 最小金额(支付宝)
+     */
+    String ALIPAY_MIN_FUND_AMOUNT = "0.1";
+
+    /**
+     * 最小金额(微信)
+     */
+    String WX_MIN_FUND_AMOUNT = "1";
+
+    /**
+     * 金额比较结果为大于
+     */
+    int BIG_DECIMAL_GREATER_THAN = 1;
+
+    /**
+     * 金额比较结果为小于
+     */
+    int BIG_DECIMAL_LESS_THAN = -1;
 }
