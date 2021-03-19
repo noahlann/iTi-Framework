@@ -4,17 +4,25 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.PatternPool;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.enums.ErrorLevelEnum;
 import org.lan.iti.common.core.exception.ServiceException;
+import org.lan.iti.common.core.handler.RestResponseErrorHandler;
 import org.lan.iti.common.core.util.ValidationUtils;
 import org.lan.iti.common.pay.constants.PayChannelConstants;
 import org.lan.iti.common.pay.constants.PayConstants;
 import org.lan.iti.common.pay.model.PayModel;
 import org.lan.iti.common.pay.util.PayUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -273,7 +281,27 @@ public class Charge {
         }
         String sign = PayUtils.sign(PayUtils.getSignCheckContent(param), privateKey);
         param.put(PayConstants.SIGN, sign);
-        String res = HttpUtil.post(Objects.requireNonNull(getParam(PayConstants.GATEWAY_HOST, param)), PayUtils.getRequestParamString(param, null));
+        String res;
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.setErrorHandler(new RestResponseErrorHandler());
+            HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+            httpComponentsClientHttpRequestFactory.setConnectTimeout(8000);
+            httpComponentsClientHttpRequestFactory.setReadTimeout(5000);
+            restTemplate.setRequestFactory(httpComponentsClientHttpRequestFactory);
+            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+            headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+            HttpEntity<String> httpEntity = new HttpEntity<>(PayUtils.getRequestParamString(param, null), headers);
+            res = restTemplate.postForObject(Objects.requireNonNull(getParam(PayConstants.GATEWAY_HOST, param)), httpEntity, String.class);
+//            res = HttpRequest.post(Objects.requireNonNull(getParam(PayConstants.GATEWAY_HOST, param)))
+//                    .body(PayUtils.getRequestParamString(param, null))
+//                    .timeout(30000)
+//                    .execute()
+//                    .body();
+        } catch (RestClientException httpException) {
+            httpException.printStackTrace();
+            res = "请求超时(Read time out)!";
+        }
         return StrUtil.isBlank(res) ? null : res;
     }
 
