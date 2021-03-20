@@ -142,7 +142,7 @@ public interface PayConstants {
     /**
      * 最小金额(微信)
      */
-    String WX_MIN_FUND_AMOUNT = "1";
+    String WX_MIN_FUND_AMOUNT = "0.3";
 
     /**
      * 金额比较结果为大于

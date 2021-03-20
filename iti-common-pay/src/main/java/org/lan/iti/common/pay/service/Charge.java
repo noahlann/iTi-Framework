@@ -8,7 +8,6 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.enums.ErrorLevelEnum;
 import org.lan.iti.common.core.exception.ServiceException;
-import org.lan.iti.common.core.handler.RestResponseErrorHandler;
 import org.lan.iti.common.core.util.ValidationUtils;
 import org.lan.iti.common.pay.constants.PayChannelConstants;
 import org.lan.iti.common.pay.constants.PayConstants;
@@ -21,6 +20,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindException;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -284,7 +284,7 @@ public class Charge {
         String res;
         try {
             RestTemplate restTemplate = new RestTemplate();
-            restTemplate.setErrorHandler(new RestResponseErrorHandler());
+            restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
             HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
             httpComponentsClientHttpRequestFactory.setConnectTimeout(8000);
             httpComponentsClientHttpRequestFactory.setReadTimeout(5000);
