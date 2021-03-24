@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) [2019-2021] [NorthLan](lan6995@gmail.com)
+  ~  *
+  ~  * Licensed under the Apache License, Version 2.0 (the "License");
+  ~  * you may not use this file except in compliance with the License.
+  ~  * You may obtain a copy of the License at
+  ~  *
+  ~  *     http://www.apache.org/licenses/LICENSE-2.0
+  ~  *
+  ~  * Unless required by applicable law or agreed to in writing, software
+  ~  * distributed under the License is distributed on an "AS IS" BASIS,
+  ~  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  * See the License for the specific language governing permissions and
+  ~  * limitations under the License.
+  ~  */
+  -->
+
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
+<!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
+<Configuration status="OFF" monitorInterval="30">
+    <!-- 渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.log4j2.ColorConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.log4j2.WhitespaceThrowablePatternConverter" />
+    <conversionRule conversionWord="xwEx" converterClass="org.springframework.boot.logging.log4j2.ExtendedWhitespaceThrowablePatternConverter" />
+
+    <Properties>
+        <Property name="LOG_PROJ_NAME">iti-framework</Property>
+        <Property name="LOG_PATH">logs/${sys:LOG_PROJ_NAME}</Property>
+        <Property name="LOG_INFO_FILE">${sys:LOG_PATH}/info.log</Property>
+        <Property name="LOG_WARN_FILE">${sys:LOG_PATH}/warn.log</Property>
+        <Property name="LOG_ERROR_FILE">${sys:LOG_PATH}/error.log</Property>
+        <Property name="LOG_CHARSET">UTF-8</Property>
+        <Property name="LOG_FILE_SIZE">500 MB</Property>
+        <!--输出格式布局，每个转换说明符以百分号(%)开头，'%'后面的转换字符有如下:-->
+        <!--
+        p (level) 日志级别
+        c（logger） Logger的Name
+        C (class) Logger调用者的全限定类名 ***
+        d (date) 日期
+        highlight 高亮颜色
+        l (location) 调用位置 ***
+        L (line) 行号
+        m (msg/message) 输出的内容
+        M (methode) 调用方法 ***
+        maker marker的全限定名
+        n 输出平台相关的换行符,如'\n' '\r\n'
+        pid (processId) 进程ID
+        level （p）日志级别
+        r JVM启动后经过的微秒
+        t (tn/thread/threadName) 线程名称
+        T (tid/threadId) 线程ID
+        tp (threadPriority) 线程优先级
+        x (NDC) 线程Context堆栈
+
+        「」
+        -->
+        <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
+        <Property name="LOG_LEVEL_PATTERN">%5p</Property>
+        <Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss.SSS</Property>
+        <Property name="LOG_PREFIX_WORD">%notEmpty{「 %X{prefix} 」}</Property>
+        <Property name="LOG_CONSOLE_PATTERN">%clr{%d{${sys:LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${sys:LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{-&#45;&#45;}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} ${sys:LOG_PREFIX_WORD}%m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+        <Property name="LOG_FILE_PATTERN">%d{${LOG_DATEFORMAT_PATTERN}} ${LOG_LEVEL_PATTERN} %pid -&#45;&#45; [%t] %-40.40c{1.} : ${sys:LOG_PREFIX_WORD}%m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+    </Properties>
+
+    <!--Appenders 输出源,可以简单理解为配置要写到哪里怎么写-->
+    <!--Loggers 日志分根器,可以简单理解为配置哪些信息写到哪些append里-->
+    <Appenders>
+        <!--target="SYSTEM_OUT" 表示输出到终端-->
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${sys:LOG_CONSOLE_PATTERN}" charset="${LOG_CHARSET}"/>
+        </Console>
+
+        <!--滚动文件-->
+        <!--filePattern 指定当发生Rolling时，文件的转移和重命名规则-->
+        <RollingRandomAccessFile name="InfoFile" fileName="${sys:LOG_INFO_FILE}"
+                                 filePattern="${sys:LOG_PATH}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <!--日志信息输出格式-->
+            <!--注意：%M %L 所在的appender如果是AsyncLogger异步Logger的输出源的话,只有当AsyncLogger设置了includeLocation="true"才会显示
+            但是，这样会降低日志输出的性能(it can make logging 5 - 20 times slower),
+            所以,如果注重性能这里就不要打印日志的行数和所在方法
+            -->
+            <PatternLayout pattern="${LOG_FILE_PATTERN}" charset="${LOG_CHARSET}"/>
+            <Policies>
+                <!--
+                这个配置需要和filePattern结合使用，注意filePattern中配置的文件重命名规则是${LOG_HOME}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.log.gz，
+                最小的时间粒度是dd，即分钟，TimeBasedTriggeringPolicy指定的size是1，结合起来就是每一天生成一个新文件。
+                如果改成%d{yyyy-MM-dd HH}，最小粒度为小时，则每一个小时生成一个文件
+                -->
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <!--指定当文件体积大于size指定的值时，触发Rolling-->
+                <SizeBasedTriggeringPolicy size="${LOG_FILE_SIZE}"/>
+            </Policies>
+            <!-- 保留30天日志文件 -->
+            <DefaultRolloverStrategy fileIndex="nomax">
+                <Delete basePath="${LOG_PATH}" maxDepth="1">
+                    <IfFileName glob="*.log.gz"/>
+                    <IfLastModified age="P30D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="WarnFile" fileName="${sys:LOG_WARN_FILE}"
+                                 filePattern="${LOG_PATH}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="${LOG_FILE_PATTERN}"
+                           charset="${LOG_CHARSET}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${LOG_FILE_SIZE}"/>
+            </Policies>
+            <!-- 保留60天日志文件 -->
+            <DefaultRolloverStrategy fileIndex="nomax">
+                <Delete basePath="${LOG_PATH}" maxDepth="1">
+                    <!--备份文件为压缩包gz格式-->
+                    <IfFileName glob="*.log.gz"/>
+                    <!--配置失效时间-->
+                    <IfLastModified age="P60D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="ErrorFile" fileName="${sys:LOG_ERROR_FILE}"
+                                 filePattern="${LOG_PATH}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="${LOG_FILE_PATTERN}"
+                           charset="${LOG_CHARSET}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="${LOG_FILE_SIZE}"/>
+            </Policies>
+            <!-- 保留60天日志文件 -->
+            <DefaultRolloverStrategy fileIndex="nomax">
+                <Delete basePath="${LOG_PATH}" maxDepth="1">
+                    <!--备份文件为压缩包gz格式-->
+                    <IfFileName glob="*.log.gz"/>
+                    <!--配置失效时间-->
+                    <IfLastModified age="P60D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <!--日志级别level以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+        <!--日志信息 优先让 子类Logger匹配 -->
+        <!--Logger 父子Logger区分，举个粟子  name为"a"的Logger 是 name为"a.b"的父Logger,
+         而Root的name是"" 所以Root是所有Logger的父Logger(LogManager.ROOT_LOGGER_NAME="")-->
+        <!--Logger name="serverlogger"表示捕获日志信息name为serverlogger或serverlogger.xxx的信息，
+        子类Logger捕获了日志信息不会再被父Logger捕获,即使子类捕获日志信息由于level不满足不会去打印这条日志信息。-->
+        <!--注意 Logger 的 additivity 传递性,默认true
+        当additivity="true"时,表示当Logger捕获到日志信息并且日志信息的level大于等于当前Logger的属性level,
+        日志信息会打印到该Logger所有的appender中包括它的所有父logger的appender(不会管父logger的级别如何）,
+        所以呢,如果Logger的additivity不设置"false"的话，很有可能会出现重复打印的哦-->
+
+        <!--AsyncLogger 异步记录日志,Log4j2中的AsyncLogger的内部使用了Disruptor框架,所以需要添加依赖disruptor-3.3.4-->
+        <!--注意：includeLocation="true" 可以解决 AsyncLogger异步Logger输出appender中的日志 类方法和行数信息显示不出来问题，
+        但是会降低性能(it can make logging 5 - 20 times slower)，
+        所以呢 注重性能这里就不显示打印日志的行数和所在方法,把这里的includeLocation="true 去掉。
+        AsyncLogger 的additivity属性需要设置为false，这个异步需要依赖disruptor3.4，
+        如果没有disruptor3.4依赖包,AsyncLogger日志会打印不出来
+        -->
+        <AsyncLogger name="com.alibaba" level="info" additivity="false" includeLocation="false">
+            <!--被当前Logger捕获到的日志信息level大于等于当前Logger的level属性时写入到 RollingFileInfo 里-->
+            <!--每个Logger 可以设置多个appender ,如果有多个appender 会写入每个appender里-->
+            <appender-ref ref="Console"/>
+            <appender-ref ref="InfoFile"/>
+            <appender-ref ref="WarnFile"/>
+            <appender-ref ref="ErrorFile"/>
+        </AsyncLogger>
+
+        <!--框架日志-->
+        <AsyncLogger name="org.lan.iti" level="info" additivity="false" includeLocation="false">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="InfoFile"/>
+            <appender-ref ref="WarnFile"/>
+            <appender-ref ref="ErrorFile"/>
+        </AsyncLogger>
+
+        <!--业务日志建议使用异步-->
+
+        <!--Root 的name="" , 是所有其他配置的Logger的父Logger-->
+        <!--如果 Root的level="DEBUG",而且没有设置子类捕获过滤如"org"之类的日志信息的话，会发现控制台会打印非常多的调试信息-->
+        <!--解决办法提高Root的level级别，或者设置子类Logger去捕获过滤相关不想要打印的日志信息,注意level级别给低点,并且设置additivity="false"，
+        如上面的Logger org.apache.ibatis-->
+        <Root level="info"><!--这是 同步日志-->
+            <appender-ref ref="Console"/>
+            <appender-ref ref="InfoFile"/>
+            <appender-ref ref="WarnFile"/>
+            <appender-ref ref="ErrorFile"/>
+        </Root>
+
+        <!--注: 防止 Log4j2 退出时报OOM Exception
+        1 混合异步和同步Logger；root logger 为同步，其它为异步(如果additivity为false同步也行)
+        2 AsyncLogger 的additivity属性设置为false
+        -->
+    </Loggers>
+</Configuration>

@@ -1,5 +1,0 @@
-# AutoConfiguration
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.lan.iti.common.jackson.config.ITIJacksonAutoConfiguration,\
-org.lan.iti.common.jackson.config.JacksonHibernateModuleAutoConfiguration,\
-org.lan.iti.common.jackson.config.JacksonDynamicFilterAutoConfiguration

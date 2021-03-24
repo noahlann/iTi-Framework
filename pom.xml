@@ -21,9 +21,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.lan</groupId>
-    <artifactId>iti-common</artifactId>
-    <version>2.0.6</version>
-    <name>${project.artifactId}</name>
+    <artifactId>iti-framework</artifactId>
+    <version>${revision}</version>
+    <name>iTi :: Framework</name>
     <packaging>pom</packaging>
     <developers>
         <developer>
@@ -48,129 +48,26 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- version -->
         <java.version>1.8</java.version>
-
-        <!-- sonar -->
-        <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
+        <revision>2021.3.0</revision>
+        <main.basedir>${basedir}</main.basedir>
     </properties>
 
     <modules>
-        <module>iti-common-bom</module>
-        <module>iti-common-boot</module>
-        <module>iti-common-core</module>
-        <module>iti-common-feign</module>
-        <module>iti-common-gateway</module>
-        <module>iti-common-jackson</module>
-        <module>iti-common-generator</module>
-        <module>iti-common-minio</module>
-        <module>iti-common-sequence</module>
-        <module>iti-common-doc</module>
-        <module>iti-common-scanner</module>
-        <module>iti-common-sentinel</module>
-        <module>iti-common-security</module>
-        <module>iti-common-pay</module>
+        <module>iti-cloud-project</module>
+        <module>iti-common-project</module>
+        <module>iti-dependencies</module>
     </modules>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- iti-common-bom -->
-            <dependency>
-                <groupId>org.lan</groupId>
-                <artifactId>iti-common-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <dependencies>
-        <!--配置文件处理器-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <!--jasypt配置文件加解密-->
-        <dependency>
-            <groupId>com.github.ulisesbocchio</groupId>
-            <artifactId>jasypt-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!--监控-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <!--Lombok-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <!-- findbugs -->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>annotations</artifactId>
-        </dependency>
-        <!--测试依赖-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <finalName>${project.name}</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <target>${maven.compiler.target}</target>
-                    <source>${maven.compiler.source}</source>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>${sonar-maven-plugin.version}</version>
-            </plugin>
-        </plugins>
-    </build>
 
     <repositories>
         <!-- 阿里云代理 -->
         <repository>
-            <id>aliyun-maven-public</id>
-            <name>aliyun-maven-public</name>
+            <id>aliyun-central</id>
+            <name>aliyun-central</name>
+            <url>https://maven.aliyun.com/repository/central</url>
+        </repository>
+        <repository>
+            <id>aliyun-jcenter</id>
+            <name>aliyun-jcenter</name>
             <url>https://maven.aliyun.com/repository/public</url>
         </repository>
         <repository>
@@ -189,7 +86,7 @@
             </snapshots>
         </pluginRepository>
         <pluginRepository>
-            <id>aliyun-public</id>
+            <id>aliyun-jcenter</id>
             <url>https://maven.aliyun.com/repository/public</url>
             <snapshots>
                 <enabled>false</enabled>
@@ -203,16 +100,4 @@
             <url>https://repo.gygxzc.cn/repository/gxzc/</url>
         </repository>
     </distributionManagement>
-
-    <profiles>
-        <profile>
-            <id>sonar</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <sonar.host.url>http://192.168.1.46:9000</sonar.host.url>
-            </properties>
-        </profile>
-    </profiles>
 </project>

@@ -1,5 +1,0 @@
-# AutoConfiguration
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.lan.iti.common.doc.springfox.SpringfoxAutoConfiguration,\
-org.lan.iti.common.doc.springfox.SpringfoxAutoConfiguration.QueryDslPluginsConfiguration,\
-org.lan.iti.common.doc.springfox.PageableRuleConventionConfiguration
