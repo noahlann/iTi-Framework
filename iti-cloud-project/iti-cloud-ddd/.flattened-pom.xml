@@ -22,12 +22,12 @@
   <parent>
     <groupId>org.lan</groupId>
     <artifactId>iti-cloud-parent</artifactId>
-    <version>2021.3.0-SNAPSHOT</version>
+    <version>2021.3.0</version>
     <relativePath>../iti-cloud-parent</relativePath>
   </parent>
   <groupId>org.lan</groupId>
   <artifactId>iti-cloud-ddd</artifactId>
-  <version>2021.3.0-SNAPSHOT</version>
+  <version>2021.3.0</version>
   <name>iTi :: Cloud :: DDD</name>
   <description>iTi 核心公共模块</description>
   <licenses>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>org.lan</groupId>
       <artifactId>iti-cloud</artifactId>
-      <version>2021.3.0-SNAPSHOT</version>
+      <version>2021.3.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
