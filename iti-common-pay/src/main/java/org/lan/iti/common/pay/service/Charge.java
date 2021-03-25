@@ -6,11 +6,10 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.core.enums.ErrorLevelEnum;
-import org.lan.iti.common.core.exception.ServiceException;
-import org.lan.iti.common.core.util.ValidationUtils;
 import org.lan.iti.common.pay.constants.PayChannelConstants;
 import org.lan.iti.common.pay.constants.PayConstants;
+import org.lan.iti.common.pay.enums.ErrorLevelEnum;
+import org.lan.iti.common.pay.exception.ServiceException;
 import org.lan.iti.common.pay.model.PayModel;
 import org.lan.iti.common.pay.util.PayUtils;
 import org.springframework.http.HttpEntity;
@@ -19,11 +18,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.validation.BindException;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.Validation;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
@@ -46,8 +45,8 @@ public class Charge {
      *
      * @param payModel 支付模型
      */
-    public Map<String, String> setOptions(PayModel payModel) throws BindException {
-        ValidationUtils.validate(payModel, (Object) null);
+    public Map<String, String> setOptions(PayModel payModel) {
+        Validation.buildDefaultValidatorFactory().getValidator().validate(payModel);
         privateKey = payModel.privateKey;
         payModel.privateKey = null;
         return payModel.toMap();
