@@ -64,6 +64,7 @@ public class JacksonDynamicFilterAutoConfiguration implements WebMvcConfigurer {
     private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
 //        objectMapper.addMixIn(Object.class, DynamicFilterMixin.class);
 //        objectMapper.setFilterProvider(new DynamicFilterProvider(null));
+//        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return new MappingJackson2HttpMessageConverter(objectMapper);
     }
 

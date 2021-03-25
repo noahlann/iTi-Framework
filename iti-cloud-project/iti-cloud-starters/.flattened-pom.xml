@@ -20,12 +20,12 @@
   <parent>
     <groupId>org.lan</groupId>
     <artifactId>iti-cloud-parent</artifactId>
-    <version>2021.3.0</version>
+    <version>2021.3.1-SNAPSHOT</version>
     <relativePath>../iti-cloud-parent</relativePath>
   </parent>
   <groupId>org.lan</groupId>
   <artifactId>iti-cloud-starters</artifactId>
-  <version>2021.3.0</version>
+  <version>2021.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>iTi :: Cloud :: Starters</name>
   <description>iTi 核心公共模块</description>

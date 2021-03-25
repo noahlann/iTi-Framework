@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.lan.iti.common.core.exception.IExceptionSpec;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import java.util.Map;
  * @date 2020-02-20
  * @url https://noahlan.com
  */
+@SuppressWarnings("unused")
 @ToString
 @Data
 @NoArgsConstructor
@@ -45,11 +47,6 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ApiResult<T> implements Serializable {
     private static final long serialVersionUID = 5984342895602543917L;
-
-    /**
-     * 默认错误码
-     */
-    public static final String DEFAULT_ERROR_CODE = "-1";
 
     /**
      * 返回编码
@@ -62,7 +59,7 @@ public class ApiResult<T> implements Serializable {
      * TODO 服务端多语言设定
      */
     @ApiModelProperty("消息描述以及说明")
-    private String message = "成功";
+    private String message = null;
 
     /**
      * 结果集
@@ -143,10 +140,14 @@ public class ApiResult<T> implements Serializable {
      */
     public static <T> ApiResult<T> ok(String code, String message, T data) {
         ApiResult<T> result = new ApiResult<>();
-        if (!StrUtil.isEmpty(message)) {
-            result.setMessage(message);
+        if (StrUtil.isBlank(message)) {
+            message = DefaultEnum.SUCCESS.getMessage();
+        }
+        if (StrUtil.isBlank(code)) {
+            code = DefaultEnum.SUCCESS.getCode();
         }
         return result
+                .setMessage(message)
                 .setCode(code)
                 .setData(data);
     }
@@ -193,16 +194,29 @@ public class ApiResult<T> implements Serializable {
      */
     public static <T> ApiResult<T> error(String code, String message, T data) {
         ApiResult<T> result = new ApiResult<>();
-        if (StrUtil.isEmpty(code)) {
-            code = DEFAULT_ERROR_CODE;
+
+        if (StrUtil.isBlank(message)) {
+            message = DefaultEnum.FAIL.getMessage();
         }
-        if (StrUtil.isEmpty(message)) {
-            message = "失败";
+        if (StrUtil.isBlank(code)) {
+            code = DefaultEnum.FAIL.getCode();
         }
+
         return result
                 .setCode(code)
                 .setMessage(message)
                 .setData(data);
     }
     // endregion
+
+    @SuppressWarnings("AlibabaEnumConstantsMustHaveComment")
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    enum DefaultEnum implements IExceptionSpec {
+        SUCCESS("SUCCESS", "成功"),
+        FAIL("FAIL", "失败"),
+        ;
+        private final String code;
+        private final String message;
+    }
 }

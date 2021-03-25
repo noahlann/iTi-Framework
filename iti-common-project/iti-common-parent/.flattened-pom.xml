@@ -20,12 +20,12 @@
   <parent>
     <groupId>org.lan</groupId>
     <artifactId>iti-common-dependencies</artifactId>
-    <version>2021.3.0</version>
+    <version>2021.3.1-SNAPSHOT</version>
     <relativePath>../iti-common-dependencies</relativePath>
   </parent>
   <groupId>org.lan</groupId>
   <artifactId>iti-common-parent</artifactId>
-  <version>2021.3.0</version>
+  <version>2021.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>iTi :: Common :: Parent</name>
   <description>common 共同父包</description>

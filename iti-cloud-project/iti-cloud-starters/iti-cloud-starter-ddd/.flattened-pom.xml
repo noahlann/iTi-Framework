@@ -20,11 +20,11 @@
   <parent>
     <groupId>org.lan</groupId>
     <artifactId>iti-cloud-starters</artifactId>
-    <version>2021.3.0</version>
+    <version>2021.3.1-SNAPSHOT</version>
   </parent>
   <groupId>org.lan</groupId>
   <artifactId>iti-cloud-starter-ddd</artifactId>
-  <version>2021.3.0</version>
+  <version>2021.3.1-SNAPSHOT</version>
   <name>iTi :: Cloud :: Starter :: DDD</name>
   <description>iTi 核心公共模块</description>
   <licenses>
@@ -45,13 +45,13 @@
     <dependency>
       <groupId>org.lan</groupId>
       <artifactId>iti-cloud-starter</artifactId>
-      <version>2021.3.0</version>
+      <version>2021.3.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.lan</groupId>
       <artifactId>iti-cloud-ddd</artifactId>
-      <version>2021.3.0</version>
+      <version>2021.3.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.lan</groupId>
     <artifactId>iti-common-parent</artifactId>
-    <version>2021.3.0</version>
+    <version>2021.3.1-SNAPSHOT</version>
     <relativePath>../iti-common-parent</relativePath>
   </parent>
   <groupId>org.lan</groupId>
   <artifactId>iti-common-pay</artifactId>
-  <version>2021.3.0</version>
+  <version>2021.3.1-SNAPSHOT</version>
   <name>iTi :: Common :: Pay</name>
   <description>支付工具</description>
   <licenses>
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.lan</groupId>
       <artifactId>iti-common-core</artifactId>
-      <version>2021.3.0</version>
+      <version>2021.3.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
