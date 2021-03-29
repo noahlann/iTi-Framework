@@ -26,13 +26,7 @@
             <groupId>org.lan</groupId>
             <artifactId>iti-common-core</artifactId>
         </dependency>
-
         <!-- Provided -->
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
 </project>

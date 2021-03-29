@@ -65,6 +65,7 @@
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <httpclient.version>4.5.13</httpclient.version>
         <disruptor.version>3.4.2</disruptor.version>
+        <fastjson.version>1.2.75</fastjson.version>
 
         <snakeyaml.version>1.27</snakeyaml.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
@@ -250,6 +251,11 @@
                 <groupId>com.lmax</groupId>
                 <artifactId>disruptor</artifactId>
                 <version>${disruptor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
