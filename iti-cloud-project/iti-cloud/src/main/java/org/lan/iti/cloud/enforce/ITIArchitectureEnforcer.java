@@ -74,7 +74,7 @@ public class ITIArchitectureEnforcer {
     /**
      * DDD分层架构
      * 应用层: application/app 允许 用户接口层/基础设施层 引用
-     * 领域层: domain 允许 应用层/基础设施层 引用
+     * 领域层: domain 允许 应用层 引用
      * 基础设施层: infrastructure/infra 允许 应用层/用户接口层 引用
      * 用户接口层: interfaces 允许 应用层 引用
      * 共享层: spec 允许任何层 引用
@@ -84,13 +84,10 @@ public class ITIArchitectureEnforcer {
             .optionalLayer("Domain").definedBy("..domain..")
             .optionalLayer("Infrastructure").definedBy("..infrastructure..", "..infra..")
             .optionalLayer("Interfaces").definedBy("..interfaces..")
-            .optionalLayer("Spec").definedBy("..spec..")
-            .whereLayer("Application").mayOnlyBeAccessedByLayers("Interfaces", "Infrastructure")
+            .whereLayer("Application").mayOnlyBeAccessedByLayers("Interfaces")
             .whereLayer("Domain").mayOnlyBeAccessedByLayers("Application", "Infrastructure")
-            .whereLayer("Infrastructure").mayOnlyBeAccessedByLayers("Application")
-            .whereLayer("Interfaces").mayOnlyBeAccessedByLayers("Application")
-            .whereLayer("Spec").mayOnlyBeAccessedByLayers("Application", "Domain", "Infrastructure",
-                    "Interfaces", "Spec")
+            .whereLayer("Infrastructure").mayOnlyBeAccessedByLayers("Application", "Interfaces")
+            .whereLayer("Interfaces").mayNotBeAccessedByAnyLayer()
             .as("必须严格属于DDD分层架构规范,注意各层之间的引用");
 
     /**
@@ -104,17 +101,15 @@ public class ITIArchitectureEnforcer {
             .that().resideInAPackage("..domain.service..")
             .should().haveSimpleNameEndingWith("DomainService")
             .andShould().beAssignableTo(IDomainService.class)
-            .andShould().beInterfaces()
             .as("领域服务规约：\n" +
                     "1. 命名必须以 DomainService 结尾; \n" +
-                    "2. 必须实现接口 IDomainService; \n" +
-                    "3. 必须是接口");
+                    "2. 必须实现接口 IDomainService");
 
     /**
      * 领域仓储接口 规约
      * 对于所有 domain.facade.repository 的类
      * 1. 必须是接口
-     * 2. 必须实现或继承 IAggregateRepository 接口
+     * 2. 必须实现或继承 IDomainRepository 接口
      * 3. 不能以 @Repository 进行注解
      * 4. 必须以 xxxRepository 命名
      */
