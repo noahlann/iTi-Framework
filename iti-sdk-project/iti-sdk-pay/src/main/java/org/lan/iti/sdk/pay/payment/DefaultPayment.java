@@ -35,7 +35,7 @@ public class DefaultPayment<T extends IRequest, R extends IResponse> extends Abs
         String privateKey = Convert.toStr(params.get(PayFieldKeyConstants.PRIVATE_KEY));
         params.remove(PayFieldKeyConstants.PRIVATE_KEY);
         String sign = PayCommonUtil.sign(PayCommonUtil.getSignCheckContent(params), privateKey);
-        params.put(PayConstants.SIGN, sign);
+        params.put(PayFieldKeyConstants.SIGN, sign);
     }
 
     @Override

@@ -44,7 +44,6 @@ public class PayCommonUtil {
             String errorMessage = "签名遭遇异常，content=" + content + " privateKeySize=" + privateKeyPem.length() + " reason=" + var7.getMessage();
             log.error(errorMessage, var7);
             return "签名异常,请检查私钥是否配置正确!";
-//            throw new RuntimeException(errorMessage, var7);
         }
     }
 
@@ -139,13 +138,14 @@ public class PayCommonUtil {
             return null;
         } else {
             StringBuilder content = new StringBuilder();
-            List<String> keys = new ArrayList(params.keySet());
+            List<String> keys = new ArrayList<>(params.keySet());
             Collections.sort(keys);
-
             for (int i = 0; i < keys.size(); ++i) {
                 String key = keys.get(i);
-                Object value = params.get(key);
-                content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
+                if(!StrUtil.isBlankIfStr(params.get(key))){
+                    String value = Convert.toStr(params.get(key));
+                    content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
+                }
             }
             return content.toString();
         }
