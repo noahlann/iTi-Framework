@@ -40,7 +40,7 @@ import java.util.concurrent.RejectedExecutionException;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Slf4j
-public class AbstractStepsExecTemplate<Step extends IDomainStep, Model extends IDomain> {
+public abstract class AbstractStepsExecTemplate<Step extends IDomainStep, Model extends IDomain> {
     private static final List<String> EMPTY_REVISED_STEPS = Collections.emptyList();
     private static final Set<String> EMPTY_ASYNC_STEPS = Collections.emptySet();
 
