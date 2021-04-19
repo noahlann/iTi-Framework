@@ -56,11 +56,11 @@ public class FrameworkPassportEndpoint {
     public ApiResult<?> postLogin(@RequestParam Map<String, String> params) {
         String grantType = params.get(PassportConstants.GRANT_TYPE);
         if (StrUtil.isBlank(grantType)) {
-            throw new ServiceException(1000, "未指定 grant_type,请检查！");
+            throw new ServiceException("1000", "未指定 grant_type,请检查！");
         }
         PassportService passportService = passportServiceMap.get(PassportConstants.PREFIX_PASSPORT_SERVICE + grantType);
         if (passportService == null) {
-            throw new ServiceException(1001, Formatter.format("系统未实现类型为:[{}] 的登录方式,请检查！", grantType));
+            throw new ServiceException("1001", Formatter.format("系统未实现类型为:[{}] 的登录方式,请检查！", grantType));
         }
         return ApiResult.ok(passportService.grant(params));
     }
@@ -78,7 +78,7 @@ public class FrameworkPassportEndpoint {
             break;
         }
         if (passportService == null) {
-            throw new ServiceException(1001, "系统未实现任何登录类型");
+            throw new ServiceException("1001", "系统未实现任何登录类型");
         }
         return ApiResult.ok(passportService.refreshToken());
     }

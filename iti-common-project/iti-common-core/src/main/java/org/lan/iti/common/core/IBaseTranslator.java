@@ -18,18 +18,30 @@
 
 package org.lan.iti.common.core;
 
+import org.mapstruct.BeanMapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import java.util.Collection;
+
 /**
- * 分层模型的类型转换，DTO -> Creator -> Entity <-> PO.
+ * 分层模型的类型转换，Command -> Do <-> PO.
  * <p>
  * <p>使用{@code MapStruct} 或 {@code Selma}进行声明式类型转换</p>
  *
- * @param <Source> 源类型, DDD中建议为Do
- * @param <Target> 目标类型, DDD中建议为Po
+ * @param <Source> 源类型
+ * @param <Target> 目标类型
  * @author NorthLan
  * @date 2021-03-01
  * @url https://noahlan.com
  */
 public interface IBaseTranslator<Source, Target> {
+    interface MethodName {
+        String TO_TARGET = "toTarget";
+        String TO_SOURCE = "toSource";
+        String TO_TARGET_COLLECTION = "toTargetCollection";
+        String TO_SOURCE_COLLECTION = "toSourceCollection";
+    }
 
     /**
      * 映射同名属性，可以通过覆盖来实现更复杂的映射逻辑.
@@ -39,5 +51,53 @@ public interface IBaseTranslator<Source, Target> {
      * @param source 源类型
      * @return 目标类型
      */
-    Target translate(Source source);
+    Target toTarget(Source source);
+
+    /**
+     * 映射同名属性，可以通过覆盖来实现更复杂的映射逻辑.
+     * <p>
+     * <p>包含常用的Java类型自动转换</p>
+     *
+     * @param target 目标类型
+     * @return 源类型
+     */
+    Source toSource(Target target);
+
+    /**
+     * 映射同名属性，可以通过覆盖来实现更复杂的映射逻辑.
+     * <p>
+     * <p>包含常用的Java类型自动转换</p>
+     *
+     * @param sources 源类型列表
+     * @return 目标类型列表
+     */
+    Collection<Target> toTargetCollection(Collection<Source> sources);
+
+    /**
+     * 映射同名属性，可以通过覆盖来实现更复杂的映射逻辑.
+     * <p>
+     * <p>包含常用的Java类型自动转换</p>
+     *
+     * @param targets 目标类型列表
+     * @return 源类型列表
+     */
+    Collection<Source> toSourceCollection(Collection<Target> targets);
+
+    /**
+     * 复制非null属性到 target
+     *
+     * @param source 左值
+     * @param target 右值
+     */
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void copyPropertiesNonNullTarget(Source source, @MappingTarget Target target);
+
+    /**
+     * 复制非null属性到 source
+     *
+     * @param source 右值
+     * @param target 左值
+     */
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void copyPropertiesNonNullSource(Target target, @MappingTarget Source source);
 }

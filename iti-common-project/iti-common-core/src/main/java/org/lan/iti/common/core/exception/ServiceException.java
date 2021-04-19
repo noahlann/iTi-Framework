@@ -16,6 +16,8 @@
 
 package org.lan.iti.common.core.exception;
 
+import lombok.Getter;
+
 /**
  * 服务异常统一规范
  *
@@ -26,28 +28,11 @@ package org.lan.iti.common.core.exception;
 public class ServiceException extends AbstractException {
     private static final long serialVersionUID = -6476522626904036566L;
 
-    private final int code;
+    @Getter
+    private final String code;
 
-    public ServiceException(int code, String message) {
+    public ServiceException(String code, String message) {
         super(message);
         this.code = code;
-    }
-
-    public ServiceException(int code, int level, String message) {
-        super(message);
-        this.code = code;
-    }
-
-    @Override
-    public int getCode() {
-        return this.code;
-    }
-
-    /**
-     * 移除堆栈信息
-     */
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return this;
     }
 }

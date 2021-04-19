@@ -63,7 +63,7 @@ public interface ProcessorPlugin {
      * @param annotations 注解
      * @param roundEnv    环境
      */
-    void process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv);
+    void process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) throws Exception;
 
     /**
      * 写入

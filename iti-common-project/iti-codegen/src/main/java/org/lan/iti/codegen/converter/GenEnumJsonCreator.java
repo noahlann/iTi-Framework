@@ -46,13 +46,13 @@ import java.lang.annotation.*;
 public @interface GenEnumJsonCreator {
     /**
      * 预生成的类包名
-     * 默认为当前位置
+     * <p> 默认为当前位置</p>
      */
     String pkgName() default "";
 
     /**
      * 待转换的值变量名
-     * <p>变量类型将自动获取
+     * <p>变量类型将自动获取</p>
      */
     String valueField() default "code";
 }

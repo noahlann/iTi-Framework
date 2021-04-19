@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<String> handleException(Exception e) {
         log.error("全局异常信息 ex={}", e.getMessage(), e);
-        String errorCode = String.valueOf(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode());
+        String errorCode = ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode();
         return ApiResult.error(errorCode, e.getLocalizedMessage());
     }
 }

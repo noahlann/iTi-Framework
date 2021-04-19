@@ -18,8 +18,6 @@
 
 package org.lan.iti.common.ddd.specification;
 
-import org.lan.iti.common.ddd.model.IDomain;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -33,7 +31,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-22
  * @url https://noahlan.com
  */
-public interface ISpecification<T extends IDomain> {
+public interface ISpecification<T> {
 
     /**
      * Check whether a candidate business object satisfies the specification: the business rule.
@@ -42,7 +40,7 @@ public interface ISpecification<T extends IDomain> {
      * @return true if the business rule satisfied
      */
     default boolean satisfiedBy(@NotNull T candidate) {
-        return satisfiedBy(candidate, null);
+        return satisfiedBy(candidate, getNotification());
     }
 
     /**
@@ -54,26 +52,6 @@ public interface ISpecification<T extends IDomain> {
      */
     boolean satisfiedBy(@NotNull T candidate, Notification notification);
 
-//    /**
-//     * Compose specification with AND operator
-//     *
-//     * @param spec The specification
-//     * @return CompositeSpecification
-//     */
-//    ISpecification<T> and(ISpecification<T> spec);
-//
-//    /**
-//     * Compose specification with OR operator
-//     *
-//     * @param spec The specification
-//     * @return CompositeSpecification
-//     */
-//    ISpecification<T> or(ISpecification<T> spec);
-//
-//    /**
-//     * Specific the specification with NOT operator
-//     *
-//     * @return CompositeSpecification
-//     */
-//    ISpecification<T> not();
+
+    Notification getNotification();
 }

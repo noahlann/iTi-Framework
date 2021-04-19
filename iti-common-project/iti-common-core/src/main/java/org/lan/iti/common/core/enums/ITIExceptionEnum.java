@@ -19,6 +19,7 @@
 package org.lan.iti.common.core.enums;
 
 import lombok.Getter;
+import org.lan.iti.common.core.exception.IExceptionSpec;
 
 /**
  * 框架错误枚举
@@ -36,11 +37,11 @@ import lombok.Getter;
  * @url https://noahlan.com
  */
 @Getter
-public enum ITIExceptionEnum {
+public enum ITIExceptionEnum implements IExceptionSpec {
     /**
      * 参数错误 600开始
      */
-    METHOD_ARGUMENT_NOT_VALID(600, "请求参数验证错误"),
+    METHOD_ARGUMENT_NOT_VALID("600", "请求参数验证错误"),
     CHECK_ERROR("参数检查错误"),
     PAGE_NOT_FOUND("页面不存在"),
     BAD_SQL("SQL语句错误"),
@@ -48,28 +49,28 @@ public enum ITIExceptionEnum {
     /**
      * 其他错误
      */
-    INTERNAL_SERVER_ERROR(620, "服务端错误"),
+    INTERNAL_SERVER_ERROR("620", "服务端错误"),
 
-    BIZ_INSERT_ERROR(800, "插入数据错误"),
+    BIZ_INSERT_ERROR("800", "插入数据错误"),
     BIZ_DELETE_ERROR("删除数据错误"),
     BIZ_SELECT_ERROR("查询数据错误"),
     BIZ_UPDATE_ERROR("更新数据错误"),
     ;
 
-    private final int code;
-    private final String msg;
+    private final String code;
+    private final String message;
 
-    ITIExceptionEnum(String msg) {
-        this(Counter.nextValue, msg);
+    ITIExceptionEnum(String message) {
+        this(Counter.nextValue.toString(), message);
     }
 
-    ITIExceptionEnum(Integer code, String msg) {
+    ITIExceptionEnum(String code, String message) {
         this.code = code;
-        this.msg = msg;
-        Counter.nextValue = code + 1;
+        this.message = message;
+        Counter.nextValue = Integer.parseInt(code) + 1;
     }
 
     private static class Counter {
-        private static int nextValue = 0;
+        private static Integer nextValue = 0;
     }
 }

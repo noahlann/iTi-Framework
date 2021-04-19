@@ -20,8 +20,8 @@ package org.lan.iti.cloud.codegen.repository.jpa;
 
 import com.squareup.javapoet.*;
 import lombok.AllArgsConstructor;
+import org.lan.iti.cloud.codegen.NLDDDProcessor;
 import org.lan.iti.cloud.jpa.repository.BaseEntityGraphRepository;
-import org.lan.iti.codegen.NLDDDProcessor;
 import org.lan.iti.codegen.support.TypeBuilderFactory;
 import org.lan.iti.codegen.util.TypeUtils;
 import org.mapstruct.factory.Mappers;

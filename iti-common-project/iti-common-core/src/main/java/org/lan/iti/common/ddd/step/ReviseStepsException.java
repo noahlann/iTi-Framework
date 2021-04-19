@@ -18,7 +18,13 @@
 
 package org.lan.iti.common.ddd.step;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,12 +34,22 @@ import java.util.List;
  * @date 2021-02-07
  * @url https://noahlan.com
  */
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class ReviseStepsException extends RuntimeException implements IReviseStepsException {
     private static final long serialVersionUID = -5673564807243684991L;
 
-    private List<String> subsequentSteps;
+    private List<String> subsequentSteps = new ArrayList<>();
 
-    public ReviseStepsException withSubsequentSteps(List<String> subsequentSteps) {
+    public static ReviseStepsException withSubsequentSteps(List<String> subsequentSteps) {
+        return new ReviseStepsException(subsequentSteps);
+    }
+
+    public static ReviseStepsException withSubsequentSteps(String... steps) {
+        return new ReviseStepsException(Arrays.asList(steps));
+    }
+
+    public ReviseStepsException subsequentSteps(List<String> subsequentSteps) {
         this.subsequentSteps = subsequentSteps;
         return this;
     }

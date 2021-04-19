@@ -18,7 +18,8 @@
 
 package org.lan.iti.cloud.codegen.repository.jpa;
 
-import org.lan.iti.common.ddd.IBaseDDDTranslator;
+import org.lan.iti.common.core.IBaseTranslator;
+import org.lan.iti.common.ddd.IDomainRepository;
 
 import java.lang.annotation.*;
 
@@ -29,10 +30,11 @@ import java.lang.annotation.*;
  * @date 2021-02-06
  * @url https://noahlan.com
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.PACKAGE})
 @Retention(RetentionPolicy.SOURCE)
 @Inherited
 @Documented
+@Repeatable(GenJpaRepositories.class)
 public @interface GenJpaRepository {
     /**
      * 目标包名,不填默认当前类的包名
@@ -50,9 +52,15 @@ public @interface GenJpaRepository {
     Class<?> poClazz();
 
     /**
-     * 转换器class
+     * 领域仓储类型
      */
-    Class<? extends IBaseDDDTranslator> translatorClazz();
+    Class<? extends IDomainRepository> domainRepoClazz();
+
+    /**
+     * 转换器类型
+     * <p>通常是Do/Po/Creator间的互相转换</p>
+     */
+    Class<? extends IBaseTranslator> translatorClazz();
 
     /**
      * BaseJpaRepository 中的变量 translator 是否使用MapStruct的Mappers.getMapper方法获取

@@ -18,6 +18,7 @@
 
 package org.lan.iti.codegen;
 
+import cn.hutool.core.collection.CollUtil;
 import com.squareup.javapoet.JavaFile;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,6 +28,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -47,7 +49,10 @@ public abstract class AbstractProcessorPlugin implements ProcessorPlugin {
     private Types typeUtils;
     private Elements elementUtils;
 
-    protected abstract void process(TypeElement typeElement, Annotation t);
+    protected abstract void process(TypeElement typeElement, Annotation t) throws Exception;
+
+    protected void process(PackageElement packageElement, Annotation t) throws Exception {
+    }
 
     @Override
     public void init(TypeCollector typeCollector, Types typeUtils, Elements elementUtils) {
@@ -57,11 +62,20 @@ public abstract class AbstractProcessorPlugin implements ProcessorPlugin {
     }
 
     @Override
-    public void process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    public void process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) throws Exception {
         for (Element element : roundEnv.getRootElements()) {
             if (!(element instanceof TypeElement)) {
-                continue;
+                if (element instanceof PackageElement) {
+                    if (CollUtil.isEmpty(element.getAnnotationMirrors())) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
             }
+
+            // 1. package 且其上标记有注解
+            // 2. 其它普通类型: 类、接口、enum等
 
             for (Class<Annotation> ann : ignoreAnnCls()) {
                 if (element.getAnnotation(ann) != null) {
@@ -84,7 +98,11 @@ public abstract class AbstractProcessorPlugin implements ProcessorPlugin {
                         }
                     }
                 } else {
-                    process((TypeElement) newElement, annotation);
+                    if (newElement.getKind() == ElementKind.PACKAGE) {
+                        process((PackageElement) newElement, annotation);
+                    } else {
+                        process((TypeElement) newElement, annotation);
+                    }
                     break;
                 }
             }

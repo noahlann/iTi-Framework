@@ -87,7 +87,7 @@ public interface CommonConstants {
     /**
      * header 中版本信息
      */
-    String VERSION = "VERSION";
+    String VERSION = "VER";
     // endregion
 
     // region Defaults

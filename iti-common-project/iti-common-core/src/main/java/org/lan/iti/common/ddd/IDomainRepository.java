@@ -18,7 +18,7 @@
 
 package org.lan.iti.common.ddd;
 
-import org.lan.iti.common.ddd.model.IDomain;
+import org.lan.iti.common.ddd.model.IEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,7 @@ import java.util.Optional;
  * @date 2021-02-05
  * @url https://noahlan.com
  */
-public interface IDomainRepository<A extends IDomain> {
+public interface IDomainRepository<A extends IEntity> {
     /**
      * 通过ID获取聚合根
      *
@@ -51,19 +51,8 @@ public interface IDomainRepository<A extends IDomain> {
      * 持久化聚合根
      *
      * @param entity 聚合根实体
-     * @return 回写过ID的聚合根对象
      */
-    A save(A entity);
-
-    /**
-     * 更新聚合根
-     *
-     * @param entity 聚合根实体
-     * @return 更新后的聚合根
-     */
-    default A update(A entity) {
-        return save(entity);
-    }
+    void save(A entity);
 
     /**
      * 删除聚合根

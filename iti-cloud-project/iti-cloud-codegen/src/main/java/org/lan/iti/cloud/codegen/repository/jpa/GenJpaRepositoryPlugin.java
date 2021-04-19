@@ -23,11 +23,13 @@ import org.lan.iti.cloud.codegen.repository.jpa.writer.*;
 import org.lan.iti.codegen.AbstractProcessorPlugin;
 import org.lan.iti.codegen.JavaSource;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
 
 /**
- * GenAggRepository插件
+ * GenJpaRepository插件
  *
  * @author NorthLan
  * @date 2021-02-06
@@ -35,10 +37,32 @@ import java.lang.annotation.Annotation;
  */
 public class GenJpaRepositoryPlugin extends AbstractProcessorPlugin {
     @Override
-    protected void process(TypeElement typeElement, Annotation t) {
-        GenJpaRepositoryMetaParser parser = new GenJpaRepositoryMetaParser(getTypeCollector(), getTypeUtils(), getElementUtils());
-        GenJpaRepositoryMeta meta = parser.parse(typeElement, t);
+    protected void process(PackageElement packageElement, Annotation t) throws Exception {
+        processInner(packageElement, t);
+    }
 
+    @Override
+    protected void process(TypeElement typeElement, Annotation t) throws Exception {
+        processInner(typeElement, t);
+    }
+
+    private void processInner(Element element, Annotation t) throws Exception {
+        if (t instanceof GenJpaRepositories) {
+            for (GenJpaRepository genJpaRepository : ((GenJpaRepositories) t).value()) {
+                GenJpaRepositoryMetaParser parser = new GenJpaRepositoryMetaParser(getTypeCollector(), getTypeUtils(), getElementUtils());
+                GenJpaRepositoryMeta meta = parser.parse(element, genJpaRepository);
+
+                processMeta(meta);
+            }
+        } else {
+            GenJpaRepositoryMetaParser parser = new GenJpaRepositoryMetaParser(getTypeCollector(), getTypeUtils(), getElementUtils());
+            GenJpaRepositoryMeta meta = parser.parse(element, t);
+
+            processMeta(meta);
+        }
+    }
+
+    private void processMeta(GenJpaRepositoryMeta meta) {
         GenJpaRepositoryBuilderFactory factory = new GenJpaRepositoryBuilderFactory(meta);
         TypeSpec.Builder builder = factory.create();
 
@@ -49,13 +73,14 @@ public class GenJpaRepositoryPlugin extends AbstractProcessorPlugin {
         new RemoveMethodWriter(meta).writeTo(javaSource);
         new SaveMethodWriter(meta).writeTo(javaSource);
         new ExistsMethodWriter(meta).writeTo(javaSource);
+        new UpdateMethodWriter(meta).writeTo(javaSource);
 
         getJavaSourceCollector().register(javaSource);
     }
 
     @Override
     public <A extends Annotation> Class<A>[] applyAnnCls() {
-        return new Class[]{GenJpaRepository.class};
+        return new Class[]{GenJpaRepository.class, GenJpaRepositories.class};
     }
 
     @Override

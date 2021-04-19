@@ -33,7 +33,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-03-02
  * @url https://noahlan.com
  */
-public class BusinessException extends RuntimeException {
+public class BusinessException extends AbstractException {
     private static final long serialVersionUID = 3719499343672609356L;
 
     /**
@@ -59,6 +59,10 @@ public class BusinessException extends RuntimeException {
         return this;
     }
 
+    public static BusinessException withReason(@NotNull IExceptionSpec errorReason) {
+        return new BusinessException(errorReason);
+    }
+
     public String code() {
         return errorReason.getCode();
     }
@@ -77,6 +81,11 @@ public class BusinessException extends RuntimeException {
             return this.custom;
         }
         return message();
+    }
+
+    @Override
+    public String getCode() {
+        return this.code();
     }
 
     /**

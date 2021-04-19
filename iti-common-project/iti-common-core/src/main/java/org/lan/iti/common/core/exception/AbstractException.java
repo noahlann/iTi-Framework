@@ -25,7 +25,7 @@ package org.lan.iti.common.core.exception;
  * @date 2020-05-14
  * @url https://noahlan.com
  */
-public abstract class AbstractException extends RuntimeException {
+public abstract class AbstractException extends RuntimeException implements IExceptionSpec {
     private static final long serialVersionUID = -1064327362741791267L;
 
     protected AbstractException() {
@@ -47,10 +47,8 @@ public abstract class AbstractException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    /**
-     * 错误代码
-     *
-     * @return 错误代码
-     */
-    public abstract int getCode();
+    @Override
+    public String getMessage() {
+        return super.getMessage();
+    }
 }

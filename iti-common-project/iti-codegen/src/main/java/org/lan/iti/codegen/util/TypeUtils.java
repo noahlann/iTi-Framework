@@ -24,9 +24,11 @@ import org.lan.iti.codegen.annotation.Description;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +40,6 @@ import java.util.stream.Collectors;
  */
 @UtilityClass
 public class TypeUtils {
-    public String getParentPacketName(String pkgName) {
-        return pkgName.substring(0, pkgName.lastIndexOf('.'));
-    }
 
     public void bindDescription(Element element, MethodSpec.Builder methodBuilder) {
         Description description = element.getAnnotation(Description.class);
@@ -199,5 +198,61 @@ public class TypeUtils {
             }
         }
         return result.toString();
+    }
+
+    public String getClassNameSafety(Supplier<Class<?>> classGetter) {
+        String clsName;
+        try {
+            clsName = classGetter.get().getCanonicalName();
+        } catch (MirroredTypeException e) {
+            clsName = e.getTypeMirror().toString();
+        }
+        return clsName;
+    }
+
+    public boolean isAssignableFrom(TypeMirror targetType, TypeMirror type) {
+        if ((targetType instanceof DeclaredType)
+                && (type instanceof DeclaredType)) {
+            Element targetElement = ((DeclaredType) targetType).asElement();
+            Element element = ((DeclaredType) type).asElement();
+            if ((targetElement instanceof TypeElement)
+                    && (element instanceof TypeElement)) {
+                return isAssignableFrom((TypeElement) targetElement, (TypeElement) element);
+            }
+        }
+        return false;
+    }
+
+    public boolean isAssignableFrom(TypeElement targetElement, TypeElement element) {
+        TypeElement currentElement = element;
+
+        //Compare at interface level
+        for (TypeMirror interfaceType : element.getInterfaces()) {
+            Element interfaceElement = ((DeclaredType) interfaceType)
+                    .asElement();
+            if (targetElement.equals(interfaceElement)) {
+                return true;
+            }
+        }
+
+        // Compare at class level
+        while (currentElement != null) {
+            if (targetElement.equals(currentElement)) {
+                return true;
+            }
+            currentElement = getSuperClass(currentElement);
+        }
+        return false;
+    }
+
+    public TypeElement getSuperClass(TypeElement element) {
+        TypeMirror parent = element.getSuperclass();
+        if (parent instanceof DeclaredType) {
+            Element elt = ((DeclaredType) parent).asElement();
+            if (elt instanceof TypeElement) {
+                return (TypeElement) elt;
+            }
+        }
+        return null;
     }
 }

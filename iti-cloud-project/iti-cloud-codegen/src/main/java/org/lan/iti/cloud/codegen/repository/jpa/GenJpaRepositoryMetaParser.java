@@ -18,21 +18,23 @@
 
 package org.lan.iti.cloud.codegen.repository.jpa;
 
-import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.ddd.IDomainRepository;
 import org.lan.iti.codegen.TypeCollector;
 import org.lan.iti.codegen.util.TypeUtils;
+import org.lan.iti.common.ddd.IDomainRepository;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 /**
  * AggRepositoryMeta 解析器
@@ -41,99 +43,81 @@ import java.lang.annotation.Annotation;
  * @date 2021-02-06
  * @url https://noahlan.com
  */
-@Slf4j
 @AllArgsConstructor
 public class GenJpaRepositoryMetaParser {
     private final TypeCollector typeCollector;
     private final Types typeUtils;
     private final Elements elementUtils;
 
-    public GenJpaRepositoryMeta parse(TypeElement typeElement, Annotation annotation) {
+    public GenJpaRepositoryMeta parse(Element element, Annotation annotation) throws Exception {
         if (annotation instanceof GenJpaRepository) {
-            return parseFromGenJpaRepository(typeElement, (GenJpaRepository) annotation);
+            return parseFromGenJpaRepository(element, (GenJpaRepository) annotation);
         }
         throw new IllegalArgumentException();
     }
 
-    private GenJpaRepositoryMeta parseFromGenJpaRepository(TypeElement typeElement, GenJpaRepository annotation) {
-        TypeElement repoType = (TypeElement) typeUtils.asElement(typeElement.getInterfaces().get(0));
-        String pkgName = getPkgName(typeElement, annotation.pkgName());
-        String clsName = getClsName(repoType, annotation.clsName());
+    private GenJpaRepositoryMeta parseFromGenJpaRepository(Element element, GenJpaRepository annotation) throws Exception {
+        // domainRepoClazz
+        String domainRepoClsName = TypeUtils.getClassNameSafety(annotation::domainRepoClazz);
+        // domainRepoType
+        TypeElement domainRepoType = elementUtils.getTypeElement(domainRepoClsName);
+        // pkgName
+        String pkgName = getPkgName(element, annotation.pkgName());
+        // clzName
+        String clsName = getClsName(domainRepoType, annotation.clsName());
         // poClazz
-        Class<?> poClazz = getPoClazz(annotation);
+        String poClsName = TypeUtils.getClassNameSafety(annotation::poClazz);
+        TypeElement poClsType = elementUtils.getTypeElement(poClsName);
         // doClazz
-        Class<?> doClazz = getDoClazz(typeElement);
+        String doClsName = getDoClsName(domainRepoType.asType());
+        TypeElement doClsType = elementUtils.getTypeElement(doClsName);
         // translatorClazz
-        Class<?> translatorClazz = getTranslatorClazz(annotation);
+        String translatorClsName = TypeUtils.getClassNameSafety(annotation::translatorClazz);
+        TypeElement translatorClsType = elementUtils.getTypeElement(translatorClsName);
         boolean useMapFactory = annotation.useMapFactory();
+
         return new GenJpaRepositoryMeta(
                 pkgName,
                 clsName,
-                repoType,
-                typeCollector.getByName(poClazz.getCanonicalName()),
-                typeCollector.getByName(doClazz.getCanonicalName()),
-                typeCollector.getByName(translatorClazz.getCanonicalName()),
+                domainRepoType,
+                poClsType,
+                doClsType,
+                translatorClsType,
                 useMapFactory,
-                ClassName.get(poClazz),
-                ClassName.get(doClazz),
-                ClassName.get(translatorClazz));
+                TypeName.get(poClsType.asType()),
+                TypeName.get(doClsType.asType()),
+                TypeName.get(translatorClsType.asType()));
     }
 
-    private Class<?> getTranslatorClazz(GenJpaRepository annotation) {
-        Class<?> clazz = null;
-        String clsName;
-        try {
-            clsName = annotation.translatorClazz().getCanonicalName();
-        } catch (MirroredTypeException e) {
-            clsName = e.getTypeMirror().toString();
-        }
-        if (StrUtil.isNotEmpty(clsName)) {
-            try {
-                clazz = Class.forName(clsName);
-            } catch (ClassNotFoundException ignore) {
+    private String getDoClsName(TypeMirror type) throws Exception {
+        // domainRepoType 一定是 IDomainRepository 子类
+        if (type instanceof DeclaredType) {
+            DeclaredType declaredType = (DeclaredType) type;
+            if (declaredType.asElement().asType()
+                    .equals(elementUtils.getTypeElement(IDomainRepository.class.getCanonicalName()).asType())) {
+                List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
+                if (CollUtil.isNotEmpty(typeArguments)) {
+                    return typeArguments.get(0).toString();
+                }
+                throw new Exception("error domainRepoClazz");
             }
+            return getDoClsName(((TypeElement) declaredType.asElement()).getInterfaces().get(0));
         }
-        return clazz;
+        return "";
     }
 
-    private Class<?> getPoClazz(GenJpaRepository annotation) {
-        Class<?> clazz = null;
-        String clsName;
-        try {
-            clsName = annotation.poClazz().getCanonicalName();
-        } catch (MirroredTypeException e) {
-            clsName = e.getTypeMirror().toString();
-        }
-        if (StrUtil.isNotEmpty(clsName)) {
-            try {
-                clazz = Class.forName(clsName);
-            } catch (ClassNotFoundException ignore) {
-            }
-        }
-        return clazz;
-    }
-
-    private Class<?> getDoClazz(TypeElement element) {
-        return getDoClazz(element.getInterfaces().get(0));
-    }
-
-    private Class<?> getDoClazz(TypeMirror mirror) {
-        Class<?> tmp = TypeUtils.getClass(mirror);
-        if (tmp != null && IDomainRepository.class.isAssignableFrom(tmp)) {
-            return ClassUtil.getTypeArgument(tmp);
-        }
-        return getDoClazz(((TypeElement) typeUtils.asElement(mirror)).getInterfaces().get(0));
-    }
-
-    private String getPkgName(TypeElement typeElement, String pkgName) {
+    private String getPkgName(Element element, String pkgName) {
         if (StrUtil.isNotEmpty(pkgName)) {
             return pkgName;
         }
-        return getDefaultPkgName(typeElement);
+        return getDefaultPkgName(element);
     }
 
-    private String getDefaultPkgName(TypeElement typeElement) {
-        return typeElement.getEnclosingElement().toString();
+    private String getDefaultPkgName(Element element) {
+        if (element instanceof PackageElement) {
+            return element.toString();
+        }
+        return element.getEnclosingElement().toString();
     }
 
     private String getClsName(TypeElement typeElement, String clsName) {

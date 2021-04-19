@@ -57,7 +57,7 @@ public class SqlExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<?> handleBadSqlException(BadSqlGrammarException e) {
         log.error("SQL异常：", e);
-        String errorCode = String.valueOf(ITIExceptionEnum.BAD_SQL.getCode());
-        return ApiResult.error(errorCode, ITIExceptionEnum.BAD_SQL.getMsg());
+        String errorCode = ITIExceptionEnum.BAD_SQL.getCode();
+        return ApiResult.error(errorCode, ITIExceptionEnum.BAD_SQL.getMessage());
     }
 }

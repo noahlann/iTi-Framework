@@ -22,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.cloud.constants.AopConstants;
 import org.lan.iti.common.core.api.ApiResult;
 import org.lan.iti.common.core.enums.ITIExceptionEnum;
-import org.lan.iti.common.core.exception.AbstractException;
 import org.lan.iti.common.core.exception.BusinessException;
+import org.lan.iti.common.core.exception.ServiceException;
 import org.lan.iti.common.core.validator.ArgumentInvalidResult;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -59,9 +59,9 @@ public class BizExceptionHandler {
      * @param e 异常信息
      * @return 错误消息
      */
-    @ExceptionHandler(AbstractException.class)
+    @ExceptionHandler(ServiceException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<String> handleServiceException(AbstractException e) {
+    public ApiResult<String> handleServiceException(ServiceException e) {
         log.error("服务异常：", e);
         String errorCode = String.valueOf(e.getCode());
         return ApiResult.error(errorCode, e.getMessage());
@@ -117,7 +117,7 @@ public class BizExceptionHandler {
         log.error("参数验证错误, {}", results.toString());
         String errorCode = String.valueOf(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode());
         return ApiResult.error(errorCode,
-                ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMsg(),
+                ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMessage(),
                 results.stream().map(ArgumentInvalidResult::getDefaultMessage).collect(Collectors.joining("|")));
     }
 
@@ -165,7 +165,7 @@ public class BizExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResult<String> handleMissingParameterException(MissingServletRequestParameterException e) {
         log.error("缺少请求参数：", e);
-        String errorCode = String.valueOf(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode());
+        String errorCode = ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode();
         return ApiResult.error(errorCode, e.getMessage());
     }
 
@@ -179,7 +179,7 @@ public class BizExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<String> handleRuntimeException(RuntimeException e) {
         log.error("运行时异常，未知错误：", e);
-        String errorCode = String.valueOf(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode());
+        String errorCode = ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode();
         return ApiResult.error(errorCode, e.getLocalizedMessage());
     }
 

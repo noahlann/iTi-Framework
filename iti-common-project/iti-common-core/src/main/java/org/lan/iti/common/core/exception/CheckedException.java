@@ -49,7 +49,7 @@ public class CheckedException extends AbstractException {
     }
 
     @Override
-    public int getCode() {
+    public String getCode() {
         return ITIExceptionEnum.CHECK_ERROR.getCode();
     }
 }

@@ -85,9 +85,9 @@ public class ITIArchitectureEnforcer {
             .optionalLayer("Infrastructure").definedBy("..infrastructure..", "..infra..")
             .optionalLayer("Interfaces").definedBy("..interfaces..")
             .whereLayer("Application").mayOnlyBeAccessedByLayers("Interfaces")
-            .whereLayer("Domain").mayOnlyBeAccessedByLayers("Application", "Infrastructure")
-            .whereLayer("Infrastructure").mayOnlyBeAccessedByLayers("Application", "Interfaces")
-            .whereLayer("Interfaces").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Domain").mayOnlyBeAccessedByLayers("Application", "Infrastructure", "Interfaces")
+            .whereLayer("Infrastructure").mayOnlyBeAccessedByLayers("Application")
+            .whereLayer("Interfaces").mayOnlyBeAccessedByLayers("Infrastructure")
             .as("必须严格属于DDD分层架构规范,注意各层之间的引用");
 
     /**
