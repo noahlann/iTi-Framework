@@ -23,6 +23,7 @@ import org.lan.iti.cloud.sequence.properties.SequenceDbProperties;
 import org.lan.iti.cloud.sequence.properties.SequenceRedisProperties;
 import org.lan.iti.cloud.sequence.properties.SequenceSnowflakeProperties;
 import org.lan.iti.cloud.sequence.sequence.Sequence;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +50,7 @@ public class SequenceAutoConfiguration {
      * @param properties 配置文件
      */
     @Bean
+    @ConditionalOnMissingBean
     public Sequence snowflakeSequence(SequenceSnowflakeProperties properties) {
         return SnowflakeSequenceBuilder.create()
                 .properties(properties)
