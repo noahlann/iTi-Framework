@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cglib.proxy.Proxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
@@ -46,7 +47,8 @@ public class SecurityTokenStoreAutoConfiguration {
     private final RedisConnectionFactory redisConnectionFactory;
 
     @Bean
-    public TokenStore tokenStore() {
+    @Primary
+    public TokenStore oauthTokenStore() {
         // 使用jdk动态代理,修改私有变量prefix,扩展redis存储的多domain与多租户
         RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
         return (TokenStore) Proxy.newProxyInstance(RedisTokenStore.class.getClassLoader(),
