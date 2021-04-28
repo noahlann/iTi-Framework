@@ -21,28 +21,26 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.lan</groupId>
-        <artifactId>iti-framework</artifactId>
+        <artifactId>iti-cloud-starters</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>iti-cloud-project</artifactId>
-    <name>iTi :: Cloud :: Project</name>
-    <packaging>pom</packaging>
+    <name>iTi :: Cloud :: Starter :: Axon</name>
+    <artifactId>iti-cloud-starter-axon</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
-        <main.basedir>${basedir}/..</main.basedir>
+        <main.basedir>${basedir}/../../..</main.basedir>
     </properties>
 
-    <modules>
-        <module>iti-cloud</module>
-        <module>iti-cloud-codegen</module>
-        <module>iti-cloud-autoconfigure</module>
-        <module>iti-cloud-dependencies</module>
-        <module>iti-cloud-parent</module>
-        <module>iti-cloud-security</module>
-        <module>iti-cloud-sentinel</module>
-        <module>iti-cloud-starters</module>
-        <module>iti-cloud-ddd</module>
-        <module>iti-cloud-axon</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-cloud-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-cloud-axon</artifactId>
+        </dependency>
+    </dependencies>
 </project>

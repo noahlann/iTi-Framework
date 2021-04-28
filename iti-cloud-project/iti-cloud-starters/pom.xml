@@ -39,6 +39,7 @@
         <module>iti-cloud-starter-data-jpa</module>
         <module>iti-cloud-starter-data-redis</module>
         <module>iti-cloud-starter-ddd</module>
+        <module>iti-cloud-starter-axon</module>
         <module>iti-cloud-starter-loadbalancer</module>
         <module>iti-cloud-starter-openfeign</module>
         <module>iti-cloud-starter-oss</module>
