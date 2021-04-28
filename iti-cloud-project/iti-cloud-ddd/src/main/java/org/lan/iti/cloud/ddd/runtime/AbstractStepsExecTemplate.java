@@ -55,7 +55,7 @@ public abstract class AbstractStepsExecTemplate<Step extends IDomainStep, Model 
     /**
      * 同步执行编排好的步骤.
      * <p>
-     * <p>步骤的实现里，可以通过{@link }来进行后续步骤修订，即动态的步骤编排</p>
+     * <p>步骤的实现里，可以通过{@link IReviseStepsException}来进行后续步骤修订，即动态的步骤编排</p>
      * <p>如果步骤实现了{@link IRevokableDomainStep}，在步骤抛出异常后会自动触发步骤回滚</p>
      *
      * @param activityCode 领域活动
