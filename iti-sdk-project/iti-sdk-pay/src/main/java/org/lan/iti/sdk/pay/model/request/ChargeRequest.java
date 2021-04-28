@@ -36,7 +36,7 @@ public class ChargeRequest implements IRequest {
     /**
      * 订单金额
      */
-    private Float amount;
+    private String amount;
 
     /**
      * 订单标题

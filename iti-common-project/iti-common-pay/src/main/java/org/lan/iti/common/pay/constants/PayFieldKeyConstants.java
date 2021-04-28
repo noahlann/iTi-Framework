@@ -10,32 +10,32 @@ public interface PayFieldKeyConstants {
     /**
      * 平台 app id
      */
-    String APP_ID = "app_id";
+    String APP_ID = "appId";
 
     /**
      * privateKey 私钥
      */
-    String PRIVATE_KEY = "private_key";
+    String PRIVATE_KEY = "privateKey";
 
     /**
      * privateKey 接口网关
      */
-    String GATEWAY_HOST = "gateway_host";
+    String GATEWAY_HOST = "gatewayHost";
 
     /**
      * outOrderNo 商户订单号
      */
-    String OUT_ORDER_NO = "out_order_no";
+    String OUT_ORDER_NO = "outOrderNo";
 
     /**
      * outRefundNo 商户退款订单号
      */
-    String OUT_REFUND_NO = "out_refund_no";
+    String OUT_REFUND_NO = "outRefundNo";
 
     /**
      * outFundNo 商户转账订单号
      */
-    String OUT_FUND_NO = "out_fund_no";
+    String OUT_FUND_NO = "outFundNo";
 
     /**
      * 订单标题
@@ -50,42 +50,42 @@ public interface PayFieldKeyConstants {
     /**
      * 退款金额
      */
-    String REFUND_AMOUNT = "refund_amount";
+    String REFUND_AMOUNT = "refundAmount";
 
     /**
      * 转账金额
      */
-    String FUND_AMOUNT = "fund_amount";
+    String FUND_AMOUNT = "fundAmount";
 
     /**
      * 转账到账用户类型
      */
-    String ACCOUNT_ID = "account_id";
+    String ACCOUNT_ID = "accountId";
 
     /**
      * 转账到账用户标识
      */
-    String ACCOUNT_TYPE = "account_type";
+    String ACCOUNT_TYPE = "accountType";
 
     /**
      * 收款方姓名
      */
-    String ACCOUNT_NAME = "account_name";
+    String ACCOUNT_NAME = "accountName";
 
     /**
      * 转账渠道
      */
-    String FUND_CHANNEL = "fund_channel";
+    String FUND_CHANNEL = "fundChannel";
 
     /**
      * 银行编号
      */
-    String BANK_CODE = "bank_code";
+    String BANK_CODE = "bankCode";
 
     /**
      * 是否转账到银行卡（Y:是；N:否）
      */
-    String TO_BANK = "to_bank";
+    String TO_BANK = "toBank";
 
     /**
      * 是否转账到银行卡（Y:是；N:否） 是
@@ -100,7 +100,7 @@ public interface PayFieldKeyConstants {
     /**
      * 授权码
      */
-    String AUTH_CODE = "auth_code";
+    String AUTH_CODE = "authCode";
 
     /**
      * 签名
