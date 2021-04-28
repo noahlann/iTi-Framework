@@ -1,6 +1,6 @@
 /*
  *
- *  * Copyright (c) [2019-2020] [NorthLan](lan6995@gmail.com)
+ *  * Copyright (c) [2019-2021] [NorthLan](lan6995@gmail.com)
  *  *
  *  * Licensed under the Apache License, Version 2.0 (the "License");
  *  * you may not use this file except in compliance with the License.
@@ -16,36 +16,49 @@
  *
  */
 
-package org.lan.iti.cloud.sequence.properties;
+package org.lan.iti.common.core.util.idgen.snowflake;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Snowflake 属性
+ * Id生成时回调参数
  *
  * @author NorthLan
- * @date 2020-05-06
+ * @date 2021-04-27
  * @url https://noahlan.com
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties(prefix = "iti.sequence.snowflake")
-public class SequenceSnowflakeProperties extends BaseProperties {
+@AllArgsConstructor
+public class OverCostActionArg {
     /**
-     * 工作机器ID，必须由外部设定，最大值 2^workerIdBitLength-1
+     * 事件类型
+     * 1-开始，2-结束，8-漂移
      */
-    private long workerId = 0;
+    private int actionType = 0;
 
     /**
-     * 基础时间
-     * 不能超过当前系统时间
+     * 时间戳
      */
-    private long baseTime = System.currentTimeMillis();
+    private long timeTick = 0;
 
     /**
-     * 是否使用优化后的系统时钟
+     * 机器码
      */
-    private boolean useSystemClock = true;
+    private short workerId = 0;
+
+    /**
+     *
+     */
+    private int overCostCountInOneTerm = 0;
+
+    /**
+     * 漂移期间生产ID个数
+     */
+    private int genCountInOneTerm = 0;
+
+    /**
+     * 漂移周期
+     */
+    private int termIndex = 0;
 }

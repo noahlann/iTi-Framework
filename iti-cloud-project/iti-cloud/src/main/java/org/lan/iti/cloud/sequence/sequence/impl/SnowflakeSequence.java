@@ -18,9 +18,12 @@
 
 package org.lan.iti.cloud.sequence.sequence.impl;
 
-import org.lan.iti.common.core.util.Snowflake;
 import org.lan.iti.cloud.sequence.exception.SequenceException;
 import org.lan.iti.cloud.sequence.sequence.Sequence;
+import org.lan.iti.common.core.util.idgen.DefaultIdGenerator;
+import org.lan.iti.common.core.util.idgen.IGenerator;
+import org.lan.iti.common.core.util.idgen.exception.IdGeneratorException;
+import org.lan.iti.common.core.util.idgen.snowflake.SnowflakeOptions;
 
 /**
  * 雪花算法生成器
@@ -30,17 +33,20 @@ import org.lan.iti.cloud.sequence.sequence.Sequence;
  * @url https://noahlan.com
  */
 public class SnowflakeSequence implements Sequence {
-    private final Snowflake snowflake;
+    private final IGenerator snowflake;
 
-    public SnowflakeSequence(long workerId, long dataCenterId) {
-        this.snowflake = new Snowflake(workerId, dataCenterId, true);
+    public SnowflakeSequence(long baseTime, long workerId, boolean useSystemClock) {
+        this.snowflake = new DefaultIdGenerator(new SnowflakeOptions()
+                .setBaseTime(baseTime)
+                .setWorkerId(workerId)
+                .setUseSystemClock(useSystemClock));
     }
 
     @Override
     public long next() throws SequenceException {
         try {
-            return snowflake.nextId();
-        } catch (IllegalStateException e) {
+            return snowflake.nextLong();
+        } catch (IdGeneratorException e) {
             throw new SequenceException(e.getMessage());
         }
     }

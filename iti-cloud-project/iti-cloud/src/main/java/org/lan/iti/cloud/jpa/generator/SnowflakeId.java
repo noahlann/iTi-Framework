@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;
-import org.lan.iti.common.core.util.Snowflake;
+import org.lan.iti.common.core.util.idgen.IdGenerator;
 
 import java.io.Serializable;
 
@@ -38,10 +38,8 @@ public class SnowflakeId implements IdentifierGenerator {
     public static final String GENERATOR_NAME = "snowflakeId";
     public static final String STRATEGY_NAME = "org.lan.iti.cloud.jpa.generator.SnowflakeId";
 
-    private final Snowflake snowflake = new Snowflake();
-
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-        return snowflake.nextIdStr();
+        return IdGenerator.nextStr();
     }
 }

@@ -19,10 +19,15 @@
 package org.lan.iti.common.core.util;
 
 import org.junit.jupiter.api.Test;
+import org.lan.iti.common.core.util.idgen.IdGenerator;
+import org.lan.iti.common.core.util.idgen.snowflake.SnowflakeOptions;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -34,18 +39,22 @@ public class SnowflakeTest {
 
     @Test
     public void snowFlakeTest() {
-        Snowflake snowflake = new Snowflake(0, 0, true);
         List<Long> list = new CopyOnWriteArrayList<>();
 
-        ExecutorService executor = new ThreadPoolExecutor(100, 1000, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new ThreadPoolExecutor.AbortPolicy());
+        IdGenerator.setOptions(new SnowflakeOptions()
+                .setBaseTime(System.currentTimeMillis())
+                .setMethod(SnowflakeOptions.Method.SHIFT));
 
+//        ExecutorService executor = new ThreadPoolExecutor(100, 1000, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new ThreadPoolExecutor.AbortPolicy());
+        ExecutorService executor = Executors.newFixedThreadPool(10000);
         int totalNumberOfTasks = 100000;
         CountDownLatch latch = new CountDownLatch(totalNumberOfTasks);
         for (int i = 0; i < totalNumberOfTasks; ++i) {
             executor.execute(() -> {
-                list.add(snowflake.nextId());
+                list.add(IdGenerator.nextLong());
                 latch.countDown();
             });
+//            list.add(IdGenerator.nextLong());
         }
 
         try {
@@ -62,6 +71,7 @@ public class SnowflakeTest {
                 .collect(Collectors.toList());
 
         System.out.println(repeat);
+        System.out.println(repeat.size());
         System.out.println(list.size());
     }
 }

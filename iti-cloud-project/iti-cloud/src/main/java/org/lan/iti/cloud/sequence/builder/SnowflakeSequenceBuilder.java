@@ -44,7 +44,7 @@ public class SnowflakeSequenceBuilder implements SequenceBuilder {
 
     @Override
     public Sequence build() {
-        return new SnowflakeSequence(properties.getWorkerId(), properties.getDataCenterId());
+        return new SnowflakeSequence(properties.getBaseTime(), properties.getWorkerId(), properties.isUseSystemClock());
     }
 
     // region access-chain
