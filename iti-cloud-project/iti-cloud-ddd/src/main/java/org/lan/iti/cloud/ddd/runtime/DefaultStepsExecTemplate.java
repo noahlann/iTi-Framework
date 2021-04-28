@@ -27,6 +27,8 @@ import org.lan.iti.common.ddd.step.IDomainStep;
  * @author NorthLan
  * @date 2021-03-27
  * @url https://noahlan.com
+ * @deprecated 将取消步骤编排功能
  */
+@Deprecated
 public class DefaultStepsExecTemplate<Step extends IDomainStep, Model extends IDomain> extends AbstractStepsExecTemplate<Step, Model> {
 }

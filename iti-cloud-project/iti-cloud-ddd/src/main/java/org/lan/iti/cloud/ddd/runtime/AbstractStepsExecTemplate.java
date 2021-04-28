@@ -37,9 +37,11 @@ import java.util.concurrent.RejectedExecutionException;
  * @author NorthLan
  * @date 2021-02-24
  * @url https://noahlan.com
+ * @deprecated 将取消步骤编排功能
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Slf4j
+@Deprecated
 public abstract class AbstractStepsExecTemplate<Step extends IDomainStep, Model extends IDomain> {
     private static final List<String> EMPTY_REVISED_STEPS = Collections.emptyList();
     private static final Set<String> EMPTY_ASYNC_STEPS = Collections.emptySet();

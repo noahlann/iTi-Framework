@@ -23,7 +23,6 @@ import cn.hutool.core.util.ArrayUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.lan.iti.cloud.ddd.annotation.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +39,11 @@ import java.util.stream.Collectors;
  * @author NorthLan
  * @date 2021-03-02
  * @url https://noahlan.com
+ * @deprecated 将取消step编排
  */
 @Aspect
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@Deprecated
 public class AutoLoggerStepAspect {
 
     @Around("execution(* *..IDomainStep.execute(..))")

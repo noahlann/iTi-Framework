@@ -31,7 +31,9 @@ import java.util.List;
  * @author NorthLan
  * @date 2021-02-24
  * @url https://noahlan.com
+ * @deprecated 编排能力不再有
  */
+@Deprecated
 public abstract class AbstractDecideStepsAbility<Model extends IDomain> extends AbstractDomainAbility<Model, IDecideStepsExt> {
     private static final IDecideStepsExt DEFAULT_EXT = new EmptyExt();
 

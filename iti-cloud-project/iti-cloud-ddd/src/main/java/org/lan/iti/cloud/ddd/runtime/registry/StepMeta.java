@@ -33,10 +33,12 @@ import javax.validation.constraints.NotNull;
  * @author NorthLan
  * @date 2021-02-22
  * @url https://noahlan.com
+ * @deprecated 将取消步骤编排功能
  */
 @SuppressWarnings("rawtypes")
 @Getter
 @ToString
+@Deprecated
 public class StepMeta implements IRegistryAware {
     private String activity;
     private String code;

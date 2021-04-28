@@ -35,7 +35,9 @@ import java.util.Optional;
  * @author NorthLan
  * @date 2021-04-14
  * @url https://noahlan.com
+ * @deprecated 将取消领域仓储，转由Query模块执行
  */
+@Deprecated
 public abstract class BaseJpaDomainRepositoryImpl<Domain extends IDomain, Po, Jpa extends BaseEntityGraphRepository<Po, String>>
         implements IDomainRepository<Domain> {
     @Autowired

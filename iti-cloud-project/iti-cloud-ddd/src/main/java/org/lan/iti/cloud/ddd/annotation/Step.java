@@ -30,12 +30,14 @@ import java.lang.annotation.*;
  * @author NorthLan
  * @date 2021-02-07
  * @url https://noahlan.com
+ * @deprecated 不再使用step编排，意义不大
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
 @Service
+@Deprecated
 public @interface Step {
 
     /**

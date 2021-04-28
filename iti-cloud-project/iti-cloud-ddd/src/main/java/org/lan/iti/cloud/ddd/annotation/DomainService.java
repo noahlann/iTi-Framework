@@ -24,16 +24,20 @@ import java.lang.annotation.*;
 
 /**
  * 领域服务注解
+ * <p>领域服务用于协调 界限上下文 内的多个聚合根，将转为saga模式实现</p>
+ * <p>将使用@Saga代替</p>
  *
  * @author NorthLan
  * @date 2021-02-08
  * @url https://noahlan.com
+ * @deprecated 将使用@Saga代替
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
 @Service
+@Deprecated
 public @interface DomainService {
 
     /**

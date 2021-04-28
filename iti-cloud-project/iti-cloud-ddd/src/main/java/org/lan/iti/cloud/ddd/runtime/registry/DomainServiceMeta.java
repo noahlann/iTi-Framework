@@ -20,9 +20,9 @@ package org.lan.iti.cloud.ddd.runtime.registry;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.lan.iti.common.core.exception.BootstrapException;
-import org.lan.iti.cloud.util.AopUtils;
 import org.lan.iti.cloud.ddd.annotation.DomainService;
+import org.lan.iti.cloud.util.AopUtils;
+import org.lan.iti.common.core.exception.BootstrapException;
 import org.lan.iti.common.ddd.model.IDomainService;
 
 import javax.validation.constraints.NotNull;
@@ -33,9 +33,11 @@ import javax.validation.constraints.NotNull;
  * @author NorthLan
  * @date 2021-02-22
  * @url https://noahlan.com
+ * @deprecated 将使用@Saga
  */
 @ToString
 @Getter
+@Deprecated
 class DomainServiceMeta implements IRegistryAware {
     private String domain;
 
