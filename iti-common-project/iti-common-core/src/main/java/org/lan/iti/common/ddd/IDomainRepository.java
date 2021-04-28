@@ -18,7 +18,7 @@
 
 package org.lan.iti.common.ddd;
 
-import org.lan.iti.common.ddd.model.IEntity;
+import org.lan.iti.common.ddd.model.IDomain;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,49 +30,64 @@ import java.util.Optional;
  * @date 2021-02-05
  * @url https://noahlan.com
  */
-public interface IDomainRepository<A extends IEntity> {
+public interface IDomainRepository<Domain extends IDomain> {
     /**
      * 通过ID获取聚合根
      *
      * @param id id
      * @return 可选聚合根
      */
-    Optional<A> getById(String id);
+    Optional<Domain> loadById(String id);
 
     /**
-     * 通过IDs获取聚合根列表
+     * 根据聚合根ID从仓储中取出一批聚合根
      *
-     * @param ids ids
-     * @return 聚合根列表
+     * @param ids id列表
+     * @return 若无值，则返回空列表
      */
-    List<A> getAllById(Iterable<String> ids);
+    List<Domain> loadAllByIds(Iterable<String> ids);
 
     /**
-     * 持久化聚合根
+     * 取出此仓储中的所有聚合根
      *
-     * @param entity 聚合根实体
+     * @return 若无值，则返回空列表
      */
-    void save(A entity);
+    List<Domain> loadAll();
 
     /**
-     * 删除聚合根
+     * 仓储中聚合根的数量
      *
-     * @param entity 聚合根实体
+     * @return 数量
      */
-    void remove(A entity);
+    long size();
 
     /**
-     * 通过ID删除聚合根
+     * 往仓储中保存聚合根
+     * <p>若聚合根存在，则更新</p>
      *
-     * @param id 聚合根ID
+     * @param domain 聚合根实体
      */
-    void removeById(String id);
+    void save(Domain domain);
 
     /**
-     * 聚合根是否存在
+     * 删除仓储中的某个聚合根，此方法是为了方便
      *
-     * @param id 聚合根ID
-     * @return true 存在
+     * @param domain 聚合根实体
      */
-    boolean exists(String id);
+    void remove(Domain domain);
+
+    /**
+     * 领域驱动设计中，不存在删除聚合的理念，应当标记为禁用或启用
+     *
+     * @param domain 聚合根实体
+     */
+    void disable(Domain domain);
+
+    /**
+     * 仓储中是否包含聚合根(通过ID)
+     *
+     * @param domain 聚合根
+     * @return true包含 false不包含
+     */
+    boolean contains(Domain domain);
 }

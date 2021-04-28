@@ -20,9 +20,10 @@ package org.lan.iti.common.core;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * 分层模型的类型转换，Command -> Do <-> PO.
@@ -39,8 +40,8 @@ public interface IBaseTranslator<Source, Target> {
     interface MethodName {
         String TO_TARGET = "toTarget";
         String TO_SOURCE = "toSource";
-        String TO_TARGET_COLLECTION = "toTargetCollection";
-        String TO_SOURCE_COLLECTION = "toSourceCollection";
+        String TO_TARGET_LIST = "toTargetList";
+        String TO_SOURCE_LIST = "toSourceList";
     }
 
     /**
@@ -51,6 +52,7 @@ public interface IBaseTranslator<Source, Target> {
      * @param source 源类型
      * @return 目标类型
      */
+    @Named(MethodName.TO_TARGET)
     Target toTarget(Source source);
 
     /**
@@ -61,6 +63,7 @@ public interface IBaseTranslator<Source, Target> {
      * @param target 目标类型
      * @return 源类型
      */
+    @Named(MethodName.TO_SOURCE)
     Source toSource(Target target);
 
     /**
@@ -71,7 +74,8 @@ public interface IBaseTranslator<Source, Target> {
      * @param sources 源类型列表
      * @return 目标类型列表
      */
-    Collection<Target> toTargetCollection(Collection<Source> sources);
+    @Named(MethodName.TO_TARGET_LIST)
+    List<Target> toTargetList(List<Source> sources);
 
     /**
      * 映射同名属性，可以通过覆盖来实现更复杂的映射逻辑.
@@ -81,7 +85,8 @@ public interface IBaseTranslator<Source, Target> {
      * @param targets 目标类型列表
      * @return 源类型列表
      */
-    Collection<Source> toSourceCollection(Collection<Target> targets);
+    @Named(MethodName.TO_SOURCE_LIST)
+    List<Source> toSourceList(List<Target> targets);
 
     /**
      * 复制非null属性到 target

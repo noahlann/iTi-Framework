@@ -22,11 +22,10 @@ import cn.hutool.core.util.StrUtil;
 import org.lan.iti.cloud.jpa.repository.BaseEntityGraphRepository;
 import org.lan.iti.common.core.IBaseTranslator;
 import org.lan.iti.common.ddd.IDomainRepository;
-import org.lan.iti.common.ddd.model.IEntity;
+import org.lan.iti.common.ddd.model.IDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,43 +36,43 @@ import java.util.Optional;
  * @date 2021-04-14
  * @url https://noahlan.com
  */
-public abstract class BaseJpaDomainRepositoryImpl<Entity extends IEntity, Po, Jpa extends BaseEntityGraphRepository<Po, String>>
-        implements IDomainRepository<Entity> {
+public abstract class BaseJpaDomainRepositoryImpl<Domain extends IDomain, Po, Jpa extends BaseEntityGraphRepository<Po, String>>
+        implements IDomainRepository<Domain> {
     @Autowired
     protected Jpa jpaRepository;
 
-    private final IBaseTranslator<Entity, Po> translator;
+    private final IBaseTranslator<Domain, Po> translator;
 
-    protected BaseJpaDomainRepositoryImpl(IBaseTranslator<Entity, Po> translator) {
+    protected BaseJpaDomainRepositoryImpl(IBaseTranslator<Domain, Po> translator) {
         this.translator = translator;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <T extends IBaseTranslator<Entity, Po>> T getTranslator() {
-        return (T) translator;
     }
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public Optional<Entity> getById(String id) {
+    public Optional<Domain> loadById(String id) {
         Po po = jpaRepository.findById(id).orElse(null);
-        Entity result = po == null ? null : translator.toSource(po);
+        Domain result = po == null ? null : translator.toSource(po);
         return Optional.ofNullable(result);
     }
 
     @Override
-    @Transactional(rollbackFor = Throwable.class)
-    public List<Entity> getAllById(Iterable<String> ids) {
-        List<Entity> result = new ArrayList<>();
-        for (Po po : jpaRepository.findAllById(ids)) {
-            result.add(translator.toSource(po));
-        }
-        return result;
+    public List<Domain> loadAllByIds(Iterable<String> ids) {
+        return translator.toSourceList(jpaRepository.findAllById(ids));
+    }
+
+    @Override
+    public List<Domain> loadAll() {
+        return translator.toSourceList(jpaRepository.findAll());
+    }
+
+    @Override
+    public long size() {
+        return jpaRepository.count();
     }
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public void save(Entity entity) {
+    public void save(Domain entity) {
         Po po = StrUtil.isNotBlank(entity.getId()) ?
                 jpaRepository.findById(entity.getId()).orElse(null) :
                 null;
@@ -89,18 +88,18 @@ public abstract class BaseJpaDomainRepositoryImpl<Entity extends IEntity, Po, Jp
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public void remove(Entity entity) {
-        removeById(entity.getId());
+    public void disable(Domain entity) {
+        jpaRepository.deleteById(entity.getId());
     }
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public void removeById(String id) {
-        jpaRepository.deleteById(id);
+    public void remove(Domain domain) {
+        disable(domain);
     }
 
     @Override
-    public boolean exists(String id) {
-        return jpaRepository.existsById(id);
+    public boolean contains(Domain domain) {
+        return jpaRepository.existsById(domain.getId());
     }
 }
