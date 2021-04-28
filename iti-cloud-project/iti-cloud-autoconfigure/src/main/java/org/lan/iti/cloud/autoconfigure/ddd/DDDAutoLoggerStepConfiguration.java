@@ -19,6 +19,7 @@
 package org.lan.iti.cloud.autoconfigure.ddd;
 
 import org.lan.iti.cloud.ddd.aop.AutoLoggerStepAspect;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "iti.ddd.logger", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnClass(AutoLoggerStepAspect.class)
 public class DDDAutoLoggerStepConfiguration {
 
     @Bean
