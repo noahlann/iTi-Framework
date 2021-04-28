@@ -112,6 +112,7 @@ public class Payment {
      * @return 支付业务响应统一结构
      */
     public static ChargeResponse charge(ChargeRequestBuilder chargeRequestBuilder) {
+        chargeRequestBuilder.validate();
         ChargeRequest chargeRequest = chargeRequestBuilder.build();
         DefaultResponse<ChargeResponse> defaultResponse = new DefaultPayment<ChargeRequest, ChargeResponse>(chargeRequest).execute();
         return defaultResponse.getResponse();

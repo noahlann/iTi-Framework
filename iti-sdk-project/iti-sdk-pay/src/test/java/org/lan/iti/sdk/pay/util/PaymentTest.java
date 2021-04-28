@@ -1,7 +1,6 @@
 package org.lan.iti.sdk.pay.util;
 
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.lan.iti.sdk.pay.Payment;
 import org.lan.iti.sdk.pay.model.IResponse;
@@ -22,7 +21,7 @@ public class PaymentTest {
         IResponse response = Payment.charge(
                 Payment.chargeConfigurer()
                         .appId("1282962695032754178")
-                        .amount(0.01f)
+                        .amount("0.01")
                         .body("测试描述")
                         .outOrderNo(RandomUtil.randomString(32))
                         .gatewayHost("http://192.168.200.54:26003" + "/test/charge/create")

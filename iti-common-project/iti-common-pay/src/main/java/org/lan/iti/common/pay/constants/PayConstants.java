@@ -54,6 +54,12 @@ public interface PayConstants {
 
     /**
      * Http header Content-Type
-     * */
+     */
     String CONTENT_TYPE = "Content-Type";
+
+    /**
+     * http请求异常!
+     */
+    String HTTP_ERROR = "http请求异常!";
+
 }

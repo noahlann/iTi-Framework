@@ -29,7 +29,7 @@ public abstract class AbstractPayment<T extends IRequest, R extends IResponse> {
      * @param model 数据模型
      */
     protected Map<String, Object> toMap(IRequest model) {
-        return BeanUtil.beanToMap(model, true, false);
+        return BeanUtil.beanToMap(model, false, false);
     }
 
     /**
