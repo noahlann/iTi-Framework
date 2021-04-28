@@ -44,10 +44,16 @@ public class SystemClock {
      * 时钟更新间隔，单位毫秒
      */
     private final long period;
+
     /**
      * 现在时刻的毫秒数
      */
-    private volatile long now;
+    private volatile long currentTimeMillis;
+
+    /**
+     * 现在时刻的纳秒数
+     */
+    private volatile long nanoTime;
 
     /**
      * 构造
@@ -56,7 +62,8 @@ public class SystemClock {
      */
     private SystemClock(long period) {
         this.period = period;
-        this.now = System.currentTimeMillis();
+        this.nanoTime = System.nanoTime();
+        this.currentTimeMillis = System.currentTimeMillis();
         scheduleClockUpdating();
     }
 
@@ -64,19 +71,24 @@ public class SystemClock {
      * 开启计时器线程
      */
     private void scheduleClockUpdating() {
-        ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1, runnable -> {
+        ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(2, runnable -> {
             Thread thread = new Thread(runnable, "System Clock");
             thread.setDaemon(true);
             return thread;
         });
-        scheduler.scheduleAtFixedRate(() -> now = System.currentTimeMillis(), period, period, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> this.currentTimeMillis = System.currentTimeMillis(), 0, period, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> this.nanoTime = System.nanoTime(), 0, period, TimeUnit.NANOSECONDS);
     }
 
     /**
      * @return 当前时间毫秒数
      */
     private long currentTimeMillis() {
-        return now;
+        return currentTimeMillis;
+    }
+
+    private long nanoTime() {
+        return nanoTime;
     }
 
     //------------------------------------------------------------------------ static
