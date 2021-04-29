@@ -18,8 +18,6 @@
 
 package org.lan.iti.common.ddd.ext;
 
-import org.lan.iti.common.ddd.model.IDomain;
-
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -35,9 +33,9 @@ public interface IDecideStepsExt extends IDomainExtension {
     /**
      * 根据领域模型和领域活动码决定需要执行哪些领域步骤
      *
-     * @param model        领域模型
+     * @param params       条件参数
      * @param activityCode 领域活动码
      * @return stepCode List
      */
-    @NotNull List<String> decideSteps(@NotNull IDomain model, @NotNull String activityCode);
+    @NotNull List<String> decideSteps(@NotNull Object params, @NotNull String activityCode);
 }

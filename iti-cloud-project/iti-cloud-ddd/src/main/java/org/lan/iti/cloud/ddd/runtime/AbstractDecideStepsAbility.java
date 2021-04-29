@@ -19,7 +19,6 @@
 package org.lan.iti.cloud.ddd.runtime;
 
 import org.lan.iti.common.ddd.ext.IDecideStepsExt;
-import org.lan.iti.common.ddd.model.IDomain;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
@@ -34,22 +33,22 @@ import java.util.List;
  * @deprecated 编排能力不再有
  */
 @Deprecated
-public abstract class AbstractDecideStepsAbility<Model extends IDomain> extends AbstractDomainAbility<Model, IDecideStepsExt> {
+public abstract class AbstractDecideStepsAbility extends AbstractDomainAbility<IDecideStepsExt> {
     private static final IDecideStepsExt DEFAULT_EXT = new EmptyExt();
 
     /**
-     * 根据领域模型和领域活动码决定需要执行哪些领域步骤.
+     * 根据 给定条件参数 和领域活动码决定需要执行哪些领域步骤.
      *
-     * @param model        领域模型
+     * @param params       条件参数
      * @param activityCode 领域活动码
      * @return step code list
      */
-    public List<String> decideSteps(@NotNull Model model, String activityCode) {
-        return firstExtension(model).decideSteps(model, activityCode);
+    public List<String> decideSteps(@NotNull Object params, String activityCode) {
+        return firstExtension(params).decideSteps(params, activityCode);
     }
 
     @Override
-    public IDecideStepsExt defaultExtension(@NotNull Model model) {
+    public IDecideStepsExt defaultExtension(@NotNull Object params) {
         return DEFAULT_EXT;
     }
 
@@ -57,7 +56,7 @@ public abstract class AbstractDecideStepsAbility<Model extends IDomain> extends 
         private static final List<String> EMPTY_STEPS = Collections.emptyList();
 
         @Override
-        public List<String> decideSteps(@NotNull IDomain model, @NotNull String activityCode) {
+        public List<String> decideSteps(@NotNull Object params, @NotNull String activityCode) {
             return EMPTY_STEPS;
         }
     }

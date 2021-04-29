@@ -22,10 +22,9 @@ import cn.hutool.core.collection.CollUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.lan.iti.cloud.ddd.runtime.AbstractDomainAbility;
 import org.lan.iti.common.core.exception.BootstrapException;
 import org.lan.iti.common.ddd.ext.IDomainExtension;
-import org.lan.iti.common.ddd.model.IDomain;
-import org.lan.iti.cloud.ddd.runtime.AbstractDomainAbility;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -140,21 +139,21 @@ public class InternalIndexer {
      * 获取某一个扩展点的所有实现实例.
      *
      * @param extClazz  extension interface
-     * @param model     domain model
+     * @param params    参数,可以是聚合
      * @param firstStop 是否找到一个就返回
      * @return 有效的扩展点列表, empty List if not found
      */
     @NotNull
     public static List<ExtensionMeta> findEffectiveExtensions(
             @NotNull Class<? extends IDomainExtension> extClazz,
-            @NotNull IDomain model, boolean firstStop) {
+            @NotNull Object params, boolean firstStop) {
         List<ExtensionMeta> effectiveExtensions = new LinkedList<>();
 
         // O(1) extension locating by Policy
         PolicyMeta policyMeta = POLICY_META_MAP.get(extClazz);
         if (policyMeta != null) {
             // bingo! this extension is located by policy
-            ExtensionMeta extensionByPolicy = policyMeta.getExtension(model);
+            ExtensionMeta extensionByPolicy = policyMeta.getExtension(params);
             if (extensionByPolicy == null) {
                 // found no extension for this model
                 return effectiveExtensions;
@@ -175,7 +174,7 @@ public class InternalIndexer {
             log.debug("{} found patterns:{}", extClazz.getCanonicalName(), sortedPatternMetas);
 
             for (PatternMeta patternMeta : sortedPatternMetas) {
-                if (!patternMeta.match(model)) {
+                if (!patternMeta.match(params)) {
                     continue;
                 }
 
@@ -193,7 +192,7 @@ public class InternalIndexer {
 
         // 之后再找Partner
         for (PartnerMeta partnerMeta : PARTNER_META_MAP.values()) {
-            if (!partnerMeta.match(model)) {
+            if (!partnerMeta.match(params)) {
                 continue;
             }
 

@@ -18,8 +18,6 @@
 
 package org.lan.iti.common.ddd.ext;
 
-import org.lan.iti.common.ddd.model.IDomain;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -29,13 +27,13 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-24
  * @url https://noahlan.com
  */
-public interface IIdentityResolver<Model extends IDomain> extends IPlugable {
+public interface IIdentityResolver extends IPlugable {
 
     /**
-     * 根据领域模型判断是否属于本业务身份的业务
+     * 根据 所给参数 判断是否属于本业务身份的业务
      *
-     * @param model 领域模型
+     * @param params 参数
      * @return true if yes
      */
-    boolean match(@NotNull Model model);
+    boolean match(@NotNull Object params);
 }

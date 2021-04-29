@@ -19,11 +19,10 @@
 package org.lan.iti.cloud.ddd.runtime;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.core.util.Formatter;
-import org.lan.iti.common.ddd.ext.IDomainExtension;
-import org.lan.iti.common.ddd.model.IDomain;
 import org.lan.iti.cloud.ddd.runtime.registry.ExtensionMeta;
 import org.lan.iti.cloud.ddd.runtime.registry.InternalIndexer;
+import org.lan.iti.common.core.util.Formatter;
+import org.lan.iti.common.ddd.ext.IDomainExtension;
 import org.slf4j.MDC;
 
 import javax.validation.constraints.NotNull;
@@ -56,14 +55,14 @@ public class ExtensionInvocationHandler<Ext extends IDomainExtension, R> impleme
             new NamedThreadFactory("ExtInvokeTimer", false));
 
     private final Class<Ext> extInterface;
-    private final IDomain model;
+    private final Object params;
     private final IReducer<R> reducer;
     private final Ext defaultExt;
     private final int timeoutInMs;
 
-    ExtensionInvocationHandler(@NotNull Class<Ext> extInterface, @NotNull IDomain model, IReducer<R> reducer, Ext defaultExt, int timeoutInMs) {
+    ExtensionInvocationHandler(@NotNull Class<Ext> extInterface, @NotNull Object params, IReducer<R> reducer, Ext defaultExt, int timeoutInMs) {
         this.extInterface = extInterface;
-        this.model = model;
+        this.params = params;
         this.reducer = reducer;
         this.defaultExt = defaultExt;
         this.timeoutInMs = timeoutInMs;
@@ -76,14 +75,14 @@ public class ExtensionInvocationHandler<Ext extends IDomainExtension, R> impleme
 
     @Override
     public Object invoke(Object proxy, final Method method, Object[] args) throws Throwable {
-        List<ExtensionMeta> effectiveExts = InternalIndexer.findEffectiveExtensions(extInterface, model, reducer == null);
+        List<ExtensionMeta> effectiveExts = InternalIndexer.findEffectiveExtensions(extInterface, params, reducer == null);
         log.debug("{} effective {}", extInterface.getCanonicalName(), effectiveExts);
 
         if (effectiveExts.isEmpty()) {
             if (defaultExt == null) {
-                log.debug("found NO ext instance {} on {}, HAS TO return null", extInterface.getCanonicalName(), model);
+                log.debug("found NO ext instance {} on {}, HAS TO return null", extInterface.getCanonicalName(), params);
                 throw new ExtNotFoundException(Formatter.format("found NO ext instance {} on {}, HAS TO return null",
-                        extInterface.getCanonicalName(), model));
+                        extInterface.getCanonicalName(), params));
                 // 扩展点方法的返回值不能是int/boolean等，否则会抛出NPE!
 //                return null;
             }

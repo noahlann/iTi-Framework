@@ -18,10 +18,10 @@
 
 package org.lan.iti.cloud.ddd.runtime;
 
+import org.lan.iti.cloud.ddd.runtime.registry.InternalIndexer;
 import org.lan.iti.common.ddd.ext.IDomainExtension;
 import org.lan.iti.common.ddd.model.IDomain;
 import org.lan.iti.common.ddd.model.IDomainService;
-import org.lan.iti.cloud.ddd.runtime.registry.InternalIndexer;
 
 import javax.validation.constraints.NotNull;
 
@@ -34,22 +34,22 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-22
  * @url https://noahlan.com
  */
-public abstract class AbstractDomainAbility<Model extends IDomain, Ext extends IDomainExtension> implements IDomainService {
+public abstract class AbstractDomainAbility<Ext extends IDomainExtension> implements IDomainService {
 
     /**
      * 定位指定的扩展点实例.
      * <p>
      * <p>可以通过{@link IReducer}实现多个扩展点的执行</p>
      *
-     * @param model   领域模型
+     * @param params  条件参数
      * @param reducer 扩展点执行的归约器 如果为空，则等同于{@link #firstExtension(IDomain)}
      * @param <R>     扩展点方法的返回值类型
      * @return null if not found
      */
     @SuppressWarnings("unchecked")
-    protected <R> Ext getExtension(@NotNull Model model, IReducer<R> reducer) {
+    protected <R> Ext getExtension(@NotNull Object params, IReducer<R> reducer) {
         Class<? extends IDomainExtension> extClazz = InternalIndexer.getDomainAbilityExtDeclaration(this.getClass());
-        return findExtension((Class<Ext>) extClazz, model, reducer, defaultExtension(model), 0);
+        return findExtension((Class<Ext>) extClazz, params, reducer, defaultExtension(params), 0);
     }
 
     /**
@@ -58,11 +58,11 @@ public abstract class AbstractDomainAbility<Model extends IDomain, Ext extends I
      * <p>这表示：扩展点实例之间是互斥的，无法叠加的</p>
      * <p>如果需要根据扩展点执行结果来找第一个匹配的扩展点实例，请使用{@link #getExtension(IDomain, IReducer)}</p>
      *
-     * @param model 领域模型
+     * @param params 条件参数
      * @return null if not found
      */
-    protected Ext firstExtension(@NotNull Model model) {
-        return firstExtension(model, 0);
+    protected Ext firstExtension(@NotNull Object params) {
+        return firstExtension(params, 0);
     }
 
     /**
@@ -71,20 +71,26 @@ public abstract class AbstractDomainAbility<Model extends IDomain, Ext extends I
      * <p>这表示：扩展点实例之间是互斥的，无法叠加的</p>
      * <p>如果需要根据扩展点执行结果来找第一个匹配的扩展点实例，请使用{@link #getExtension(IDomain, IReducer)}</p>
      *
-     * @param model       领域模型
+     * @param params      条件参数
      * @param timeoutInMs 执行扩展点的超时时间，in ms；如果超时，会强行终止扩展点的执行
      * @return null if not found
      */
     @SuppressWarnings("unchecked")
-    protected Ext firstExtension(@NotNull Model model, int timeoutInMs) {
+    protected Ext firstExtension(@NotNull Object params, int timeoutInMs) {
         Class<? extends IDomainExtension> extClazz = InternalIndexer.getDomainAbilityExtDeclaration(this.getClass());
-        return findExtension((Class<Ext>) extClazz, model, null, defaultExtension(model), timeoutInMs);
+        return findExtension((Class<Ext>) extClazz, params, null, defaultExtension(params), timeoutInMs);
     }
 
-    public abstract Ext defaultExtension(@NotNull Model model);
+    /**
+     * 默认扩展，当且仅当无其它扩展时调用
+     *
+     * @param params 条件参数
+     * @return 扩展点实例
+     */
+    public abstract Ext defaultExtension(@NotNull Object params);
 
-    private <E extends IDomainExtension, R> E findExtension(@NotNull Class<E> extClazz, @NotNull Model model, IReducer<R> reducer, E defaultExt, int timeoutInMs) {
-        ExtensionInvocationHandler<E, R> proxy = new ExtensionInvocationHandler<>(extClazz, model, reducer, defaultExt, timeoutInMs);
+    private <E extends IDomainExtension, R> E findExtension(@NotNull Class<E> extClazz, @NotNull Object params, IReducer<R> reducer, E defaultExt, int timeoutInMs) {
+        ExtensionInvocationHandler<E, R> proxy = new ExtensionInvocationHandler<>(extClazz, params, reducer, defaultExt, timeoutInMs);
         return proxy.createProxy();
     }
 }

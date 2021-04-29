@@ -20,12 +20,11 @@ package org.lan.iti.cloud.ddd.runtime.registry;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.lan.iti.common.core.exception.BootstrapException;
-import org.lan.iti.cloud.util.AopUtils;
 import org.lan.iti.cloud.ddd.annotation.Pattern;
+import org.lan.iti.cloud.util.AopUtils;
+import org.lan.iti.common.core.exception.BootstrapException;
 import org.lan.iti.common.ddd.ext.IDomainExtension;
 import org.lan.iti.common.ddd.ext.IIdentityResolver;
-import org.lan.iti.common.ddd.model.IDomain;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -49,10 +48,9 @@ class PatternMeta implements IRegistryAware, IIdentityResolver {
     private IIdentityResolver patternBean;
     private final Map<Class<? extends IDomainExtension>, ExtensionMeta> extensionMetaMap = new HashMap<>();
 
-    @SuppressWarnings("unchecked")
     @Override
-    public boolean match(IDomain iDomain) {
-        return patternBean.match(iDomain);
+    public boolean match(Object params) {
+        return patternBean.match(params);
     }
 
     @Override

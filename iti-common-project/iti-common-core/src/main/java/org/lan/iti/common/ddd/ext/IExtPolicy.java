@@ -18,8 +18,6 @@
 
 package org.lan.iti.common.ddd.ext;
 
-import org.lan.iti.common.ddd.model.IDomain;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -32,13 +30,13 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-24
  * @url https://noahlan.com
  */
-public interface IExtPolicy<Model extends IDomain> {
+public interface IExtPolicy {
     /**
-     * 根据领域模型，定位匹配的扩展点.
+     * 根据 给定条件，定位匹配的扩展点.
      *
-     * @param model 领域模型
+     * @param params 领域模型
      * @return 匹配的扩展点编码, SHOULD NEVER be null
      */
     @NotNull
-    String extensionCode(@NotNull Model model);
+    String extensionCode(@NotNull Object params);
 }

@@ -21,12 +21,11 @@ package org.lan.iti.cloud.ddd.runtime.registry;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
-import org.lan.iti.common.core.exception.BootstrapException;
-import org.lan.iti.cloud.util.AopUtils;
 import org.lan.iti.cloud.ddd.annotation.Policy;
+import org.lan.iti.cloud.util.AopUtils;
+import org.lan.iti.common.core.exception.BootstrapException;
 import org.lan.iti.common.ddd.ext.IDomainExtension;
 import org.lan.iti.common.ddd.ext.IExtPolicy;
-import org.lan.iti.common.ddd.model.IDomain;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -73,11 +72,10 @@ class PolicyMeta implements IRegistryAware {
         extensionMetaMap.put(extensionDef.getCode(), extensionDef);
     }
 
-    @SuppressWarnings("unchecked")
     @NotNull
-    ExtensionMeta getExtension(IDomain model) {
+    ExtensionMeta getExtension(Object params) {
         // 根据领域模型，让扩展点定位策略计算目标扩展点code: will never be null
-        final String extensionCode = policyBean.extensionCode(model);
+        final String extensionCode = policyBean.extensionCode(params);
         if (extensionCode == null) {
             return null;
         }
