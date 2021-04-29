@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.lan.iti.cloud.scanner.model;
+package org.lan.iti.cloud.resscanner.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.lan.iti.cloud.scanner.exception;
+package org.lan.iti.cloud.resscanner.exception;
 
 import org.lan.iti.common.core.util.Formatter;
 

@@ -16,12 +16,12 @@
  *
  */
 
-package org.lan.iti.cloud.scanner.util;
+package org.lan.iti.cloud.resscanner.util;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
-import org.lan.iti.cloud.scanner.model.PatternInfo;
-import org.lan.iti.cloud.scanner.model.ResourceDefinition;
+import org.lan.iti.cloud.resscanner.model.PatternInfo;
+import org.lan.iti.cloud.resscanner.model.ResourceDefinition;
 
 import java.util.Comparator;
 

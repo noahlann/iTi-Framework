@@ -18,8 +18,8 @@
 
 package org.lan.iti.cloud.security.authority.service;
 
-import org.lan.iti.cloud.scanner.ResourceCache;
-import org.lan.iti.cloud.scanner.model.ResourceDefinition;
+import org.lan.iti.cloud.resscanner.ResourceCache;
+import org.lan.iti.cloud.resscanner.model.ResourceDefinition;
 
 import java.util.List;
 

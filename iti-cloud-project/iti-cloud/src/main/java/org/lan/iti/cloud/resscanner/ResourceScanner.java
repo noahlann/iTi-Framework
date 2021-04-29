@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.cloud.scanner;
+package org.lan.iti.cloud.resscanner;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.net.NetUtil;
@@ -28,12 +28,12 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.lan.iti.cloud.util.BeanUtils;
 import org.lan.iti.cloud.util.PropertiesUtils;
-import org.lan.iti.cloud.scanner.annotation.ITIApi;
-import org.lan.iti.cloud.scanner.exception.ScannerException;
-import org.lan.iti.cloud.scanner.feign.RemoteResourceService;
-import org.lan.iti.cloud.scanner.model.ResourceDefinition;
-import org.lan.iti.cloud.scanner.properties.ScannerProperties;
-import org.lan.iti.cloud.scanner.util.CodeUtils;
+import org.lan.iti.cloud.resscanner.annotation.ITIApi;
+import org.lan.iti.cloud.resscanner.exception.ScannerException;
+import org.lan.iti.cloud.resscanner.feign.RemoteResourceService;
+import org.lan.iti.cloud.resscanner.model.ResourceDefinition;
+import org.lan.iti.cloud.resscanner.properties.ScannerProperties;
+import org.lan.iti.cloud.resscanner.util.CodeUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;

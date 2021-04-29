@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.lan.iti.cloud.scanner.properties;
+package org.lan.iti.cloud.resscanner.properties;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

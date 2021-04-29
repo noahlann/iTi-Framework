@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.lan.iti.cloud.scanner.annotation;
+package org.lan.iti.cloud.resscanner.annotation;
 
 import org.springframework.core.annotation.AliasFor;
 

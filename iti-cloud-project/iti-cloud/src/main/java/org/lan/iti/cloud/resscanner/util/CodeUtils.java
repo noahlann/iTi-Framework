@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.cloud.scanner.util;
+package org.lan.iti.cloud.resscanner.util;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;

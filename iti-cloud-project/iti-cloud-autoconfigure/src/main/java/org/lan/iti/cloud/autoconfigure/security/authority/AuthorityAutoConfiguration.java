@@ -18,7 +18,7 @@
 
 package org.lan.iti.cloud.autoconfigure.security.authority;
 
-import org.lan.iti.cloud.scanner.model.ResourceDefinition;
+import org.lan.iti.cloud.resscanner.model.ResourceDefinition;
 import org.lan.iti.cloud.security.authority.ITIFilterInvocationSecurityMetadataSource;
 import org.lan.iti.cloud.security.authority.service.AuthorityService;
 import org.lan.iti.cloud.security.authority.service.DefaultAuthorityService;

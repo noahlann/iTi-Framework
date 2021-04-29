@@ -16,13 +16,13 @@
  *
  */
 
-package org.lan.iti.cloud.scanner;
+package org.lan.iti.cloud.resscanner;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.lan.iti.cloud.scanner.exception.ScannerException;
-import org.lan.iti.cloud.scanner.model.ResourceDefinition;
+import org.lan.iti.cloud.resscanner.exception.ScannerException;
+import org.lan.iti.cloud.resscanner.model.ResourceDefinition;
 import org.springframework.lang.Nullable;
 
 import java.util.*;

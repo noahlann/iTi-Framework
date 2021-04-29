@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.cloud.scanner.model;
+package org.lan.iti.cloud.resscanner.model;
 
 import org.springframework.lang.Nullable;
 

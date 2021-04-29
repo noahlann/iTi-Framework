@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.lan.iti.cloud.scanner.feign;
+package org.lan.iti.cloud.resscanner.feign;
 
 import feign.Headers;
 import org.lan.iti.common.core.constants.SecurityConstants;
-import org.lan.iti.cloud.scanner.model.ResourceDefinition;
+import org.lan.iti.cloud.resscanner.model.ResourceDefinition;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;

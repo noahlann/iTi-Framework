@@ -16,11 +16,11 @@
  *
  */
 
-package org.lan.iti.cloud.scanner.config;
+package org.lan.iti.cloud.resscanner.config;
 
 import lombok.AllArgsConstructor;
-import org.lan.iti.cloud.scanner.ResourceScanner;
-import org.lan.iti.cloud.scanner.properties.ScannerProperties;
+import org.lan.iti.cloud.resscanner.ResourceScanner;
+import org.lan.iti.cloud.resscanner.properties.ScannerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
