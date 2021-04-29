@@ -212,7 +212,7 @@ public class ApiResult<T> implements Serializable {
     @SuppressWarnings("AlibabaEnumConstantsMustHaveComment")
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    enum DefaultEnum implements IExceptionSpec {
+    public static enum DefaultEnum implements IExceptionSpec {
         SUCCESS("SUCCESS", "成功"),
         FAIL("FAIL", "失败"),
         ;

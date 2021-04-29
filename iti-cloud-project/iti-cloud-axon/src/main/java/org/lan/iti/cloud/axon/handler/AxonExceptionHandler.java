@@ -16,38 +16,41 @@
  *
  */
 
-package org.lan.iti.cloud.handler;
+package org.lan.iti.cloud.axon.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.messaging.annotation.MessageHandlerInvocationException;
 import org.lan.iti.cloud.constants.AopConstants;
+import org.lan.iti.cloud.handler.ExceptionHandlerHelper;
 import org.lan.iti.common.core.api.ApiResult;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.sql.SQLException;
-
 /**
- * SQL异常全局拦截处理器
- *
  * @author NorthLan
- * @date 2020-07-30
+ * @date 2021-04-29
  * @url https://noahlan.com
  */
 @Slf4j
-@Order(AopConstants.SQL_EXCEPTION_HANDLER)
+@Order(AopConstants.AXON_EXCEPTION_HANDLER)
 @RestControllerAdvice
-public class SqlExceptionHandler {
+public class AxonExceptionHandler {
 
+    /**
+     * Axon MessageHandlerInvocation
+     * <p>消息发布异常</p>
+     *
+     * @param e 异常信息
+     * @return 错误消息
+     */
     @ExceptionHandler
-    public ResponseEntity<ApiResult<String>> handleSqlException(SQLException e) {
-        return ExceptionHandlerHelper.handle(e, log);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ApiResult<String>> handleBadSqlException(BadSqlGrammarException e) {
-        return ExceptionHandlerHelper.handle(e, log);
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ApiResult<String>> handleServiceException(MessageHandlerInvocationException e) {
+        log.error("消息发布异常：", e);
+        return ExceptionHandlerHelper.handle(e.getCause() != null ? e.getCause() : e, log);
     }
 }

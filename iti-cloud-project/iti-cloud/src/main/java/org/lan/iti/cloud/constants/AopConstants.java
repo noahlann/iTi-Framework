@@ -35,12 +35,17 @@ public interface AopConstants {
     int GLOBAL_EXCEPTION_HANDLER = 200;
 
     /**
-     * 业务异常处理器Order
-     */
-    int BIZ_EXCEPTION_HANDLER = 199;
-
-    /**
      * SQLExceptionHandler
      */
     int SQL_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 1;
+
+    /**
+     * 业务异常处理器Order
+     */
+    int BIZ_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 2;
+
+    /**
+     * Axon 异常处理器 Order
+     */
+    int AXON_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 3;
 }

@@ -21,23 +21,20 @@ package org.lan.iti.cloud.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.cloud.constants.AopConstants;
 import org.lan.iti.common.core.api.ApiResult;
-import org.lan.iti.common.core.enums.ITIExceptionEnum;
 import org.lan.iti.common.core.exception.BusinessException;
 import org.lan.iti.common.core.exception.ServiceException;
-import org.lan.iti.common.core.validator.ArgumentInvalidResult;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -49,7 +46,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Order(AopConstants.BIZ_EXCEPTION_HANDLER)
-@RestController
 @RestControllerAdvice
 public class BizExceptionHandler {
 
@@ -60,18 +56,13 @@ public class BizExceptionHandler {
      * @return 错误消息
      */
     @ExceptionHandler(ServiceException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<String> handleServiceException(ServiceException e) {
-        log.error("服务异常：", e);
-        String errorCode = String.valueOf(e.getCode());
-        return ApiResult.error(errorCode, e.getMessage());
+    public ResponseEntity<ApiResult<String>> handleServiceException(ServiceException e) {
+        return ExceptionHandlerHelper.handle(e, log);
     }
 
     @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<String> handleBusinessException(BusinessException e) {
-        log.error("业务异常：", e);
-        return ApiResult.error(e.code(), e.message());
+    public ResponseEntity<ApiResult<String>> handleBusinessException(BusinessException e) {
+        return ExceptionHandlerHelper.handle(e, log);
     }
 
     /**
@@ -82,9 +73,8 @@ public class BizExceptionHandler {
      * @return 转换后可识别的验证列表
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult<?> handleBodyValidException(MethodArgumentNotValidException e) {
-        return handleArgumentResult(getBindingResult(e.getBindingResult()));
+    public ResponseEntity<ApiResult<String>> handleBodyValidException(MethodArgumentNotValidException e) {
+        return ExceptionHandlerHelper.handleArgumentResult(e.getBindingResult(), log);
     }
 
     /**
@@ -95,9 +85,8 @@ public class BizExceptionHandler {
      * @return 转换后可识别的验证列表
      */
     @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult<?> handleBindException(BindException e) {
-        return handleArgumentResult(getBindingResult(e));
+    public ResponseEntity<ApiResult<String>> handleBindException(BindException e) {
+        return ExceptionHandlerHelper.handleArgumentResult(e, log);
     }
 
     /**
@@ -108,51 +97,8 @@ public class BizExceptionHandler {
      * @return 转换后可识别的验证列表
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult<?> handleViolationException(ConstraintViolationException e) {
-        return handleArgumentResult(getViolationResults(e));
-    }
-
-    private ApiResult<?> handleArgumentResult(List<ArgumentInvalidResult> results) {
-        log.error("参数验证错误, {}", results.toString());
-        String errorCode = String.valueOf(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode());
-        return ApiResult.error(errorCode,
-                ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMessage(),
-                results.stream().map(ArgumentInvalidResult::getDefaultMessage).collect(Collectors.joining("|")));
-    }
-
-    /**
-     * 转换为参数错误列表
-     *
-     * @param bindingResult 绑定结果对象
-     * @return 具体参数错误列表
-     */
-    private List<ArgumentInvalidResult> getBindingResult(BindingResult bindingResult) {
-        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        List<ArgumentInvalidResult> results = new ArrayList<>();
-        fieldErrors.forEach(it -> results.add(new ArgumentInvalidResult(
-                it.getDefaultMessage(),
-                it.getObjectName(),
-                it.getField(),
-                it.getRejectedValue())));
-        return results;
-    }
-
-    /**
-     * 转换异常内参数为错误信息
-     *
-     * @param e 参数验证异常
-     * @return 具体参数错误列表
-     */
-    private List<ArgumentInvalidResult> getViolationResults(ConstraintViolationException e) {
-        List<ArgumentInvalidResult> results = new ArrayList<>();
-        e.getConstraintViolations().forEach(it -> results.add(new ArgumentInvalidResult(
-                it.getMessage(),
-                it.getRootBeanClass().getSimpleName(),
-                it.getPropertyPath().toString(),
-                it.getInvalidValue()
-        )));
-        return results;
+    public ResponseEntity<ApiResult<String>> handleViolationException(ConstraintViolationException e) {
+        return ExceptionHandlerHelper.handleArgumentResult(e, log);
     }
 
     /**
@@ -162,11 +108,8 @@ public class BizExceptionHandler {
      * @return 转换后可识别的验证列表
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult<String> handleMissingParameterException(MissingServletRequestParameterException e) {
-        log.error("缺少请求参数：", e);
-        String errorCode = ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode();
-        return ApiResult.error(errorCode, e.getMessage());
+    public ResponseEntity<ApiResult<String>> handleMissingParameterException(MissingServletRequestParameterException e) {
+        return ExceptionHandlerHelper.handle(e, log);
     }
 
     /**
@@ -176,11 +119,8 @@ public class BizExceptionHandler {
      * @return 错误消息
      */
     @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<String> handleRuntimeException(RuntimeException e) {
-        log.error("运行时异常，未知错误：", e);
-        String errorCode = ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode();
-        return ApiResult.error(errorCode, e.getLocalizedMessage());
+    public ResponseEntity<ApiResult<String>> handleRuntimeException(RuntimeException e) {
+        return ExceptionHandlerHelper.handle(e, log);
     }
 
     /**

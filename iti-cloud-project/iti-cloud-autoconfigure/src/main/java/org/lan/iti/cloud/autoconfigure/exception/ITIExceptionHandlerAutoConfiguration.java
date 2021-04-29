@@ -19,6 +19,8 @@
 package org.lan.iti.cloud.autoconfigure.exception;
 
 import com.alibaba.csp.sentinel.Tracer;
+import org.axonframework.messaging.annotation.MessageHandlerInvocationException;
+import org.lan.iti.cloud.axon.handler.AxonExceptionHandler;
 import org.lan.iti.cloud.handler.BizExceptionHandler;
 import org.lan.iti.cloud.handler.GlobalExceptionHandler;
 import org.lan.iti.cloud.handler.SqlExceptionHandler;
@@ -57,6 +59,16 @@ public class ITIExceptionHandlerAutoConfiguration {
         @Bean
         public BizExceptionHandler bizExceptionHandler() {
             return new BizExceptionHandler();
+        }
+    }
+
+    @Configuration
+    @ConditionalOnClass({MessageHandlerInvocationException.class})
+    public static class AxonExceptionHandlerAutoConfiguration {
+
+        @Bean
+        public AxonExceptionHandler axonExceptionHandler() {
+            return new AxonExceptionHandler();
         }
     }
 
