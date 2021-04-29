@@ -103,7 +103,7 @@ public final class GenJpaEnumConverterPlugin extends AbstractProcessorPlugin {
                 .addStatement("if (i == null) return null")
                 .addCode(CodeBlock.builder()
                         .add("for ($T value : $T.values()){\n", TypeName.get(typeElement.asType()), TypeName.get(typeElement.asType()))
-                        .add("\tif (value.$L() == i){\n", getGetterName(firstFieldElement))
+                        .add("\tif (value.$L().equals(i)){\n", getGetterName(firstFieldElement))
                         .add("\t\treturn value; \n")
                         .add("\t}\n")
                         .add("}\n")
