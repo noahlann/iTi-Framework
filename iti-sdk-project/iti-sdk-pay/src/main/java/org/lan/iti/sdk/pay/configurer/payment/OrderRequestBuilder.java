@@ -1,4 +1,4 @@
-package org.lan.iti.sdk.pay.configurer.charge;
+package org.lan.iti.sdk.pay.configurer.payment;
 
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
@@ -7,7 +7,7 @@ import org.lan.iti.common.pay.util.PatternPool;
 import org.lan.iti.sdk.pay.configurer.AbstractRequestBuilder;
 import org.lan.iti.sdk.pay.exception.BusinessException;
 import org.lan.iti.sdk.pay.exception.biz.ValidatePaymentParamException;
-import org.lan.iti.sdk.pay.model.request.ChargeRequest;
+import org.lan.iti.sdk.pay.model.request.OrderRequest;
 
 import java.math.BigDecimal;
 
@@ -16,10 +16,10 @@ import java.math.BigDecimal;
  * @since 2021/3/26
  * description 支付参数配置器
  */
-public class ChargeRequestBuilder extends AbstractRequestBuilder<ChargeRequest, ChargeRequestBuilder> {
+public class OrderRequestBuilder extends AbstractRequestBuilder<OrderRequest, OrderRequestBuilder> {
 
-    public ChargeRequestBuilder() {
-        super(new ChargeRequest());
+    public OrderRequestBuilder() {
+        super(new OrderRequest());
     }
 
     /**
@@ -28,7 +28,7 @@ public class ChargeRequestBuilder extends AbstractRequestBuilder<ChargeRequest, 
      * @param outOrderNo 支付单号
      * @return 支付参数配置器
      */
-    public ChargeRequestBuilder outOrderNo(String outOrderNo) {
+    public OrderRequestBuilder outOrderNo(String outOrderNo) {
         request.setOutOrderNo(outOrderNo);
         return this;
     }
@@ -39,7 +39,7 @@ public class ChargeRequestBuilder extends AbstractRequestBuilder<ChargeRequest, 
      * @param amount 订单金额
      * @return 支付参数配置器
      */
-    public ChargeRequestBuilder amount(String amount) {
+    public OrderRequestBuilder amount(String amount) {
         request.setAmount(amount);
         return this;
     }
@@ -50,7 +50,7 @@ public class ChargeRequestBuilder extends AbstractRequestBuilder<ChargeRequest, 
      * @param subject 订单标题
      * @return 支付参数配置器
      */
-    public ChargeRequestBuilder subject(String subject) {
+    public OrderRequestBuilder subject(String subject) {
         request.setSubject(subject);
         return this;
     }
@@ -61,7 +61,7 @@ public class ChargeRequestBuilder extends AbstractRequestBuilder<ChargeRequest, 
      * @param body 订单描述
      * @return 支付参数配置器
      */
-    public ChargeRequestBuilder body(String body) {
+    public OrderRequestBuilder body(String body) {
         request.setBody(body);
         return this;
     }

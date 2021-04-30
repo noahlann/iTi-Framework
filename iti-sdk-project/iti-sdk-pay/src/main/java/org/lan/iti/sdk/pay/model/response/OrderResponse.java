@@ -1,6 +1,6 @@
 package org.lan.iti.sdk.pay.model.response;
 
-import lombok.Getter;
+import lombok.Data;
 import org.lan.iti.sdk.pay.model.IResponse;
 
 import java.util.Map;
@@ -10,8 +10,8 @@ import java.util.Map;
  * @since 2021/3/26
  * description 支付业务统一响应参数
  */
-@Getter
-public class ChargeResponse implements IResponse {
+@Data
+public class OrderResponse implements IResponse {
 
     /**
      * 平台 app id
@@ -59,14 +59,19 @@ public class ChargeResponse implements IResponse {
     private String body;
 
     /**
+     * 订单创建时间
+     */
+    private String createTime;
+
+    /**
      * 支付时间
      */
-    private String timePaid;
+    private String paidTime;
 
     /**
      * 超时时间
      */
-    private String timeExpire;
+    private String expiredTime;
 
     /**
      * 渠道支付单号
@@ -76,7 +81,7 @@ public class ChargeResponse implements IResponse {
     /**
      * 退款金额
      */
-    private Float refundAmount;
+    private String refundAmount;
 
     /**
      * 退款描述(暂无退款;部分退款;全部退款)
@@ -86,16 +91,21 @@ public class ChargeResponse implements IResponse {
     /**
      * 错误码
      */
-    private String failureCode;
+    private String errorCode;
 
     /**
      * 错误信息
      */
-    private String failureMsg;
+    private String errorMsg;
 
     /**
      * 描述
      */
     private String description;
+
+    /**
+     * wap url
+     */
+    private String wapUrl;
 
 }

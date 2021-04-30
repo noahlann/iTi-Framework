@@ -11,7 +11,7 @@ import java.util.Map;
  * description 转账参数
  */
 @Data
-public class FundRequest implements IRequest {
+public class TransferRequest implements IRequest {
 
     /**
      * 转账接口网关

@@ -32,7 +32,8 @@ import java.util.Map;
 @UtilityClass
 public class HttpUtil {
 
-    public HttpEntity request(String url, Map<String, Object> requestMap) {
+    public String request(String url, Map<String, Object> requestMap) {
+        String entityString;
         HttpEntity httpEntity;
         CloseableHttpResponse closeableHttpResponse = null;
         //创建http client请求对象
@@ -55,7 +56,7 @@ public class HttpUtil {
             closeableHttpResponse = closeableHttpClient.execute(httpPost);
             //解析返回值
             httpEntity = closeableHttpResponse.getEntity();
-            System.out.println(EntityUtils.toString(httpEntity));
+            entityString = EntityUtils.toString(httpEntity);
         } catch (IOException e) {
             e.printStackTrace();
             throw new ServiceException(2000, ErrorLevelEnum.PRIMARY.getValue(), PayConstants.HTTP_ERROR);
@@ -69,7 +70,7 @@ public class HttpUtil {
                 e.printStackTrace();
             }
         }
-        return httpEntity;
+        return entityString;
     }
 
 }

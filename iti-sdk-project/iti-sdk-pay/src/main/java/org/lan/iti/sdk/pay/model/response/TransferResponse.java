@@ -12,7 +12,7 @@ import java.util.Map;
  * description 转账业务统一响应参数
  */
 @Getter
-public class FundResponse implements IResponse {
+public class TransferResponse implements IResponse {
 
     /**
      * 平台 app id

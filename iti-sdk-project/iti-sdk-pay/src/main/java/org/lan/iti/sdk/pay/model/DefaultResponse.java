@@ -1,5 +1,6 @@
 package org.lan.iti.sdk.pay.model;
 
+import com.alibaba.fastjson.JSON;
 import lombok.Data;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class DefaultResponse<R extends IResponse> {
 
     private String code;
 
-    private String msg;
+    private String message;
 
     private R response;
 
@@ -23,11 +24,15 @@ public class DefaultResponse<R extends IResponse> {
 
     private Map<String, Object> extra;
 
-    public DefaultResponse(R response) {
+    public DefaultResponse(String code, String message, R response) {
+        this.code = code;
+        this.message = message;
         this.response = response;
     }
 
-    public DefaultResponse(List<R> responseList) {
+    public DefaultResponse(String code, String message, List<R> responseList) {
+        this.code = code;
+        this.message = message;
         this.responseList = responseList;
     }
 

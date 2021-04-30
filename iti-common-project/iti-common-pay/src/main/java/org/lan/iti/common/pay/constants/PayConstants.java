@@ -62,4 +62,19 @@ public interface PayConstants {
      */
     String HTTP_ERROR = "http请求异常!";
 
+    /**
+     * HttpEntity code
+     */
+    String HTTP_ENTITY_CODE = "code";
+
+    /**
+     * HttpEntity message
+     */
+    String HTTP_ENTITY_MESSAGE = "message";
+
+    /**
+     * HttpEntity data
+     */
+    String HTTP_ENTITY_DATA = "data";
+
 }

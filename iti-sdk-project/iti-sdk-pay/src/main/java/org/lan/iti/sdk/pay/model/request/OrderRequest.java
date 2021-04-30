@@ -11,7 +11,7 @@ import java.util.Map;
  * description 支付参数
  */
 @Data
-public class ChargeRequest implements IRequest {
+public class OrderRequest implements IRequest {
 
     /**
      * 支付接口网关

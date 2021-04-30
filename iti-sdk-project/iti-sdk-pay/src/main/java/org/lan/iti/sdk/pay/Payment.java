@@ -2,17 +2,17 @@ package org.lan.iti.sdk.pay;
 
 import lombok.experimental.UtilityClass;
 import org.lan.iti.sdk.pay.configurer.AbstractRequestBuilder;
-import org.lan.iti.sdk.pay.configurer.charge.ChargeRequestBuilder;
-import org.lan.iti.sdk.pay.configurer.fund.FundRequestBuilder;
+import org.lan.iti.sdk.pay.configurer.payment.OrderRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.refund.RefundRequestBuilder;
+import org.lan.iti.sdk.pay.configurer.transfer.TransferRequestBuilder;
 import org.lan.iti.sdk.pay.model.DefaultResponse;
 import org.lan.iti.sdk.pay.model.IRequest;
-import org.lan.iti.sdk.pay.model.request.ChargeRequest;
-import org.lan.iti.sdk.pay.model.request.FundRequest;
+import org.lan.iti.sdk.pay.model.request.OrderRequest;
 import org.lan.iti.sdk.pay.model.request.RefundRequest;
-import org.lan.iti.sdk.pay.model.response.ChargeResponse;
-import org.lan.iti.sdk.pay.model.response.FundResponse;
+import org.lan.iti.sdk.pay.model.request.TransferRequest;
+import org.lan.iti.sdk.pay.model.response.OrderResponse;
 import org.lan.iti.sdk.pay.model.response.RefundResponse;
+import org.lan.iti.sdk.pay.model.response.TransferResponse;
 import org.lan.iti.sdk.pay.payment.DefaultPayment;
 
 import java.util.HashMap;
@@ -31,9 +31,9 @@ public class Payment {
     private static final Map<Class<? extends IRequest>, AbstractRequestBuilder<? extends IRequest, ? extends AbstractRequestBuilder<?, ?>>> DEFAULT_PAYMENT_MAP = new HashMap<>();
 
     static {
-        DEFAULT_PAYMENT_MAP.put(ChargeRequest.class, new ChargeRequestBuilder());
+        DEFAULT_PAYMENT_MAP.put(OrderRequest.class, new OrderRequestBuilder());
         DEFAULT_PAYMENT_MAP.put(RefundRequest.class, new RefundRequestBuilder());
-        DEFAULT_PAYMENT_MAP.put(FundRequest.class, new FundRequestBuilder());
+        DEFAULT_PAYMENT_MAP.put(TransferRequest.class, new TransferRequestBuilder());
     }
 
     @SuppressWarnings("unchecked")
@@ -47,19 +47,19 @@ public class Payment {
      *
      * @return 支付参数配置器
      */
-    public static ChargeRequestBuilder chargeConfigurer() {
-        return configurer(ChargeRequest.class);
+    public static OrderRequestBuilder orderConfigurer() {
+        return configurer(OrderRequest.class);
     }
 
     /**
      * 支付参数配置
      *
-     * @param chargeParamMap 支付数据(map结构)
+     * @param orderParamMap 支付数据(map结构)
      * @return 支付参数配置器
      */
-    public static ChargeRequestBuilder chargeConfigurer(Map<String, Object> chargeParamMap) {
-        ChargeRequestBuilder configurer = configurer(ChargeRequest.class);
-        configurer.accept(chargeParamMap);
+    public static OrderRequestBuilder orderConfigurer(Map<String, Object> orderParamMap) {
+        OrderRequestBuilder configurer = configurer(OrderRequest.class);
+        configurer.accept(orderParamMap);
         return configurer;
     }
 
@@ -89,68 +89,69 @@ public class Payment {
      *
      * @return 转账参数配置器
      */
-    public static FundRequestBuilder fundConfigurer() {
-        return configurer(FundRequest.class);
+    public static TransferRequestBuilder transferConfigurer() {
+        return configurer(TransferRequest.class);
     }
 
     /**
      * 转账参数配置
      *
-     * @param fundParamMap 转账数据(map结构)
+     * @param transferParamMap 转账数据(map结构)
      * @return 转账参数配置器
      */
-    public static FundRequestBuilder fundConfigurer(Map<String, Object> fundParamMap) {
-        FundRequestBuilder configurer = configurer(FundRequest.class);
-        configurer.accept(fundParamMap);
+    public static TransferRequestBuilder transferConfigurer(Map<String, Object> transferParamMap) {
+        TransferRequestBuilder configurer = configurer(TransferRequest.class);
+        configurer.accept(transferParamMap);
         return configurer;
     }
 
     /**
      * 创建订单
      *
-     * @param chargeRequestBuilder 支付参数配置器
+     * @param orderRequestBuilder 支付参数配置器
      * @return 支付业务响应统一结构
      */
-    public static ChargeResponse charge(ChargeRequestBuilder chargeRequestBuilder) {
-        chargeRequestBuilder.validate();
-        ChargeRequest chargeRequest = chargeRequestBuilder.build();
-        DefaultResponse<ChargeResponse> defaultResponse = new DefaultPayment<ChargeRequest, ChargeResponse>(chargeRequest).execute();
+    public static OrderResponse createOrder(OrderRequestBuilder orderRequestBuilder) {
+        orderRequestBuilder.validate();
+        OrderRequest orderRequest = orderRequestBuilder.build();
+        DefaultResponse<OrderResponse> defaultResponse = new DefaultPayment<>(orderRequest).execute(OrderResponse.class);
         return defaultResponse.getResponse();
     }
 
     /**
      * 创建订单(批量)
      *
-     * @param chargeRequestBuilder 支付参数配置器
+     * @param orderRequestBuilder 支付参数配置器
      * @return 支付业务响应统一结构
      */
-    public static ChargeResponse chargeBatch(ChargeRequestBuilder chargeRequestBuilder) {
-        ChargeRequest chargeRequest = chargeRequestBuilder.build();
-        DefaultResponse<ChargeResponse> defaultResponse = new DefaultPayment<ChargeRequest, ChargeResponse>(chargeRequest).execute();
-        return defaultResponse.getResponse();
+    public static List<OrderResponse> orderBatch(OrderRequestBuilder orderRequestBuilder) {
+        OrderRequest orderRequest = orderRequestBuilder.build();
+        DefaultResponse<OrderResponse> defaultResponse = new DefaultPayment<>(orderRequest).execute(OrderResponse.class);
+        return defaultResponse.getResponseList();
     }
 
     /**
      * 订单查询
      *
-     * @param chargeRequestBuilder 支付参数配置器
+     * @param orderRequestBuilder 支付参数配置器
      * @return 支付业务响应统一结构
      */
-    public static ChargeResponse chargeQuery(ChargeRequestBuilder chargeRequestBuilder) {
-        ChargeRequest chargeRequest = chargeRequestBuilder.build();
-        DefaultResponse<ChargeResponse> defaultResponse = new DefaultPayment<ChargeRequest, ChargeResponse>(chargeRequest).execute();
+    public static OrderResponse orderQuery(OrderRequestBuilder orderRequestBuilder) {
+        OrderRequest orderRequest = orderRequestBuilder.build();
+        DefaultResponse<OrderResponse> defaultResponse = new DefaultPayment<>(orderRequest).execute(OrderResponse.class);
         return defaultResponse.getResponse();
     }
 
     /**
      * 订单查询(批量)
      *
-     * @param chargeRequestBuilder 支付参数配置器
+     * @param orderRequestBuilder 支付参数配置器
      * @return 支付业务响应统一结构
      */
-    public static List<ChargeResponse> chargeList(ChargeRequestBuilder chargeRequestBuilder) {
-        ChargeRequest chargeRequest = chargeRequestBuilder.build();
-        DefaultResponse<ChargeResponse> defaultResponse = new DefaultPayment<ChargeRequest, ChargeResponse>(chargeRequest).execute();
+    public static List<OrderResponse> orderList(OrderRequestBuilder orderRequestBuilder) {
+        OrderRequest orderRequest = orderRequestBuilder.build();
+        OrderResponse orderResponse = new OrderResponse();
+        DefaultResponse<OrderResponse> defaultResponse = new DefaultPayment<>(orderRequest).execute(OrderResponse.class);
         return defaultResponse.getResponseList();
     }
 
@@ -162,7 +163,7 @@ public class Payment {
      */
     public static RefundResponse refund(RefundRequestBuilder refundRequestBuilder) {
         RefundRequest refundRequest = refundRequestBuilder.build();
-        DefaultResponse<RefundResponse> defaultResponse = new DefaultPayment<RefundRequest, RefundResponse>(refundRequest).execute();
+        DefaultResponse<RefundResponse> defaultResponse = new DefaultPayment<>(refundRequest).execute(RefundResponse.class);
         return defaultResponse.getResponse();
     }
 
@@ -174,7 +175,7 @@ public class Payment {
      */
     public static RefundResponse refundBatch(RefundRequestBuilder refundRequestBuilder) {
         RefundRequest refundRequest = refundRequestBuilder.build();
-        DefaultResponse<RefundResponse> defaultResponse = new DefaultPayment<RefundRequest, RefundResponse>(refundRequest).execute();
+        DefaultResponse<RefundResponse> defaultResponse = new DefaultPayment<>(refundRequest).execute(RefundResponse.class);
         return defaultResponse.getResponse();
     }
 
@@ -186,7 +187,7 @@ public class Payment {
      */
     public static RefundResponse refundQuery(RefundRequestBuilder refundRequestBuilder) {
         RefundRequest refundRequest = refundRequestBuilder.build();
-        DefaultResponse<RefundResponse> defaultResponse = new DefaultPayment<RefundRequest, RefundResponse>(refundRequest).execute();
+        DefaultResponse<RefundResponse> defaultResponse = new DefaultPayment<>(refundRequest).execute(RefundResponse.class);
         return defaultResponse.getResponse();
     }
 
@@ -196,57 +197,57 @@ public class Payment {
      * @param refundRequestBuilder 退款参数配置器
      * @return 退款业务响应统一结构
      */
-    public static List<RefundResponse> refundList(RefundRequestBuilder refundRequestBuilder) {
+    public static RefundResponse refundList(RefundRequestBuilder refundRequestBuilder) {
         RefundRequest refundRequest = refundRequestBuilder.build();
-        DefaultResponse<RefundResponse> defaultResponse = new DefaultPayment<RefundRequest, RefundResponse>(refundRequest).execute();
-        return defaultResponse.getResponseList();
+        DefaultResponse<RefundResponse> defaultResponse = new DefaultPayment<>(refundRequest).execute(RefundResponse.class);
+        return defaultResponse.getResponse();
     }
 
     /**
      * 申请转账
      *
-     * @param fundRequestBuilder 转账参数配置器
+     * @param transferRequestBuilder 转账参数配置器
      * @return 转账业务响应统一结构
      */
-    public static FundResponse fund(FundRequestBuilder fundRequestBuilder) {
-        FundRequest fundRequest = fundRequestBuilder.build();
-        DefaultResponse<FundResponse> defaultResponse = new DefaultPayment<FundRequest, FundResponse>(fundRequest).execute();
+    public static TransferResponse transfer(TransferRequestBuilder transferRequestBuilder) {
+        TransferRequest transferRequest = transferRequestBuilder.build();
+        DefaultResponse<TransferResponse> defaultResponse = new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
         return defaultResponse.getResponse();
     }
 
     /**
      * 申请转账(批量)
      *
-     * @param fundRequestBuilder 转账参数配置器
+     * @param transferRequestBuilder 转账参数配置器
      * @return 转账业务响应统一结构
      */
-    public static FundResponse fundBatch(FundRequestBuilder fundRequestBuilder) {
-        FundRequest fundRequest = fundRequestBuilder.build();
-        DefaultResponse<FundResponse> defaultResponse = new DefaultPayment<FundRequest, FundResponse>(fundRequest).execute();
+    public static TransferResponse transferBatch(TransferRequestBuilder transferRequestBuilder) {
+        TransferRequest transferRequest = transferRequestBuilder.build();
+        DefaultResponse<TransferResponse> defaultResponse = new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
         return defaultResponse.getResponse();
     }
 
     /**
      * 转账查询
      *
-     * @param fundRequestBuilder 转账参数配置器
+     * @param transferRequestBuilder 转账参数配置器
      * @return 转账业务响应统一结构
      */
-    public static FundResponse fundQuery(FundRequestBuilder fundRequestBuilder) {
-        FundRequest fundRequest = fundRequestBuilder.build();
-        DefaultResponse<FundResponse> defaultResponse = new DefaultPayment<FundRequest, FundResponse>(fundRequest).execute();
+    public static TransferResponse fundQuery(TransferRequestBuilder transferRequestBuilder) {
+        TransferRequest transferRequest = transferRequestBuilder.build();
+        DefaultResponse<TransferResponse> defaultResponse = new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
         return defaultResponse.getResponse();
     }
 
     /**
      * 转账查询(批量)
      *
-     * @param fundRequestBuilder 转账参数配置器
+     * @param transferRequestBuilder 转账参数配置器
      * @return 转账业务响应统一结构
      */
-    public static List<FundResponse> fundList(FundRequestBuilder fundRequestBuilder) {
-        FundRequest fundRequest = fundRequestBuilder.build();
-        DefaultResponse<FundResponse> defaultResponse = new DefaultPayment<FundRequest, FundResponse>(fundRequest).execute();
+    public static List<TransferResponse> fundList(TransferRequestBuilder transferRequestBuilder) {
+        TransferRequest transferRequest = transferRequestBuilder.build();
+        DefaultResponse<TransferResponse> defaultResponse = new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
         return defaultResponse.getResponseList();
     }
 
