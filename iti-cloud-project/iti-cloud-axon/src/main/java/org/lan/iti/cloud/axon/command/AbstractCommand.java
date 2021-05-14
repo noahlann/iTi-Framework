@@ -21,6 +21,7 @@ package org.lan.iti.cloud.axon.command;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 /**
@@ -31,11 +32,22 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
  * @url https://noahlan.com
  */
 @Data
+@Accessors(chain = true)
 @NoArgsConstructor
 public abstract class AbstractCommand {
 
     @TargetAggregateIdentifier
-    private String id;
+    public String identifier() {
+        return getId();
+    }
+
+    /**
+     * 获取ID
+     * <p>此ID作为标识聚合根唯一性必须</p>
+     *
+     * @return 唯一标识
+     */
+    protected abstract String getId();
 
     /**
      * 是否具有唯一标识
@@ -43,6 +55,6 @@ public abstract class AbstractCommand {
      * @return true 具有
      */
     public boolean hasIdentifier() {
-        return StrUtil.isNotBlank(id);
+        return StrUtil.isNotBlank(getId());
     }
 }
