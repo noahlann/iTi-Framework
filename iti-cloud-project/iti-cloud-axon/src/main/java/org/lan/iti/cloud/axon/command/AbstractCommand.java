@@ -37,8 +37,8 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 public abstract class AbstractCommand {
 
     @TargetAggregateIdentifier
-    public String identifier() {
-        return getId();
+    public String getId() {
+        return identifier();
     }
 
     /**
@@ -47,7 +47,8 @@ public abstract class AbstractCommand {
      *
      * @return 唯一标识
      */
-    protected abstract String getId();
+    @TargetAggregateIdentifier
+    protected abstract String identifier();
 
     /**
      * 是否具有唯一标识
@@ -55,6 +56,6 @@ public abstract class AbstractCommand {
      * @return true 具有
      */
     public boolean hasIdentifier() {
-        return StrUtil.isNotBlank(getId());
+        return StrUtil.isNotBlank(identifier());
     }
 }
