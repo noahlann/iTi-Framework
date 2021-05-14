@@ -5,7 +5,7 @@
     <parent>
         <artifactId>iti-common</artifactId>
         <groupId>org.lan</groupId>
-        <version>2.0.6</version>
+        <version>1.6.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -27,6 +27,12 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
         <!--        <dependency>-->
 <!--            <groupId>com.fasterxml.jackson.core</groupId>-->
 <!--            <artifactId>jackson-databind</artifactId>-->

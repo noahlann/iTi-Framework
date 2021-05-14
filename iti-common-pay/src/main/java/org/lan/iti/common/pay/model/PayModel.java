@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.Map;
 
 /**
  * @author I'm
@@ -118,5 +119,10 @@ public class PayModel extends BaseModel {
      * 渠道编码 支付宝：alipay 微信：wx 银联：upacp
      */
     public String channel;
+
+    /**
+     * 支付额外参数
+     */
+    public Map<String, Object> extra;
 
 }
