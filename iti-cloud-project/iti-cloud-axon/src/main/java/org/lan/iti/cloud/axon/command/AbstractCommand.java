@@ -47,7 +47,6 @@ public abstract class AbstractCommand {
      *
      * @return 唯一标识
      */
-    @TargetAggregateIdentifier
     protected abstract String identifier();
 
     /**
