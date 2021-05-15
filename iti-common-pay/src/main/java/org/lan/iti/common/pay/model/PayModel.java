@@ -121,8 +121,8 @@ public class PayModel extends BaseModel {
     public String channel;
 
     /**
-     * 支付额外参数
+     * 微信openid
      */
-    public Map<String, Object> extra;
+    public String wxOpenid;
 
 }
