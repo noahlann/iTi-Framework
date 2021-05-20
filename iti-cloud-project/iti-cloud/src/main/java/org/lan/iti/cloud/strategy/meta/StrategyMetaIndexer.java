@@ -52,6 +52,7 @@ public class StrategyMetaIndexer {
             }
             SORTED_STRATEGIES_META_MAP.get(strategyClazz).add(meta);
         }
+        // sort and antiDup of defaults
         for (List<StrategyMeta> metas : SORTED_STRATEGIES_META_MAP.values()) {
             metas.sort(Comparator.comparingInt(StrategyMeta::getPriority));
         }

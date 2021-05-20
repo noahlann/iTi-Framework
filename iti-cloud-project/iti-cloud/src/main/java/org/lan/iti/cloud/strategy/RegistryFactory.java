@@ -50,24 +50,24 @@ public class RegistryFactory {
 
     public static void register(ApplicationContext applicationContext) {
         for (RegistryEntry registryEntry : REGISTRY_ENTRIES) {
-
-            for (Object bean : applicationContext.getBeansWithAnnotation(registryEntry.annotation).values()) {
-                registryEntry.create().registerBean(bean);
-            }
+            registerWithBeans(registryEntry, applicationContext.getBeansWithAnnotation(registryEntry.getAnnotation()).values());
         }
         StrategyMetaIndexer.postIndexing();
     }
 
     public static void register(Function<RegistryEntry, Collection<Object>> singleton) {
         for (RegistryEntry registryEntry : REGISTRY_ENTRIES) {
-            Collection<Object> beans = singleton.apply(registryEntry);
-            if (CollUtil.isNotEmpty(beans)) {
-                for (Object bean : beans) {
-                    registryEntry.create().registerBean(bean);
-                }
-            }
+            registerWithBeans(registryEntry, singleton.apply(registryEntry));
         }
         StrategyMetaIndexer.postIndexing();
+    }
+
+    private static void registerWithBeans(RegistryEntry entry, Collection<Object> beans) {
+        if (CollUtil.isNotEmpty(beans)) {
+            for (Object bean : beans) {
+                entry.create().registerBean(bean);
+            }
+        }
     }
 
     public static class RegistryEntry {

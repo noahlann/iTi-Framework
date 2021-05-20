@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 @UtilityClass
 public class Strategy {
 
-    public <T extends IStrategy, R> T findStrategy(@NotNull Class<T> clazz, Object identify) {
+    public <T extends IStrategy, R> T find(@NotNull Class<T> clazz, Object identify) {
         StrategyInvocationHandler<T, R> proxy = new StrategyInvocationHandler<>(clazz, identify, null, 0);
         return proxy.createProxy();
     }
