@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("rawtypes")
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Deprecated
 public class InternalIndexer {
     /**
      * 空步骤

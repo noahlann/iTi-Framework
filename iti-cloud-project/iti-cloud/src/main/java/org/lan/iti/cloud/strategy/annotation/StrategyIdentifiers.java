@@ -16,24 +16,23 @@
  *
  */
 
-package org.lan.iti.cloud.ddd.runtime.registry;
+package org.lan.iti.cloud.strategy.annotation;
 
-import javax.validation.constraints.NotNull;
+import org.springframework.stereotype.Component;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * IOC bean prepare阶段感知
- *
  * @author NorthLan
- * @date 2021-02-08
+ * @date 2021-05-15
  * @url https://noahlan.com
  */
-@Deprecated
-public interface IPrepareAware {
-
-    /**
-     * 准备阶段
-     *
-     * @param bean bean
-     */
-    void prepare(@NotNull Object bean);
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Component
+public @interface StrategyIdentifiers {
+    StrategyIdentifier[] value();
 }

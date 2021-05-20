@@ -40,6 +40,7 @@ import java.util.List;
  */
 @SuppressWarnings({"AlibabaClassNamingShouldBeCamel", "rawtypes", "unchecked"})
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Deprecated
 public class DDD {
 
     /**

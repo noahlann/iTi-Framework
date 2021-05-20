@@ -34,6 +34,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Component
+@Deprecated
 public @interface Specification {
     /**
      * 业务约束名称.

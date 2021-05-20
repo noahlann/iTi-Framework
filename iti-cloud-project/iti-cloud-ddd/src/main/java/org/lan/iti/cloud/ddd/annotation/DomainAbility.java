@@ -36,6 +36,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Component
+@Deprecated
 public @interface DomainAbility {
     /**
      * The value may indicate a suggestion for a logical component name,

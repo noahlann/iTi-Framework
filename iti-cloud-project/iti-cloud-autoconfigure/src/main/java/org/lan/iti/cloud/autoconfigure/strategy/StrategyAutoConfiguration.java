@@ -16,24 +16,22 @@
  *
  */
 
-package org.lan.iti.cloud.ddd.runtime.registry;
+package org.lan.iti.cloud.autoconfigure.strategy;
 
-import javax.validation.constraints.NotNull;
+import org.lan.iti.cloud.strategy.StrategyApplicationListener;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * IOC bean prepare阶段感知
- *
  * @author NorthLan
- * @date 2021-02-08
+ * @date 2021-05-19
  * @url https://noahlan.com
  */
-@Deprecated
-public interface IPrepareAware {
+@Configuration
+public class StrategyAutoConfiguration {
 
-    /**
-     * 准备阶段
-     *
-     * @param bean bean
-     */
-    void prepare(@NotNull Object bean);
+    @Bean
+    public StrategyApplicationListener strategyApplicationListener() {
+        return new StrategyApplicationListener();
+    }
 }

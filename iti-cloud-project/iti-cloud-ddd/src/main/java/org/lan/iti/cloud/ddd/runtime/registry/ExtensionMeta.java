@@ -40,6 +40,7 @@ import javax.validation.constraints.NotNull;
 @Slf4j
 @NoArgsConstructor
 @Getter
+@Deprecated
 public class ExtensionMeta implements IRegistryAware, IPrepareAware {
     private String code;
     private String name;

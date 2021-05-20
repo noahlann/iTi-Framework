@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
 @Slf4j
+@Deprecated
 public class DDDBootstrap implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
     private final AtomicBoolean once = new AtomicBoolean();
 

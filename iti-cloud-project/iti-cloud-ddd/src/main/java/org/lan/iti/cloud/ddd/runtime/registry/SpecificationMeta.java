@@ -37,6 +37,7 @@ import java.lang.reflect.ParameterizedType;
  */
 @Getter
 @ToString
+@Deprecated
 public class SpecificationMeta implements IRegistryAware {
     private String name;
     private String[] tags;

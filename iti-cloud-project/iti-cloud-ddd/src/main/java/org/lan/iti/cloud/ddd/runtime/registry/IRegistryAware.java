@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-08
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IRegistryAware {
 
     /**

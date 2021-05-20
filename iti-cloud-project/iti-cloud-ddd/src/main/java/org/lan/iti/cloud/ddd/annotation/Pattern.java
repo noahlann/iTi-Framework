@@ -42,6 +42,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Component
+@Deprecated
 public @interface Pattern {
     /**
      * 业务模式编号.

@@ -16,24 +16,23 @@
  *
  */
 
-package org.lan.iti.cloud.ddd.runtime.registry;
+package org.lan.iti.cloud.strategy;
 
-import javax.validation.constraints.NotNull;
+import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * IOC bean prepare阶段感知
+ * 策略快速访问
  *
  * @author NorthLan
- * @date 2021-02-08
+ * @date 2021-05-18
  * @url https://noahlan.com
  */
-@Deprecated
-public interface IPrepareAware {
+@UtilityClass
+public class Strategy {
 
-    /**
-     * 准备阶段
-     *
-     * @param bean bean
-     */
-    void prepare(@NotNull Object bean);
+    public <T extends IStrategy, R> T findStrategy(@NotNull Class<T> clazz, Object identify) {
+        StrategyInvocationHandler<T, R> proxy = new StrategyInvocationHandler<>(clazz, identify, null, 0);
+        return proxy.createProxy();
+    }
 }

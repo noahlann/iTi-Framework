@@ -41,6 +41,7 @@ import java.util.Set;
 @SuppressWarnings("rawtypes")
 @Getter
 @ToString
+@Deprecated
 class PatternMeta implements IRegistryAware, IIdentityResolver {
     private String code;
     private String name;

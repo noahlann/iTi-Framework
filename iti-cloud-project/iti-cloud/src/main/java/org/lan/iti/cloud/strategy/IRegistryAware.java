@@ -16,24 +16,23 @@
  *
  */
 
-package org.lan.iti.cloud.ddd.runtime.registry;
+package org.lan.iti.cloud.strategy;
 
 import javax.validation.constraints.NotNull;
 
 /**
- * IOC bean prepare阶段感知
+ * IOC 感知器
  *
  * @author NorthLan
  * @date 2021-02-08
  * @url https://noahlan.com
  */
-@Deprecated
-public interface IPrepareAware {
+public interface IRegistryAware {
 
     /**
-     * 准备阶段
+     * 注册bean
      *
      * @param bean bean
      */
-    void prepare(@NotNull Object bean);
+    void registerBean(@NotNull Object bean);
 }

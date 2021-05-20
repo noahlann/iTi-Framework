@@ -25,6 +25,7 @@ package org.lan.iti.cloud.ddd.runtime;
  * @date 2021-02-24
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IStartupListener {
     /**
      * 启动时执行.

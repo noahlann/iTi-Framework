@@ -34,6 +34,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-22
  * @url https://noahlan.com
  */
+@Deprecated
 public abstract class AbstractDomainAbility<Ext extends IDomainExtension> implements IDomainService {
 
     /**

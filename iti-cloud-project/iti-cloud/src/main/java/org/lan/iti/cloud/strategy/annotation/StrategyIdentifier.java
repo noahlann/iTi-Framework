@@ -16,24 +16,30 @@
  *
  */
 
-package org.lan.iti.cloud.ddd.runtime.registry;
+package org.lan.iti.cloud.strategy.annotation;
 
-import javax.validation.constraints.NotNull;
+import org.springframework.stereotype.Component;
+
+import java.lang.annotation.*;
 
 /**
- * IOC bean prepare阶段感知
+ * 策略身份
+ * <p>如果策略标识符只有一个，直接使用该注解即可</p>
  *
  * @author NorthLan
- * @date 2021-02-08
+ * @date 2021-05-15
  * @url https://noahlan.com
  */
-@Deprecated
-public interface IPrepareAware {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Repeatable(StrategyIdentifiers.class)
+@Component
+public @interface StrategyIdentifier {
 
     /**
-     * 准备阶段
+     * 策略唯一标识符
      *
-     * @param bean bean
+     * @return 策略标识符
      */
-    void prepare(@NotNull Object bean);
+    String identify();
 }

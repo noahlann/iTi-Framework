@@ -16,24 +16,30 @@
  *
  */
 
-package org.lan.iti.cloud.ddd.runtime.registry;
-
-import javax.validation.constraints.NotNull;
+package org.lan.iti.cloud.strategy.exception;
 
 /**
- * IOC bean prepare阶段感知
+ * Strategy 线程超时
  *
  * @author NorthLan
- * @date 2021-02-08
+ * @date 2021-05-19
  * @url https://noahlan.com
  */
-@Deprecated
-public interface IPrepareAware {
+public class StrategyTimeoutException extends StrategyException {
+    private static final long serialVersionUID = -7825468830930819752L;
+    private final int timeoutInMs;
 
-    /**
-     * 准备阶段
-     *
-     * @param bean bean
-     */
-    void prepare(@NotNull Object bean);
+    public StrategyTimeoutException(int timeoutInMs) {
+        this.timeoutInMs = timeoutInMs;
+    }
+
+    @Override
+    public String getMessage() {
+        return "timeout:" + timeoutInMs + "ms";
+    }
+
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 }

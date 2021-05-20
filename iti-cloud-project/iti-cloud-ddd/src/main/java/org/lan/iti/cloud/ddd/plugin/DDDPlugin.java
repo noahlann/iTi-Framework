@@ -45,6 +45,7 @@ import java.util.Map;
  */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
 @Slf4j
+@Deprecated
 class DDDPlugin extends AbstractPlugin {
 
     protected DDDPlugin(String code,

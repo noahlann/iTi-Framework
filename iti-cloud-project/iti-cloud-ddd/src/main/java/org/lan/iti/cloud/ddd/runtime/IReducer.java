@@ -31,6 +31,7 @@ import java.util.List;
  * @date 2021-02-22
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IReducer<R> {
 
     /**

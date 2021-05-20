@@ -35,6 +35,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Component
+@Deprecated
 public @interface Extension {
     /**
      * The value may indicate a suggestion for a logical component name,

@@ -36,6 +36,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Component
+@Deprecated
 public @interface Partner {
     /**
      * 前台垂直业务编号.

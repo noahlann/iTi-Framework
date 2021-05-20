@@ -28,6 +28,7 @@ import java.util.function.Predicate;
  * @date 2021-02-24
  * @url https://noahlan.com
  */
+@Deprecated
 public abstract class AbstractReducer<R> implements IReducer<R> {
 
     /**

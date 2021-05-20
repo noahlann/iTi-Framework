@@ -41,6 +41,7 @@ import java.util.function.Supplier;
  * @url https://noahlan.com
  */
 @Slf4j
+@Deprecated
 public class RegistryFactory implements InitializingBean {
 
     /**

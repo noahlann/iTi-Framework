@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
  * @url https://noahlan.com
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Deprecated
 public class DomainArtifacts {
     private static final DomainArtifacts INSTANCE = new DomainArtifacts();
 

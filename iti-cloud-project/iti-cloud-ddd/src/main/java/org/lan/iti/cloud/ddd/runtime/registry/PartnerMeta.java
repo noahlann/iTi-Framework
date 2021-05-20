@@ -40,6 +40,7 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 @Getter
 @ToString
+@Deprecated
 class PartnerMeta implements IRegistryAware, IPrepareAware, IIdentityResolver {
     private String code;
     private String name;

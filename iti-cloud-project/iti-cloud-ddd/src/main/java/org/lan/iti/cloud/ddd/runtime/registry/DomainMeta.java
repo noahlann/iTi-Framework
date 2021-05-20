@@ -34,6 +34,7 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @ToString
+@Deprecated
 class DomainMeta implements IRegistryAware {
     private String code;
     private String name;

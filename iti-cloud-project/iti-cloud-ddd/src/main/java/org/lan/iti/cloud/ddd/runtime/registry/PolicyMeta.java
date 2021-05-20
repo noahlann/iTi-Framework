@@ -41,6 +41,7 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 @ToString
 @Getter(AccessLevel.PACKAGE)
+@Deprecated
 class PolicyMeta implements IRegistryAware {
 
     private IExtPolicy policyBean;

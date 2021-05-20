@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.cloud.ddd.runtime.registry;
+package org.lan.iti.cloud.strategy;
 
 import javax.validation.constraints.NotNull;
 
@@ -27,7 +27,6 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-08
  * @url https://noahlan.com
  */
-@Deprecated
 public interface IPrepareAware {
 
     /**

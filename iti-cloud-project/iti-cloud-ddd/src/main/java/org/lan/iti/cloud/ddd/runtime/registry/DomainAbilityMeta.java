@@ -39,6 +39,7 @@ import javax.validation.constraints.NotNull;
 @ToString
 @Slf4j
 @Getter
+@Deprecated
 class DomainAbilityMeta implements IRegistryAware {
     private String domain;
     private String name;

@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.cloud.ddd.runtime;
+package org.lan.iti.cloud.support;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class NamedThreadFactory implements ThreadFactory {
     private final String namePrefix;
     private final boolean daemon;
 
-    NamedThreadFactory(String prefix, boolean daemon) {
+    public NamedThreadFactory(String prefix, boolean daemon) {
         SecurityManager s = System.getSecurityManager();
         group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
         namePrefix = prefix + "-" + POOL_COUNT.getAndIncrement() + "-T-";
