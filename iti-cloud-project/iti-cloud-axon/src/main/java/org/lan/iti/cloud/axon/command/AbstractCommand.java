@@ -22,6 +22,7 @@ import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 /**
@@ -34,6 +35,7 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
+@SuperBuilder
 public abstract class AbstractCommand {
 
     @TargetAggregateIdentifier
