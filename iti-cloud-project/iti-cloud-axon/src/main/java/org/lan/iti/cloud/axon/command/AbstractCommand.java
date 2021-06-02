@@ -21,7 +21,6 @@ package org.lan.iti.cloud.axon.command;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
@@ -33,7 +32,6 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
  * @url https://noahlan.com
  */
 @Data
-@Accessors(chain = true)
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 public abstract class AbstractCommand {
