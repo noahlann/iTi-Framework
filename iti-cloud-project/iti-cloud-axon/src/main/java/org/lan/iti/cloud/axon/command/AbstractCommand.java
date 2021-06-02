@@ -19,7 +19,6 @@
 package org.lan.iti.cloud.axon.command;
 
 import cn.hutool.core.util.StrUtil;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -41,12 +40,32 @@ public abstract class AbstractCommand {
     /**
      * 命令类型，默认是Default，即任何类型
      */
-    @Builder.Default
-    private CommandType commandType = CommandType.DEFAULT;
+    private CommandType commandType;
 
     @TargetAggregateIdentifier
     public String getId() {
         return identifier();
+    }
+
+    /**
+     * 获取命令类型，如不填写任何值，则使用{@link #defaultCommandType()}的返回值
+     *
+     * @return 当前命令类型
+     */
+    public CommandType getCommandType() {
+        if (this.commandType == null) {
+            this.commandType = this.defaultCommandType();
+        }
+        return this.commandType;
+    }
+
+    /**
+     * 默认命令类型，子类可重写此方法将默认类型进行改变
+     *
+     * @return DEFAULT
+     */
+    protected CommandType defaultCommandType() {
+        return CommandType.DEFAULT;
     }
 
     /**
