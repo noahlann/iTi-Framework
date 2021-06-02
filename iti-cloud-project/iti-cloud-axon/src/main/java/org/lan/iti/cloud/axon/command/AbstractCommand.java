@@ -19,6 +19,7 @@
 package org.lan.iti.cloud.axon.command;
 
 import cn.hutool.core.util.StrUtil;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -35,8 +36,13 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public abstract class AbstractCommand {
+    /**
+     * 命令类型，默认是Default，即任何类型
+     */
+    @Builder.Default
+    private CommandType commandType = CommandType.DEFAULT;
 
     @TargetAggregateIdentifier
     public String getId() {
