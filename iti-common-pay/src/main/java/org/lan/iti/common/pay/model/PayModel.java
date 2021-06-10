@@ -125,4 +125,9 @@ public class PayModel extends BaseModel {
      */
     public String wxOpenid;
 
+    /**
+     * 微信jsapi 支付url
+     */
+    public String jsApiPayUrl;
+
 }
