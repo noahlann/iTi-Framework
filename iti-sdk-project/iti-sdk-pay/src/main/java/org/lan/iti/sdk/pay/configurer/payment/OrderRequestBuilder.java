@@ -10,6 +10,7 @@ import org.lan.iti.sdk.pay.exception.biz.ValidatePaymentParamException;
 import org.lan.iti.sdk.pay.model.request.OrderRequest;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * @author I'm
@@ -63,6 +64,17 @@ public class OrderRequestBuilder extends AbstractRequestBuilder<OrderRequest, Or
      */
     public OrderRequestBuilder body(String body) {
         request.setBody(body);
+        return this;
+    }
+
+    /**
+     * 设置订单额外字段
+     *
+     * @param extra 订单描述
+     * @return 支付参数配置器
+     */
+    public OrderRequestBuilder extra(Map<String,Object> extra) {
+        request.setExtra(extra);
         return this;
     }
 
