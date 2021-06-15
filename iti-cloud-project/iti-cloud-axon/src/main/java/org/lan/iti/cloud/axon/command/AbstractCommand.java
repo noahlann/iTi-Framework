@@ -35,15 +35,21 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 public abstract class AbstractCommand {
+
+    /**
+     * 获取聚合根ID
+     *
+     * @return 聚合根ID
+     */
+    @TargetAggregateIdentifier
+    public String getAggregateIdentifier() {
+        return identifier();
+    }
+
     /**
      * 命令类型，默认是Default，即任何类型
      */
     private CommandType commandType;
-
-    @TargetAggregateIdentifier
-    public String getId() {
-        return identifier();
-    }
 
     /**
      * 获取命令类型，如不填写任何值，则使用{@link #defaultCommandType()}的返回值
