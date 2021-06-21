@@ -1,6 +1,5 @@
 package org.lan.iti.sdk.pay.model;
 
-import com.alibaba.fastjson.JSON;
 import lombok.Data;
 
 import java.util.List;

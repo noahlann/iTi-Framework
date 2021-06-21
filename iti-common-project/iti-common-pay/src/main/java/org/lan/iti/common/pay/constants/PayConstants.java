@@ -77,4 +77,14 @@ public interface PayConstants {
      */
     String HTTP_ENTITY_DATA = "data";
 
+    /**
+     * 签名信息 随机串
+     */
+    String SIGN_NONCE_STR = "nonceStr";
+
+    /**
+     * 签名信息 时间戳
+     */
+    String SIGN_TIMESTAMP = "timestamp";
+
 }

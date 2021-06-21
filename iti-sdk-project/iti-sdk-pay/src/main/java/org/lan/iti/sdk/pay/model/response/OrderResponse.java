@@ -1,6 +1,8 @@
 package org.lan.iti.sdk.pay.model.response;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.lan.iti.sdk.pay.model.IResponse;
 
 import java.util.Map;

@@ -1,8 +1,6 @@
 package org.lan.iti.sdk.pay.net;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.CharsetUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.ContentType;
 import com.alibaba.fastjson.JSON;
 import lombok.experimental.UtilityClass;
@@ -14,12 +12,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.lan.iti.common.pay.constants.PayConstants;
-import org.lan.iti.common.pay.constants.PayFieldNameConstants;
 import org.lan.iti.common.pay.enums.ErrorLevelEnum;
 import org.lan.iti.common.pay.exception.ServiceException;
-import org.lan.iti.common.pay.util.PayCommonUtil;
-import org.lan.iti.sdk.pay.exception.BusinessException;
-import org.lan.iti.sdk.pay.exception.biz.ValidatePaymentParamException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -38,12 +32,12 @@ public class HttpUtil {
         CloseableHttpResponse closeableHttpResponse = null;
         //创建http client请求对象
         CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build();
-        if (!requestMap.containsKey(PayFieldNameConstants.GATEWAY_HOST) || StrUtil.isBlankIfStr(requestMap.get(PayFieldNameConstants.GATEWAY_HOST))) {
-            throw new BusinessException(ValidatePaymentParamException.GatewayHostException.EMPTY_GATEWAY_HOST);
-        }
-        if (!PayCommonUtil.isHttpUrlPatternCorrect(Convert.toStr(requestMap.get(PayFieldNameConstants.GATEWAY_HOST)))) {
-            throw new BusinessException(ValidatePaymentParamException.GatewayHostException.INVALID_GATEWAY_HOST_PATTERN);
-        }
+//        if (!requestMap.containsKey(PayFieldNameConstants.GATEWAY_HOST) || StrUtil.isBlankIfStr(requestMap.get(PayFieldNameConstants.GATEWAY_HOST))) {
+//            throw new BusinessException(ValidatePaymentParamException.GatewayHostException.EMPTY_GATEWAY_HOST);
+//        }
+//        if (!PayCommonUtil.isHttpUrlPatternCorrect(Convert.toStr(requestMap.get(PayFieldNameConstants.GATEWAY_HOST)))) {
+//            throw new BusinessException(ValidatePaymentParamException.GatewayHostException.INVALID_GATEWAY_HOST_PATTERN);
+//        }
         //声明请求方式
         HttpPost httpPost = new HttpPost(url);
         //设置content-Type

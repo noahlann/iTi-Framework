@@ -2,6 +2,8 @@ package org.lan.iti.sdk.pay.payment;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -40,10 +42,12 @@ public abstract class AbstractPayment<T extends IRequest> {
      */
     protected void enhance(Map<String, Object> params) {
         // 构造签名
+        params.put(PayConstants.SIGN_NONCE_STR, RandomUtil.randomString(32));
+        params.put(PayConstants.SIGN_TIMESTAMP, DateUtil.now());
         String privateKey = Convert.toStr(params.get(PayFieldKeyConstants.PRIVATE_KEY));
         params.remove(PayFieldKeyConstants.PRIVATE_KEY);
         String sign = PayCommonUtil.sign(PayCommonUtil.getSignCheckContent(params), privateKey);
-        params.put(PayFieldKeyConstants.SIGN, sign);
+        params.put(PayFieldKeyConstants.SIGNATURE, sign);
     }
 
     /**

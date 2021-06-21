@@ -14,14 +14,14 @@ import java.util.Map;
 public class OrderRequest implements IRequest {
 
     /**
-     * 支付接口网关
-     */
-    private String gatewayHost;
-
-    /**
      * 平台 app id
      */
     private String appId;
+
+    /**
+     * 支付接口网关
+     */
+    private String gatewayHost;
 
     /**
      * 接口请求私钥
@@ -46,7 +46,7 @@ public class OrderRequest implements IRequest {
     /**
      * 订单描述
      */
-    private String body;
+    private String description;
 
     /**
      * 订单额外字段

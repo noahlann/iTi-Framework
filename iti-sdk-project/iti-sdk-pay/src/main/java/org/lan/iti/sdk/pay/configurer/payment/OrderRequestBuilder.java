@@ -59,11 +59,11 @@ public class OrderRequestBuilder extends AbstractRequestBuilder<OrderRequest, Or
     /**
      * 设置订单描述
      *
-     * @param body 订单描述
+     * @param description 订单描述
      * @return 支付参数配置器
      */
-    public OrderRequestBuilder body(String body) {
-        request.setBody(body);
+    public OrderRequestBuilder description(String description) {
+        request.setDescription(description);
         return this;
     }
 
@@ -73,7 +73,7 @@ public class OrderRequestBuilder extends AbstractRequestBuilder<OrderRequest, Or
      * @param extra 订单描述
      * @return 支付参数配置器
      */
-    public OrderRequestBuilder extra(Map<String,Object> extra) {
+    public OrderRequestBuilder extra(Map<String, Object> extra) {
         request.setExtra(extra);
         return this;
     }

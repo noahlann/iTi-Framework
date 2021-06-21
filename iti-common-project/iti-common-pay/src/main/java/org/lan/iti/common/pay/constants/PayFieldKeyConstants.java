@@ -105,6 +105,6 @@ public interface PayFieldKeyConstants {
     /**
      * 签名
      */
-    String SIGN = "sign";
+    String SIGNATURE = "signature";
 
 }
