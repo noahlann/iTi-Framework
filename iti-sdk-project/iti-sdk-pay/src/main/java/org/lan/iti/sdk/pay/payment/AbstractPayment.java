@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.lan.iti.common.pay.constants.PayConstants;
 import org.lan.iti.common.pay.constants.PayFieldKeyConstants;
 import org.lan.iti.common.pay.util.PayCommonUtil;
+import org.lan.iti.common.pay.util.SignUtil;
 import org.lan.iti.sdk.pay.model.DefaultResponse;
 import org.lan.iti.sdk.pay.model.IRequest;
 import org.lan.iti.sdk.pay.model.IResponse;
@@ -34,7 +35,7 @@ public abstract class AbstractPayment<T extends IRequest> {
      * @param model 数据模型
      */
     protected Map<String, Object> toMap(IRequest model) {
-        return BeanUtil.beanToMap(model, false, false);
+        return BeanUtil.beanToMap(model, false, true);
     }
 
     /**
@@ -46,7 +47,7 @@ public abstract class AbstractPayment<T extends IRequest> {
         params.put(PayConstants.SIGN_TIMESTAMP, DateUtil.now());
         String privateKey = Convert.toStr(params.get(PayFieldKeyConstants.PRIVATE_KEY));
         params.remove(PayFieldKeyConstants.PRIVATE_KEY);
-        String sign = PayCommonUtil.sign(PayCommonUtil.getSignCheckContent(params), privateKey);
+        String sign = SignUtil.sign(PayCommonUtil.getSignContent(params), privateKey);
         params.put(PayFieldKeyConstants.SIGNATURE, sign);
     }
 

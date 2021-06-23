@@ -1,13 +1,9 @@
 package org.lan.iti.common.pay.util;
 
-import cn.hutool.core.codec.Base64;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.PatternPool;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.asymmetric.Sign;
-import cn.hutool.crypto.asymmetric.SignAlgorithm;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -30,44 +25,24 @@ public class PayCommonUtil {
     /**
      * 签名
      *
-     * @param content       验证签名的参数 形式为 a=x b=y
-     * @param privateKeyPem 私钥签名
-     * @return 签名串
+     * @param params 待签名的集合
+     * @return 验证签名的参数 形式为 a=x b=y
      */
-    public String sign(String content, String privateKeyPem) {
-        try {
-            byte[] data = content.getBytes(StandardCharsets.UTF_8);
-            Sign sha256WithRsaSign = SecureUtil.sign(SignAlgorithm.SHA256withRSA, privateKeyPem, null);
-            byte[] signed = sha256WithRsaSign.sign(data);
-            return Base64.encode(signed);
-        } catch (Exception var7) {
-            String errorMessage = "签名遭遇异常，content=" + content + " privateKeySize=" + privateKeyPem.length() + " reason=" + var7.getMessage();
-            log.error(errorMessage, var7);
-            return "签名异常,请检查私钥是否配置正确!";
-        }
-    }
-
-    /**
-     * 验签
-     *
-     * @param content      验证签名的参数 形为 a=x&b=y
-     * @param sign         content使用私钥签名的签名串
-     * @param publicKeyPem 公钥验签
-     * @return 验签结果
-     */
-    public boolean verifySign(String content, String sign, String publicKeyPem) {
-        try {
-            if (StrUtil.isBlank(sign)) {
-                return false;
+    public String getSignContent(Map<String, Object> params) {
+        if (params == null) {
+            return null;
+        } else {
+            StringBuilder content = new StringBuilder();
+            List<String> keys = new ArrayList<>(params.keySet());
+            Collections.sort(keys);
+            for (int i = 0; i < keys.size(); ++i) {
+                String key = keys.get(i);
+                if (!StrUtil.isBlankIfStr(params.get(key))) {
+                    String value = Convert.toStr(params.get(key));
+                    content.append(key).append("=").append(value).append("\n");
+                }
             }
-            byte[] data = content.getBytes(StandardCharsets.UTF_8);
-            Sign sha256WithRsaSign = SecureUtil.sign(SignAlgorithm.SHA256withRSA, null, publicKeyPem);
-            return sha256WithRsaSign.verify(data, Base64.decode(sign.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception var7) {
-            String errorMessage = "验签遭遇异常，content=" + content + " sign=" + sign + " publicKey=" + publicKeyPem + " reason=" + var7.getMessage();
-            log.error(errorMessage, var7);
-            return false;
-//            throw new RuntimeException(errorMessage, var7);
+            return content.toString();
         }
     }
 
@@ -94,20 +69,6 @@ public class PayCommonUtil {
     }
 
     /**
-     * 应用调用api验签方法
-     *
-     * @param parameters 请求参数
-     * @param publicKey  验签公钥
-     * @return 验签结果
-     */
-    public boolean verify(Map<String, Object> parameters, String publicKey) {
-        String sign = Convert.toStr(parameters.get("sign"));
-        parameters.remove("sign");
-        String content = getSignCheckContent(parameters);
-        return verifySign(content, sign, publicKey);
-    }
-
-    /**
      * 将异步通知的参数转化为Map
      *
      * @param request {HttpServletRequest}
@@ -125,30 +86,6 @@ public class PayCommonUtil {
             params.put(name, valueStr);
         }
         return params;
-    }
-
-    /**
-     * 签名
-     *
-     * @param params 待签名的集合
-     * @return 验证签名的参数 形式为 a=x b=y
-     */
-    public String getSignCheckContent(Map<String, Object> params) {
-        if (params == null) {
-            return null;
-        } else {
-            StringBuilder content = new StringBuilder();
-            List<String> keys = new ArrayList<>(params.keySet());
-            Collections.sort(keys);
-            for (int i = 0; i < keys.size(); ++i) {
-                String key = keys.get(i);
-                if(!StrUtil.isBlankIfStr(params.get(key))){
-                    String value = Convert.toStr(params.get(key));
-                    content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
-                }
-            }
-            return content.toString();
-        }
     }
 
     /**

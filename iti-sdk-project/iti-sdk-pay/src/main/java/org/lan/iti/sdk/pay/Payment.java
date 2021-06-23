@@ -1,12 +1,17 @@
 package org.lan.iti.sdk.pay;
 
+import cn.hutool.core.bean.BeanUtil;
 import lombok.experimental.UtilityClass;
+import org.lan.iti.common.pay.constants.PayConstants;
+import org.lan.iti.common.pay.constants.PayFieldKeyConstants;
+import org.lan.iti.common.pay.util.SignUtil;
 import org.lan.iti.sdk.pay.configurer.AbstractRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.payment.OrderRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.refund.RefundRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.transfer.TransferRequestBuilder;
 import org.lan.iti.sdk.pay.model.DefaultResponse;
 import org.lan.iti.sdk.pay.model.IRequest;
+import org.lan.iti.sdk.pay.model.PaymentNotifyModel;
 import org.lan.iti.sdk.pay.model.request.OrderRequest;
 import org.lan.iti.sdk.pay.model.request.RefundRequest;
 import org.lan.iti.sdk.pay.model.request.TransferRequest;
@@ -236,6 +241,19 @@ public class Payment {
     public static DefaultResponse<TransferResponse> fundList(TransferRequestBuilder transferRequestBuilder) {
         TransferRequest transferRequest = transferRequestBuilder.build();
         return new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
+    }
+
+    public static boolean verifyNotify(PaymentNotifyModel paymentNotifyModel, String publicKey) {
+
+        Map<String, Object> map = BeanUtil.beanToMap(paymentNotifyModel.getOrderResponse(), false, true);
+
+        map.put(PayFieldKeyConstants.SIGNATURE,paymentNotifyModel.getSignature());
+
+        return SignUtil.verify(map, publicKey);
+    }
+
+    public static boolean verifyNotify(Map<String, Object> map, String publicKey) {
+        return SignUtil.verify(map, publicKey);
     }
 
 }

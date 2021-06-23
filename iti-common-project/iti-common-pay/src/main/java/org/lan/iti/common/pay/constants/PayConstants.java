@@ -10,7 +10,7 @@ public interface PayConstants {
     /**
      * 签名
      */
-    String SIGN = "sign";
+    String SIGN_SIGNATURE = "signature";
 
     /**
      * 参数错误

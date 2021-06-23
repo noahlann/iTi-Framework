@@ -1,6 +1,6 @@
 package org.lan.iti.sdk.pay.model.response;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.lan.iti.sdk.pay.model.IResponse;
@@ -13,27 +13,14 @@ import java.util.Map;
  * description 支付业务统一响应参数
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderResponse implements IResponse {
 
     /**
      * 平台 app id
      */
     private String appId;
-
-    /**
-     * 订单额外字段
-     */
-    private Map<String, Object> extra;
-
-    /**
-     * 支付状态
-     */
-    private String status;
-
-    /**
-     * 退款状态
-     */
-    private String refundStatus;
 
     /**
      * 支付渠道
@@ -56,11 +43,6 @@ public class OrderResponse implements IResponse {
     private String subject;
 
     /**
-     * 订单描述
-     */
-    private String body;
-
-    /**
      * 订单创建时间
      */
     private String createTime;
@@ -81,9 +63,24 @@ public class OrderResponse implements IResponse {
     private String transactionNo;
 
     /**
+     * 支付状态
+     */
+    private String status;
+
+    /**
+     * 订单额外字段
+     */
+    private Map<String, Object> extra;
+
+    /**
      * 退款金额
      */
     private String refundAmount;
+
+    /**
+     * 退款状态
+     */
+    private String refundStatus;
 
     /**
      * 退款描述(暂无退款;部分退款;全部退款)

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.pay.constants.PayConstants;
 import org.lan.iti.common.pay.constants.PayFieldNameConstants;
 import org.lan.iti.common.pay.util.PayCommonUtil;
+import org.lan.iti.common.pay.util.SignUtil;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -195,8 +196,8 @@ public class Charge {
 //                break;
 //        }
         String privateKey = Convert.toStr(param.get(PayFieldNameConstants.PRIVATE_KEY));
-        String sign = PayCommonUtil.sign(PayCommonUtil.getSignCheckContent(param), privateKey);
-        param.put(PayConstants.SIGN, sign);
+        String sign = SignUtil.sign(PayCommonUtil.getSignContent(param), privateKey);
+        param.put(PayConstants.SIGN_SIGNATURE, sign);
         String res = null;
         return StrUtil.isBlank(res) ? null : res;
     }
