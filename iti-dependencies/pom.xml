@@ -74,7 +74,8 @@
         <slf4j.version>1.7.30</slf4j.version>
         <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
         <aspectj.version>1.9.6</aspectj.version>
-        <jackson-datatype-hibernate.version>2.12.2</jackson-datatype-hibernate.version>
+        <jackson-datatype-hibernate.version>2.12.3</jackson-datatype-hibernate.version>
+        <hibernate-type.version>2.12.0</hibernate-type.version>
 
         <!-- Doc version -->
         <swagger-core.version>1.6.2</swagger-core.version>
@@ -86,7 +87,7 @@
         <hikari.version>3.4.5</hikari.version>
         <lettuce.version>6.0.2.RELEASE</lettuce.version>
         <mysql-connector-java.version>8.0.23</mysql-connector-java.version>
-        <hibernate.version>5.4.28.Final</hibernate.version>
+        <hibernate.version>5.5.3.Final</hibernate.version>
         <mybatis-plus.version>3.4.2</mybatis-plus.version>
 
         <!-- Templates version -->
@@ -317,6 +318,11 @@
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-hibernate5</artifactId>
                 <version>${jackson-datatype-hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vladmihalcea</groupId>
+                <artifactId>hibernate-types-55</artifactId>
+                <version>${hibernate-type.version}</version>
             </dependency>
             <!-- Compiler -->
             <dependency>
