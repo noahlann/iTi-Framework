@@ -62,12 +62,6 @@ public class ITIErrorController extends AbstractErrorController {
         this.errorProperties = errorProperties;
     }
 
-    @Override
-    @Deprecated
-    public String getErrorPath() {
-        return null;
-    }
-
     /**
      * /error 错误信息返回,统一信息为ApiResult
      * <p>
@@ -129,7 +123,6 @@ public class ITIErrorController extends AbstractErrorController {
             case ALWAYS:
                 return true;
             case ON_PARAM:
-            case ON_TRACE_PARAM:
                 return getTraceParameter(request);
             default:
                 return false;

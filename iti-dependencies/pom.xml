@@ -34,10 +34,10 @@
         <!-- 2021年3月3日 更新 -->
         <main.basedir>${basedir}/..</main.basedir>
         <!-- Util version -->
-        <hutool.version>5.5.9</hutool.version>
+        <hutool.version>5.7.3</hutool.version>
         <!-- Bom version -->
         <guava-bom.version>30.1-jre</guava-bom.version>
-        <jackson-bom.version>2.12.2</jackson-bom.version>
+        <jackson-bom.version>2.12.3</jackson-bom.version>
         <openfeign-bom>11.0</openfeign-bom>
 
         <jakarta-activation-api.version>1.2.2</jakarta-activation-api.version>
@@ -74,7 +74,7 @@
         <slf4j.version>1.7.30</slf4j.version>
         <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
         <aspectj.version>1.9.6</aspectj.version>
-        <jackson-datatype-hibernate.version>2.12.3</jackson-datatype-hibernate.version>
+        <jackson-datatype.version>2.12.3</jackson-datatype.version>
         <hibernate-type.version>2.12.0</hibernate-type.version>
 
         <!-- Doc version -->
@@ -317,7 +317,12 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-hibernate5</artifactId>
-                <version>${jackson-datatype-hibernate.version}</version>
+                <version>${jackson-datatype.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson-datatype.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.vladmihalcea</groupId>

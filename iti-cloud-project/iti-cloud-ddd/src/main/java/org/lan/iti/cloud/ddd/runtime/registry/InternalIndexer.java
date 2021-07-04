@@ -18,7 +18,7 @@
 
 package org.lan.iti.cloud.ddd.runtime.registry;
 
-import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -217,7 +217,7 @@ public class InternalIndexer {
     @NotNull
     public static List<StepMeta> findDomainSteps(@NotNull String activityCode, @NotNull List<String> stepCodeList) {
         Map<String, StepMeta> childMap = DOMAIN_STEP_META_MAP.get(activityCode);
-        if (CollUtil.isEmpty(childMap)) {
+        if (MapUtil.isEmpty(childMap)) {
             log.error("found NiL activity: {}", activityCode);
             return EMPTY_STEPS;
         }

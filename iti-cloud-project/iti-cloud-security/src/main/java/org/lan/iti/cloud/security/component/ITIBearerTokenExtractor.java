@@ -18,7 +18,7 @@
 
 package org.lan.iti.cloud.security.component;
 
-import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.lan.iti.common.core.util.StringPool;
@@ -28,6 +28,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 
 /**
@@ -47,13 +48,13 @@ public class ITIBearerTokenExtractor extends BearerTokenExtractor {
     public Authentication extract(HttpServletRequest request) {
         // 判断请求方法是否匹配
         boolean result = permitAllUrlResolver.getIgnoreUrls().stream().anyMatch(url -> {
-            String[] strings = StrUtil.split(url, StringPool.PIPE);
+            List<String> strings = StrUtil.split(url, StringPool.PIPE);
             // 1. 判断路径匹配
-            boolean match = pathMatcher.match(strings[0], request.getRequestURI());
+            boolean match = pathMatcher.match(strings.get(0), request.getRequestURI());
             // 2. 判断方法匹配
-            if (strings.length >= URL_MAX_LENGTH) {
-                String[] methods = StrUtil.split(strings[1], StringPool.COMMA);
-                return ArrayUtil.contains(methods, request.getMethod()) && match;
+            if (strings.size() >= URL_MAX_LENGTH) {
+                List<String> methods = StrUtil.split(strings.get(1), StringPool.COMMA);
+                return CollUtil.contains(methods, request.getMethod()) && match;
             }
             return match;
         });

@@ -41,7 +41,7 @@ import java.util.*;
  */
 @ControllerAdvice
 public class DynamicFilterResponseBodyAdvice extends AbstractMappingJacksonResponseBodyAdvice {
-    private Map<Class<Annotation>, DynamicFilterResolver<?>> resolvers = new HashMap<>();
+    private final Map<Class<Annotation>, DynamicFilterResolver<?>> resolvers = new HashMap<>();
 
     public DynamicFilterResponseBodyAdvice() {
         addResolvers(new ITIFilterResolver());

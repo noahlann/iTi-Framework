@@ -32,12 +32,12 @@
     <properties>
         <main.basedir>${basedir}/../..</main.basedir>
         <!-- version -->
-        <spring-boot.version>2.4.3</spring-boot.version>
-        <spring-cloud.version>2020.0.1</spring-cloud.version>
+        <spring-boot.version>2.5.2</spring-boot.version>
+        <spring-cloud.version>2020.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
-        <axon.version>4.5.0</axon.version>
-        <security.oauth.version>2.3.8.RELEASE</security.oauth.version>
-        <jasypt-boot.version>2.1.1</jasypt-boot.version>
+        <axon.version>4.5.2</axon.version>
+        <security.oauth.version>2.5.1.RELEASE</security.oauth.version>
+        <jasypt-boot.version>3.0.3</jasypt-boot.version>
 
         <!-- docs -->
         <springfox.version>3.0.0</springfox.version>
@@ -47,8 +47,8 @@
 
         <!-- DB -->
         <mybatis-plus-boot.starter>3.4.2</mybatis-plus-boot.starter>
-        <querydsl.version>4.4.0</querydsl.version>
-        <spring-data-jpa-entity-graph.version>2.4.1</spring-data-jpa-entity-graph.version>
+        <querydsl.version>5.0.0.M1</querydsl.version>
+        <spring-data-jpa-entity-graph.version>2.5.0</spring-data-jpa-entity-graph.version>
     </properties>
 
     <dependencyManagement>
@@ -90,6 +90,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-bom</artifactId>
+                <version>${querydsl.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- dependencies -->
             <dependency>
                 <groupId>org.springframework.security.oauth</groupId>
                 <artifactId>spring-security-oauth2</artifactId>
@@ -160,6 +169,7 @@
                 <artifactId>iti-cloud-autoconfigure</artifactId>
                 <version>${revision}</version>
             </dependency>
+
             <!-- iti-cloud-starters -->
             <dependency>
                 <groupId>org.lan</groupId>
@@ -241,28 +251,6 @@
                 <groupId>com.cosium.spring.data</groupId>
                 <artifactId>spring-data-jpa-entity-graph-generator</artifactId>
                 <version>${spring-data-jpa-entity-graph.version}</version>
-            </dependency>
-
-            <!-- query dsl -->
-            <dependency>
-                <groupId>com.querydsl</groupId>
-                <artifactId>querydsl-apt</artifactId>
-                <version>${querydsl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.querydsl</groupId>
-                <artifactId>querydsl-core</artifactId>
-                <version>${querydsl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.querydsl</groupId>
-                <artifactId>querydsl-sql</artifactId>
-                <version>${querydsl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.querydsl</groupId>
-                <artifactId>querydsl-jpa</artifactId>
-                <version>${querydsl.version}</version>
             </dependency>
 
             <!-- docs -->
