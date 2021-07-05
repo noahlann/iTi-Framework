@@ -20,9 +20,6 @@ package org.lan.iti.cloud.codegen;
 
 import com.google.auto.service.AutoService;
 import org.lan.iti.cloud.codegen.converter.GenJpaEnumConverterPlugin;
-import org.lan.iti.cloud.codegen.creator.GenCreatorPlugin;
-import org.lan.iti.cloud.codegen.repository.domain.GenDomainRepositoryPlugin;
-import org.lan.iti.cloud.codegen.repository.jpa.GenJpaRepositoryPlugin;
 import org.lan.iti.codegen.AbstractCodeGenProcessor;
 import org.lan.iti.codegen.ProcessorPlugin;
 
@@ -40,9 +37,9 @@ import javax.lang.model.SourceVersion;
 @AutoService(Processor.class)
 public class NLDDDProcessor extends AbstractCodeGenProcessor {
     public final ProcessorPlugin[] PLUGINS = new ProcessorPlugin[]{
-            new GenCreatorPlugin(),
-            new GenDomainRepositoryPlugin(),
-            new GenJpaRepositoryPlugin(),
+//            new GenCreatorPlugin(),
+//            new GenDomainRepositoryPlugin(),
+//            new GenJpaRepositoryPlugin(),
             new GenJpaEnumConverterPlugin()};
 
     @Override
