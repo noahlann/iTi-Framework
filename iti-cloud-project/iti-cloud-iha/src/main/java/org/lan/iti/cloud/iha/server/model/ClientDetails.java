@@ -18,8 +18,11 @@
 
 package org.lan.iti.cloud.iha.server.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -34,6 +37,9 @@ import java.time.Duration;
  */
 @Data
 @Accessors(chain = true)
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientDetails implements Serializable {
     private static final long serialVersionUID = 3276335437589709597L;
 

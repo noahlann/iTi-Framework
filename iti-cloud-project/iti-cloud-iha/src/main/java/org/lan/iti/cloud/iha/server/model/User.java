@@ -19,7 +19,9 @@
 package org.lan.iti.cloud.iha.server.model;
 
 import cn.hutool.core.util.StrUtil;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
@@ -34,6 +36,8 @@ import java.util.Map;
 @Data
 @Accessors(chain = true)
 @SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements Serializable {
     private static final long serialVersionUID = 5008458846311220618L;
 
