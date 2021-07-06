@@ -18,6 +18,8 @@
 
 package org.lan.iti.cloud.iha.server;
 
+import java.time.Duration;
+
 /**
  * @author NorthLan
  * @date 2021-07-05
@@ -25,23 +27,38 @@ package org.lan.iti.cloud.iha.server;
  */
 public interface IhaServerConstants {
     String SLASH = "/";
+    String SEPARATOR_COMMA = ",";
+
+    String TOKEN_URL = "/oauth2/token";
+    String ERROR_URL = "/oauth2/error";
+    String AUTHORIZE_URL = "/oauth2/authorize";
+    String AUTHORIZE_AUTO_APPROVE_URL = "/oauth2/authorize/auto";
+    String LOGIN_URL = "/oauth2/login";
+    String USERINFO_URL = "/oauth2/userinfo";
+    String REGISTRATION_URL = "/oauth2/registration";
+    String END_SESSION_URL = "/oauth2/logout";
+    String CHECK_SESSION_URL = "/oauth2/check_session";
+    String LOGOUT_REDIRECT_URL = "/";
+    String JWKS_URL = "/.well-known/jwks.json";
+    String DISCOVERY_URL = "/.well-known/openid-configuration";
+    String CONFIRM_URL = "/oauth2/confirm";
 
     /**
      * The default validity period of the authorization code is 10 minutes (600 seconds)
      */
-    long AUTHORIZATION_CODE_ACTIVITY_TIME = 600;
+    Duration AUTHORIZATION_CODE_ACTIVITY_TIME = Duration.ofMinutes(10L);
     /**
-     * The default validity period of access token is 30 days (2592000 seconds)
+     * The default validity period of access token is 7 days
      */
-    long ACCESS_TOKEN_ACTIVITY_TIME = 2592000;
+    Duration ACCESS_TOKEN_ACTIVITY_TIME = Duration.ofDays(7);
     /**
-     * The default validity period of refresh token is 365 days (31536000 seconds)
+     * The default validity period of refresh token is 30 days
      */
-    long REFRESH_TOKEN_ACTIVITY_TIME = 31536000;
+    Duration REFRESH_TOKEN_ACTIVITY_TIME = Duration.ofDays(30);
     /**
-     * The default validity period of id token is 365 days (31536000 seconds)
+     * The default validity period of id token is 365 days
      */
-    long ID_TOKEN_ACTIVITY_TIME = 31536000;
+    Duration ID_TOKEN_ACTIVITY_TIME = Duration.ofDays(365);
 
     /**
      * token header name
@@ -61,7 +78,7 @@ public interface IhaServerConstants {
     /**
      * Cache key of oauth authorized user
      */
-    String OAUTH_USERINFO_CACHE_KEY = IHA_SERVER_OAUTH_CACHE_KEY + "USERINFO";
+    String OAUTH_USER_CACHE_KEY = IHA_SERVER_OAUTH_CACHE_KEY + "USERINFO";
 
     /**
      * Cache the key of access token
@@ -79,20 +96,5 @@ public interface IhaServerConstants {
     String OAUTH_CODE_CACHE_KEY = IHA_SERVER_OAUTH_CACHE_KEY + "CODE:";
 
     String UID = "uid";
-    String RESPONSE_MODE = "response_mode";
-    String DISPLAY = "display";
-    String PROMPT = "prompt";
-    String MAX_AGE = "max_age";
-    String ID_TOKEN_HINT = "id_token_hint";
     String AUTOAPPROVE = "autoapprove";
-
-    /**
-     * {@code auth_time} - the time when the End-User authentication occurred
-     */
-    String AUTH_TIME = "auth_time";
-
-    /**
-     * {@code acr} - the Authentication Context Class Reference
-     */
-    String ACR = "acr";
 }

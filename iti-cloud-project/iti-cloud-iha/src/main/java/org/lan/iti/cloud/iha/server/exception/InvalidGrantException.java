@@ -18,36 +18,21 @@
 
 package org.lan.iti.cloud.iha.server.exception;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.lan.iti.cloud.iha.server.model.enums.ErrorResponse;
 
 /**
  * @author NorthLan
- * @date 2021-07-05
+ * @date 2021-07-06
  * @url https://noahlan.com
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class IhaServerException extends RuntimeException {
-    private static final long serialVersionUID = -2756293597924366129L;
+public class InvalidGrantException extends IhaServerException {
+    private static final long serialVersionUID = 894666693781048839L;
 
-    private String error;
-    private String errorDescription;
+    public InvalidGrantException(ErrorResponse errorResponse) {
+        super(errorResponse);
+    }
 
-    public IhaServerException(String message) {
+    public InvalidGrantException(String message) {
         super(message);
-        this.errorDescription = message;
-    }
-
-    public IhaServerException(String error, String errorDescription) {
-        super(error + ": " + errorDescription);
-        this.error = error;
-        this.errorDescription = errorDescription;
-    }
-
-    public IhaServerException(ErrorResponse errorResponse) {
-        this.error = errorResponse.getError();
-        this.errorDescription = errorResponse.getErrorDescription();
     }
 }

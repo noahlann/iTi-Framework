@@ -19,6 +19,7 @@ import lombok.experimental.UtilityClass;
 import org.jose4j.jwk.*;
 import org.jose4j.keys.EllipticCurves;
 import org.jose4j.lang.JoseException;
+import org.lan.iti.cloud.iha.server.exception.InvalidJwksException;
 import org.lan.iti.cloud.iha.server.model.enums.TokenAlgorithms;
 
 import java.security.spec.ECParameterSpec;

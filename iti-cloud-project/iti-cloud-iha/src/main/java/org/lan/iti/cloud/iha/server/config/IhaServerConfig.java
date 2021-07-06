@@ -20,6 +20,7 @@ package org.lan.iti.cloud.iha.server.config;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.lan.iti.cloud.iha.server.IhaServerConstants;
 import org.lan.iti.cloud.iha.server.model.enums.ClientAuthenticationMethod;
 import org.lan.iti.cloud.iha.server.model.enums.TokenAuthenticationMethod;
 
@@ -52,56 +53,56 @@ public class IhaServerConfig {
     /**
      * Login url, the default is {@code /oauth/login}
      */
-    private String loginUrl;
+    private String loginUrl = IhaServerConstants.LOGIN_URL;
     /**
      * error url, the default is {@code /oauth/error}
      */
-    private String errorUrl;
+    private String errorUrl = IhaServerConstants.ERROR_URL;
     /**
      * Authorized url, the default is {@code /oauth/authorize}
      */
-    private String authorizeUrl;
+    private String authorizeUrl = IhaServerConstants.AUTHORIZE_URL;
     /**
      * Automatically authorized url (do not display the authorization page), Must support get request method,
      * the default is {@code /oauth/authorize/auto}
      */
-    private String authorizeAutoApproveUrl;
+    private String authorizeAutoApproveUrl = IhaServerConstants.AUTHORIZE_AUTO_APPROVE_URL;
     /**
      * token url, the default is {@code /oauth/token}
      */
-    private String tokenUrl;
+    private String tokenUrl = IhaServerConstants.TOKEN_URL;
     /**
      * userinfo url, the default is {@code /oauth/userinfo}
      */
-    private String userinfoUrl;
+    private String userinfoUrl = IhaServerConstants.USERINFO_URL;
     /**
      * Register the the client detail, the default is {@code /oauth/registration}
      */
-    private String registrationUrl;
+    private String registrationUrl = IhaServerConstants.REGISTRATION_URL;
     /**
      * logout url, the default is {@code /oauth/logout}
      */
-    private String endSessionUrl;
+    private String endSessionUrl = IhaServerConstants.END_SESSION_URL;
     /**
      * check session url, the default is {@code /oauth/check_session}
      */
-    private String checkSessionUrl;
+    private String checkSessionUrl = IhaServerConstants.CHECK_SESSION_URL;
     /**
      * After logout, redirect to {@code logoutRedirectUrl}. Default is `/`
      */
-    private String logoutRedirectUrl;
+    private String logoutRedirectUrl = IhaServerConstants.LOGOUT_REDIRECT_URL;
     /**
      * public key url, the default is {@code /.well-known/jwks.json}
      */
-    private String jwksUrl;
+    private String jwksUrl = IhaServerConstants.JWKS_URL;
     /**
      * Get open id provider metadata, the default is {@code /.well-known/openid-configuration}
      */
-    private String discoveryUrl;
+    private String discoveryUrl = IhaServerConstants.DISCOVERY_URL;
     /**
      * Login page url, the default is {@link org.lan.iti.cloud.iha.server.config.IhaServerConfig#loginUrl}
      */
-    private String loginPageUrl;
+    private String loginPageUrl = loginUrl;
 
     /**
      * When the login page is not provided by an authorized service (the login page is hosted by other services), this configuration needs to be turned on
@@ -111,7 +112,7 @@ public class IhaServerConfig {
     /**
      * The user confirms the authorized url, the default is {@code issuer + /oauth/confirm}
      */
-    private String confirmPageUrl;
+    private String confirmPageUrl = IhaServerConstants.CONFIRM_URL;
 
     /**
      * When the authorization confirmation page is not provided by an authorized service (the authorization confirmation page is hosted by other services),
@@ -122,12 +123,12 @@ public class IhaServerConfig {
     /**
      * When requesting api, the way to pass token
      */
-    private List<TokenAuthenticationMethod> tokenAuthMethods = Collections.singletonList(TokenAuthenticationMethod.ALL);
+    private List<TokenAuthenticationMethod> tokenAuthenticationMethods = Collections.singletonList(TokenAuthenticationMethod.ALL);
 
     /**
      * When requesting the token endpoint, the way to pass the client secret
      */
-    private List<ClientAuthenticationMethod> clientSecretAuthMethods = Collections.singletonList(ClientAuthenticationMethod.ALL);
+    private List<ClientAuthenticationMethod> clientAuthenticationMethods = Collections.singletonList(ClientAuthenticationMethod.ALL);
 
     /**
      * Generate/verify the global configuration of jwt token.

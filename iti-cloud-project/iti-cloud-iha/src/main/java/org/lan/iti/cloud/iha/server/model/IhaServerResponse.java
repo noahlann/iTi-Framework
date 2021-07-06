@@ -19,8 +19,8 @@
 package org.lan.iti.cloud.iha.server.model;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.xkcoding.json.util.StringUtil;
 import org.lan.iti.cloud.iha.server.model.enums.ErrorResponse;
+import org.lan.iti.cloud.iha.server.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,14 +34,14 @@ public class IhaServerResponse<K, V> extends HashMap<String, Object> {
     private static final long serialVersionUID = 5584929345166246094L;
 
     private final static String ERROR = "error";
-    private final static String ERROR_MESSAGE = "message";
+    private final static String ERROR_DESCRIPTION = "errorDescription";
     private final static String ERROR_URI = "error_uri";
     private final static String STATE = "state";
     private final static String DATA = "data";
 
     public IhaServerResponse<K, V> error(ErrorResponse errorCode) {
         return this.error(errorCode.getError())
-                .errorDescription(errorCode.getErrorMessage());
+                .errorDescription(errorCode.getErrorDescription());
     }
 
     public IhaServerResponse<K, V> error(String errorCode) {
@@ -50,7 +50,7 @@ public class IhaServerResponse<K, V> extends HashMap<String, Object> {
     }
 
     public IhaServerResponse<K, V> errorDescription(String errorDescription) {
-        this.put(ERROR_MESSAGE, errorDescription);
+        this.put(ERROR_DESCRIPTION, errorDescription);
         return this;
     }
 
@@ -66,7 +66,7 @@ public class IhaServerResponse<K, V> extends HashMap<String, Object> {
 
     public IhaServerResponse<K, V> data(Object data) {
         this.put(ERROR, "");
-        this.put(ERROR_MESSAGE, "");
+        this.put(ERROR_DESCRIPTION, "");
         this.put(DATA, data);
         return this;
     }
@@ -90,7 +90,7 @@ public class IhaServerResponse<K, V> extends HashMap<String, Object> {
     }
 
     public String getErrorDescription() {
-        return ObjectUtil.isEmpty(this.get(ERROR_MESSAGE)) ? null : String.valueOf(this.get(ERROR_MESSAGE));
+        return ObjectUtil.isEmpty(this.get(ERROR_DESCRIPTION)) ? null : String.valueOf(this.get(ERROR_DESCRIPTION));
     }
 
     public String getErrorUri() {

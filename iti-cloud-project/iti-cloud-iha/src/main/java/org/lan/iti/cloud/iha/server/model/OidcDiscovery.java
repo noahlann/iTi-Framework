@@ -58,4 +58,5 @@ public class OidcDiscovery implements Serializable {
     protected List<String> id_token_signing_alg_values_supported;
     protected List<String> subject_types_supported;
     protected List<String> claims_supported;
+    protected List<String> code_challenge_methods_supported;
 }

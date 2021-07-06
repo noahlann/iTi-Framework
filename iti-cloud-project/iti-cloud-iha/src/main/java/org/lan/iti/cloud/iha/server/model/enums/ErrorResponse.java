@@ -18,10 +18,10 @@
 
 package org.lan.iti.cloud.iha.server.model.enums;
 
-import com.xkcoding.json.util.StringUtil;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.lan.iti.cloud.iha.server.util.StringUtil;
 
 /**
  * Authorization error code
@@ -58,7 +58,7 @@ public enum ErrorResponse {
     DISABLED_CLIENT("disabled_client", "The client is not accessible and may have been disabled by the administrator."),
     ;
     private final String error;
-    private final String errorMessage;
+    private final String errorDescription;
 
     public static ErrorResponse getByError(String error) {
         if (StringUtil.isEmpty(error)) {

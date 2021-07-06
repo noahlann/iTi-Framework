@@ -16,31 +16,15 @@
  *
  */
 
-package org.lan.iti.cloud.iha.server.model.enums;
+package org.lan.iti.cloud.iha.server.pipeline;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.jose4j.keys.EcKeyUtil;
-import org.jose4j.keys.RsaKeyUtil;
+import org.lan.iti.cloud.iha.server.model.User;
 
 /**
+ * Pipeline for sign in flow
  * @author NorthLan
- * @date 2021-07-05
+ * @date 2021-07-06
  * @url https://noahlan.com
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-public enum TokenAlgorithms {
-    NONE("none", "none"),
-    RS256("RS256", RsaKeyUtil.RSA),
-    RS384("RS384", RsaKeyUtil.RSA),
-    RS512("RS512", RsaKeyUtil.RSA),
-    ES256("ES256", EcKeyUtil.EC),
-    ES384("ES384", EcKeyUtil.EC),
-    ES512("ES512", EcKeyUtil.EC),
-    ;
-
-    private final String alg;
-    private final String keyType;
+public interface SignInPipeline extends Pipeline<User> {
 }

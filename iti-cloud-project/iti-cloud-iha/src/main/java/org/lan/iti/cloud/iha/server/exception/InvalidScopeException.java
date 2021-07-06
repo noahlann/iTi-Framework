@@ -18,36 +18,25 @@
 
 package org.lan.iti.cloud.iha.server.exception;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.lan.iti.cloud.iha.server.model.enums.ErrorResponse;
 
 /**
  * @author NorthLan
- * @date 2021-07-05
+ * @date 2021-07-06
  * @url https://noahlan.com
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class IhaServerException extends RuntimeException {
-    private static final long serialVersionUID = -2756293597924366129L;
+public class InvalidScopeException extends IhaServerException {
+    private static final long serialVersionUID = -4669579761150623536L;
 
-    private String error;
-    private String errorDescription;
-
-    public IhaServerException(String message) {
+    public InvalidScopeException(String message) {
         super(message);
-        this.errorDescription = message;
     }
 
-    public IhaServerException(String error, String errorDescription) {
-        super(error + ": " + errorDescription);
-        this.error = error;
-        this.errorDescription = errorDescription;
+    public InvalidScopeException(String error, String errorDescription) {
+        super(error, errorDescription);
     }
 
-    public IhaServerException(ErrorResponse errorResponse) {
-        this.error = errorResponse.getError();
-        this.errorDescription = errorResponse.getErrorDescription();
+    public InvalidScopeException(ErrorResponse errorResponse) {
+        super(errorResponse);
     }
 }

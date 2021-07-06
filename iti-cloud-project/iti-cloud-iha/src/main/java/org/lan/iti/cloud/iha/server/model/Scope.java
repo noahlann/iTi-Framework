@@ -16,31 +16,36 @@
  *
  */
 
-package org.lan.iti.cloud.iha.server.model.enums;
+package org.lan.iti.cloud.iha.server.model;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.jose4j.keys.EcKeyUtil;
-import org.jose4j.keys.RsaKeyUtil;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * @author NorthLan
- * @date 2021-07-05
+ * @date 2021-07-06
  * @url https://noahlan.com
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-public enum TokenAlgorithms {
-    NONE("none", "none"),
-    RS256("RS256", RsaKeyUtil.RSA),
-    RS384("RS384", RsaKeyUtil.RSA),
-    RS512("RS512", RsaKeyUtil.RSA),
-    ES256("ES256", EcKeyUtil.EC),
-    ES384("ES384", EcKeyUtil.EC),
-    ES512("ES512", EcKeyUtil.EC),
-    ;
+@Data
+@Accessors(chain = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Scope implements Serializable {
+    private static final long serialVersionUID = -7279491358934190820L;
 
-    private final String alg;
-    private final String keyType;
+    /**
+     * scope code, such as: basic, super
+     */
+    private String code;
+
+    /**
+     * scope description
+     */
+    private String description;
 }

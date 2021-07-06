@@ -16,13 +16,7 @@
 package org.lan.iti.cloud.iha.server.util;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.fujieid.jap.ids.JapIds;
-import com.fujieid.jap.ids.exception.IdsTokenException;
-import com.fujieid.jap.ids.exception.InvalidJwksException;
-import com.fujieid.jap.ids.exception.InvalidTokenException;
-import com.fujieid.jap.ids.model.enums.*;
 import com.xkcoding.json.JsonUtil;
-import com.xkcoding.json.util.StringUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.jose4j.jwk.*;
@@ -40,8 +34,12 @@ import org.jose4j.keys.resolvers.JwksVerificationKeyResolver;
 import org.jose4j.keys.resolvers.VerificationKeyResolver;
 import org.jose4j.lang.JoseException;
 import org.lan.iti.cloud.iha.oidc.OidcParameterNames;
+import org.lan.iti.cloud.iha.server.IhaServer;
 import org.lan.iti.cloud.iha.server.config.IhaServerConfig;
 import org.lan.iti.cloud.iha.server.config.JwtConfig;
+import org.lan.iti.cloud.iha.server.exception.IhaTokenException;
+import org.lan.iti.cloud.iha.server.exception.InvalidJwksException;
+import org.lan.iti.cloud.iha.server.exception.InvalidTokenException;
 import org.lan.iti.cloud.iha.server.model.User;
 import org.lan.iti.cloud.iha.server.model.enums.*;
 
@@ -120,7 +118,7 @@ public class JwtUtil {
         // The payload of the JWS is JSON content of the JWT Claims
         jws.setPayload(claims.toJson());
 
-        JwtConfig jwtConfig = JapIds.getContext().getIdentityService().getJwtConfig(clientId);
+        JwtConfig jwtConfig = IhaServer.getContext().getIdentityService().getJwtConfig(clientId);
         if (null == jwtConfig) {
             throw new InvalidJwksException("Unable to create Jwt Token: jwt config cannot be empty.");
         }
@@ -139,7 +137,7 @@ public class JwtUtil {
         // Set the signature algorithm on the JWT/JWS that will integrity protect the claims
         jws.setAlgorithmHeaderValue(jwtConfig.getTokenSigningAlg().getAlg());
 
-        String idToken = null;
+        String idToken;
 
         // Sign the JWS and produce the compact serialization or the complete JWT/JWS
         // representation, which is a string consisting of three dot ('.') separated
@@ -149,7 +147,7 @@ public class JwtUtil {
         try {
             idToken = jws.getCompactSerialization();
         } catch (JoseException e) {
-            throw new IdsTokenException("Unable to create Jwt Token: " + e.getMessage());
+            throw new IhaTokenException("Unable to create Jwt Token: " + e.getMessage());
         }
 
         return idToken;
@@ -207,7 +205,7 @@ public class JwtUtil {
     }
 
     public static Map<String, Object> parseJwtToken(String jwtToken) {
-        JwtConfig jwtConfig = JapIds.getContext().getIdentityService().getJwtConfig(null);
+        JwtConfig jwtConfig = IhaServer.getContext().getIdentityService().getJwtConfig(null);
         if (null == jwtConfig) {
             throw new InvalidJwksException("Unable to parse Jwt Token: jwt config cannot be empty.");
         }
@@ -250,8 +248,8 @@ public class JwtUtil {
         // and audience that identifies your system as the intended recipient.
         // If the JWT is encrypted too, you need only provide a decryption key or
         // decryption key resolver to the builder.
-        IhaServerConfig serverConfig = JapIds.getIdsConfig();
-        JwtConfig jwtConfig = JapIds.getContext().getIdentityService().getJwtConfig(clientId);
+        IhaServerConfig serverConfig = IhaServer.getIhaServerConfig();
+        JwtConfig jwtConfig = IhaServer.getContext().getIdentityService().getJwtConfig(clientId);
         if (null == jwtConfig) {
             throw new InvalidJwksException("Unable to validate Jwt Token: jwt config cannot be empty.");
         }
@@ -331,7 +329,7 @@ public class JwtUtil {
                 throw invalidJwksException;
             }
 
-            JsonWebKeySet jsonWebKeySet = null;
+            JsonWebKeySet jsonWebKeySet;
             try {
                 jsonWebKeySet = new JsonWebKeySet(jwksJson);
             } catch (JoseException e) {
@@ -341,7 +339,7 @@ public class JwtUtil {
         }
 
         public static PublicJsonWebKey createPublicJsonWebKey(String keyId, String jwksJson, TokenAlgorithms tokenAlgorithms) {
-            tokenAlgorithms = null == tokenAlgorithms ? TokenSigningAlg.RS256 : tokenAlgorithms;
+            tokenAlgorithms = null == tokenAlgorithms ? TokenAlgorithms.RS256 : tokenAlgorithms;
             JsonWebKeySet jsonWebKeySet = createJsonWebKeySet(jwksJson);
 
             switch (tokenAlgorithms.getKeyType()) {

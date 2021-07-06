@@ -37,4 +37,46 @@ public interface OidcParameterNames {
      * {@code nonce} - used in the Authentication Request.
      */
     String NONCE = "nonce";
+
+    /**
+     * {@code response_mode}
+     * <p>
+     * OPTIONAL. Informs the Authorization Server of the mechanism to be used for returning parameters from the Authorization Endpoint. This use of this parameter is NOT RECOMMENDED when the Response Mode that would be requested is the default mode specified for the Response Type.
+     */
+    String RESPONSE_MODE = "response_mode";
+
+    /**
+     * {@code display} - used in the Authentication Request.
+     */
+    String DISPLAY = "display";
+
+    /**
+     * {@code prompt} - used in the Authentication Request.
+     */
+    String PROMPT = "prompt";
+
+    /**
+     * {@code max_age} - used in the Authentication Request.
+     */
+    String MAX_AGE = "max_age";
+
+    /**
+     * {@code id_token_hint} - used in the Authentication Request.
+     */
+    String ID_TOKEN_HINT = "id_token_hint";
+
+    /**
+     * {@code claims} - used in the Authentication Request.
+     */
+    String CLAIMS = "claims";
+
+    /**
+     * {@code auth_time} - the time when the End-User authentication occurred
+     */
+    String AUTH_TIME = "auth_time";
+
+    /**
+     * {@code acr} - the Authentication Context Class Reference
+     */
+    String ACR = "acr";
 }

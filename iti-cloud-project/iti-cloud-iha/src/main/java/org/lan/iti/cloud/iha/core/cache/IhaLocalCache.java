@@ -42,6 +42,12 @@ public class IhaLocalCache implements IhaCache {
     private final Lock writeLock = cacheLock.writeLock();
     private final Lock readLock = cacheLock.readLock();
 
+    public IhaLocalCache() {
+        if (IhaCacheConfig.schedulePrune) {
+            this.schedulePrune(IhaCacheConfig.timeout);
+        }
+    }
+
     @Override
     public void set(String key, Serializable value) {
         set(key, value, IhaCacheConfig.timeout);

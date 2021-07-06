@@ -17,7 +17,7 @@ package org.lan.iti.cloud.iha.core.util;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ArrayUtil;
-import com.xkcoding.json.util.StringUtil;
+import cn.hutool.core.util.StrUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 /**
  * http servlet request util
  *
- * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0.0
- * @since 1.0.1
+ * @author NorthLan
+ * @date 2021-07-06
+ * @url https://noahlan.com
  */
 public class RequestUtil {
 
@@ -144,7 +144,7 @@ public class RequestUtil {
      * @return boolean
      */
     private static boolean isValidIp(String ip) {
-        return !StringUtil.isEmpty(ip) && !"unknown".equalsIgnoreCase(ip);
+        return !StrUtil.isEmpty(ip) && !"unknown".equalsIgnoreCase(ip);
     }
 
     /**
@@ -160,7 +160,7 @@ public class RequestUtil {
         }
         String currentUrl = request.getRequestURL().toString();
         String queryString = request.getQueryString();
-        if (!StringUtil.isEmpty(queryString)) {
+        if (!StrUtil.isEmpty(queryString)) {
             currentUrl = currentUrl + "?" + queryString;
         }
 
