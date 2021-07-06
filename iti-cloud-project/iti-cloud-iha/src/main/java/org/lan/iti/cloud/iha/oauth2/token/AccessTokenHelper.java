@@ -89,7 +89,7 @@ public class AccessTokenHelper {
             params.put(OAuth2ParameterNames.REDIRECT_URI, oAuthConfig.getCallbackUrl());
         }
         // PKCE is only applicable to authorization code mode
-        if (StrUtil.equals(oAuthConfig.getResponseType(), OAuth2ResponseType.CODE) && oAuthConfig.isEnablePkce()) {
+        if (StrUtil.equals(oAuthConfig.getResponseType(), OAuth2ResponseType.CODE) && oAuthConfig.isRequireProofKey()) {
             params.put(PkceParams.CODE_VERIFIER, PkceHelper.getCacheCodeVerifier(oAuthConfig.getClientId()));
         }
 

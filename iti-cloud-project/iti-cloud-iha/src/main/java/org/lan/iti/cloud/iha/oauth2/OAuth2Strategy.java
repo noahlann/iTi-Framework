@@ -163,7 +163,7 @@ public class OAuth2Strategy extends AbstractIhaStrategy {
         params.put(OAuth2ParameterNames.STATE, oAuthConfig.getState());
         IhaAuthentication.getContext().getCache().set(OAuth2Constants.STATE_CACHE_KEY.concat(oAuthConfig.getClientId()), state);
         // Pkce is only applicable to authorization code mode
-        if (StrUtil.equals(oAuthConfig.getResponseType(), OAuth2ResponseType.CODE) && oAuthConfig.isEnablePkce()) {
+        if (StrUtil.equals(oAuthConfig.getResponseType(), OAuth2ResponseType.CODE) && oAuthConfig.isRequireProofKey()) {
             params.putAll(PkceHelper.generatePkceParameters(oAuthConfig));
         }
         String query = URLUtil.buildQuery(params, StandardCharsets.UTF_8);

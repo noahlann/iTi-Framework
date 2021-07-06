@@ -78,7 +78,7 @@ public class ClientDetails implements Serializable {
 
     /* Client Settings */
     private Boolean requireProofKey;
-    private Boolean requireUserConsent;
+    private Boolean autoApprove;
 
     /**
      * Custom second-level domain name
