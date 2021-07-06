@@ -132,7 +132,7 @@ public class LoginEndpoint extends AbstractEndpoint {
 
         String redirectUri;
         // When the client supports automatic authorization, it will judge whether the {@code autoapprove} function is enabled
-        if (null != clientDetails.getRequireProofKey() && clientDetails.getRequireProofKey() &&
+        if (null != clientDetails.getAutoApprove() && clientDetails.getAutoApprove() &&
                 StringUtil.isNotEmpty(param.getAutoApprove()) && "TRUE".equalsIgnoreCase(param.getAutoApprove())) {
             redirectUri = EndpointUtil.getAuthorizeAutoApproveUrl(request);
         } else {

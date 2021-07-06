@@ -99,7 +99,7 @@ public class OAuthConfig extends AuthenticateConfig {
     /**
      * The scope supported by the OAuth platform
      */
-    private boolean enablePkce;
+    private boolean requireProofKey;
 
     /**
      * After the pkce enhancement protocol is enabled, the generation method of challenge code derived from

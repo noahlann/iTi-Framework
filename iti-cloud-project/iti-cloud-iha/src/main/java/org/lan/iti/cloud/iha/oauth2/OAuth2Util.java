@@ -141,7 +141,7 @@ public class OAuth2Util {
                             "When using authorization code mode, grantType must be `authorization_code`");
                 }
 
-                if (!oAuthConfig.isEnablePkce() && StrUtil.isEmpty(oAuthConfig.getClientSecret())) {
+                if (!oAuthConfig.isRequireProofKey() && StrUtil.isEmpty(oAuthConfig.getClientSecret())) {
                     throw new IhaOAuth2Exception("Oauth2Strategy requires a clientSecret when PKCE is not enabled.");
                 }
             } else {
