@@ -210,6 +210,11 @@
                 <artifactId>iti-cloud-autoconfigure</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>org.lan</groupId>
+                <artifactId>iti-cloud-iha</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
             <!-- iti-cloud-starters -->
             <dependency>
