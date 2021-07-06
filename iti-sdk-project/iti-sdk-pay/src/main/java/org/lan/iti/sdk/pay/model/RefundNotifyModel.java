@@ -6,30 +6,29 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.lan.iti.sdk.pay.model.response.OrderResponse;
+import org.lan.iti.sdk.pay.model.response.RefundResponse;
 
 import java.util.Map;
 
 /**
  * @author I'm
- * @date 2021/6/21
- * description 支付异步通知数据
+ * @date 2021/6/24
+ * description 退款模型
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentNotifyModel extends NotifyModel implements INotifyModel {
+public class RefundNotifyModel extends NotifyModel implements INotifyModel {
 
     /**
-     * 通知信息
+     * 退款通知
      */
-    private OrderResponse orderResponse;
+    private RefundResponse refundResponse;
 
     @Override
     public Map<String, Object> getSignMap() {
-        return BeanUtil.beanToMap(orderResponse, false, true);
+        return BeanUtil.beanToMap(refundResponse, false, true);
     }
-
 }

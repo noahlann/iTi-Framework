@@ -1,6 +1,8 @@
 package org.lan.iti.sdk.pay.model.response;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.lan.iti.sdk.pay.model.IResponse;
 
 import java.time.LocalDateTime;
@@ -11,7 +13,9 @@ import java.util.Map;
  * @since 2021/3/27
  * description 退款业务统一响应参数
  */
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RefundResponse implements IResponse {
 
     /**
@@ -20,14 +24,9 @@ public class RefundResponse implements IResponse {
     private String appId;
 
     /**
-     * 退款额外字段
-     */
-    private Map<String, Object> extra;
-
-    /**
      * 平台支付单号
      */
-    private String chargeOrderNo;
+    private String outOrderNo;
 
     /**
      * 商户退款单号
@@ -42,7 +41,7 @@ public class RefundResponse implements IResponse {
     /**
      * 渠道退款流水号
      */
-    private String refundTransactionNo;
+    private String transactionNo;
 
     /**
      * 退款金额 数值大于0
@@ -62,7 +61,7 @@ public class RefundResponse implements IResponse {
     /**
      * 退款成功时间
      */
-    private LocalDateTime refundTime;
+    private LocalDateTime refundedTime;
 
     /**
      * 退款订单详情
@@ -72,11 +71,21 @@ public class RefundResponse implements IResponse {
     /**
      * 错误码
      */
-    private String errCode;
+    private String errorCode;
 
     /**
-     * 错误消息
+     * 错误信息
      */
-    private String errMsg;
+    private String errorMsg;
+
+    /**
+     * 退款额外字段
+     */
+    private Map<String, Object> extra;
+
+    /**
+     * 退款额外信息(渠道退款通知信息)
+     */
+    private Map<String, Object> refundExtra;
 
 }

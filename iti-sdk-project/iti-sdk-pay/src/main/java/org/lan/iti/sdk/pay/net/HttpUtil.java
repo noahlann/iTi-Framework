@@ -5,6 +5,7 @@ import cn.hutool.http.ContentType;
 import com.alibaba.fastjson.JSON;
 import lombok.experimental.UtilityClass;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -31,7 +32,9 @@ public class HttpUtil {
         HttpEntity httpEntity;
         CloseableHttpResponse closeableHttpResponse = null;
         //创建http client请求对象
-        CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build();
+        RequestConfig defaultRequestConfig = RequestConfig.custom().setConnectTimeout(PayConstants.HTTP_TIMEOUT).setSocketTimeout(PayConstants.HTTP_TIMEOUT)
+                .setConnectionRequestTimeout(PayConstants.HTTP_TIMEOUT).build();
+        CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().setDefaultRequestConfig(defaultRequestConfig).build();
 //        if (!requestMap.containsKey(PayFieldNameConstants.GATEWAY_HOST) || StrUtil.isBlankIfStr(requestMap.get(PayFieldNameConstants.GATEWAY_HOST))) {
 //            throw new BusinessException(ValidatePaymentParamException.GatewayHostException.EMPTY_GATEWAY_HOST);
 //        }

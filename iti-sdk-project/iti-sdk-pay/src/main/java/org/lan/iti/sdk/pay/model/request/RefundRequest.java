@@ -14,14 +14,14 @@ import java.util.Map;
 public class RefundRequest implements IRequest {
 
     /**
-     * 退款接口网关
-     */
-    private String gatewayHost;
-
-    /**
      * 平台 app id
      */
     private String appId;
+
+    /**
+     * 退款接口网关
+     */
+    private String gatewayHost;
 
     /**
      * 接口请求私钥
@@ -41,7 +41,7 @@ public class RefundRequest implements IRequest {
     /**
      * 退款金额
      */
-    public Float refundAmount;
+    public String refundAmount;
 
     /**
      * 退款描述

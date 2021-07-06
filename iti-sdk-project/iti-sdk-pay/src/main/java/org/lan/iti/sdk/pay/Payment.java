@@ -1,8 +1,6 @@
 package org.lan.iti.sdk.pay;
 
-import cn.hutool.core.bean.BeanUtil;
 import lombok.experimental.UtilityClass;
-import org.lan.iti.common.pay.constants.PayConstants;
 import org.lan.iti.common.pay.constants.PayFieldKeyConstants;
 import org.lan.iti.common.pay.util.SignUtil;
 import org.lan.iti.sdk.pay.configurer.AbstractRequestBuilder;
@@ -10,8 +8,8 @@ import org.lan.iti.sdk.pay.configurer.payment.OrderRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.refund.RefundRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.transfer.TransferRequestBuilder;
 import org.lan.iti.sdk.pay.model.DefaultResponse;
+import org.lan.iti.sdk.pay.model.INotifyModel;
 import org.lan.iti.sdk.pay.model.IRequest;
-import org.lan.iti.sdk.pay.model.PaymentNotifyModel;
 import org.lan.iti.sdk.pay.model.request.OrderRequest;
 import org.lan.iti.sdk.pay.model.request.RefundRequest;
 import org.lan.iti.sdk.pay.model.request.TransferRequest;
@@ -34,14 +32,20 @@ public class Payment {
 
     private static final Map<Class<? extends IRequest>, AbstractRequestBuilder<? extends IRequest, ? extends AbstractRequestBuilder<?, ?>>> DEFAULT_PAYMENT_MAP = new HashMap<>();
 
-    static {
+    private void init() {
+        DEFAULT_PAYMENT_MAP.clear();
         DEFAULT_PAYMENT_MAP.put(OrderRequest.class, new OrderRequestBuilder());
         DEFAULT_PAYMENT_MAP.put(RefundRequest.class, new RefundRequestBuilder());
         DEFAULT_PAYMENT_MAP.put(TransferRequest.class, new TransferRequestBuilder());
     }
 
+    static {
+        init();
+    }
+
     @SuppressWarnings("unchecked")
     private static <T extends IRequest, R extends AbstractRequestBuilder<T, R>> R configurer(Class<T> clazz) {
+        init();
         return (R) Optional.ofNullable(DEFAULT_PAYMENT_MAP.get(clazz))
                 .orElseThrow(() -> new IllegalArgumentException("给定参数类型不存在"));
     }
@@ -243,11 +247,11 @@ public class Payment {
         return new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
     }
 
-    public static boolean verifyNotify(PaymentNotifyModel paymentNotifyModel, String publicKey) {
+    public static boolean verifyNotify(INotifyModel notifyModel, String publicKey) {
 
-        Map<String, Object> map = BeanUtil.beanToMap(paymentNotifyModel.getOrderResponse(), false, true);
+        Map<String, Object> map = notifyModel.getSignMap();
 
-        map.put(PayFieldKeyConstants.SIGNATURE,paymentNotifyModel.getSignature());
+        map.put(PayFieldKeyConstants.SIGNATURE, notifyModel.getSignature());
 
         return SignUtil.verify(map, publicKey);
     }

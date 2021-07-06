@@ -87,4 +87,16 @@ public interface PayConstants {
      */
     String SIGN_TIMESTAMP = "timestamp";
 
+    /**
+     * 符号 =
+     */
+    String SYMBOL_EQUAL = "=";
+
+    /**
+     * 换行符号 \n
+     */
+    String SYMBOL_WRAP = "\n";
+
+    int HTTP_TIMEOUT = 5000;
+
 }

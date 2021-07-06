@@ -49,7 +49,7 @@ public class RefundRequestBuilder extends AbstractRequestBuilder<RefundRequest, 
      * @param refundAmount 退款金额
      * @return 退款参数配置器
      */
-    public RefundRequestBuilder refundAmount(Float refundAmount) {
+    public RefundRequestBuilder refundAmount(String refundAmount) {
         request.setRefundAmount(refundAmount);
         return this;
     }
@@ -62,6 +62,17 @@ public class RefundRequestBuilder extends AbstractRequestBuilder<RefundRequest, 
      */
     public RefundRequestBuilder refundDescription(String refundDescription) {
         request.setRefundDescription(refundDescription);
+        return this;
+    }
+
+    /**
+     * 设置退款额外字段
+     *
+     * @param extra 退款额外字段
+     * @return 退款参数配置器
+     */
+    public RefundRequestBuilder extra(Map<String, Object> extra) {
+        request.setExtra(extra);
         return this;
     }
 

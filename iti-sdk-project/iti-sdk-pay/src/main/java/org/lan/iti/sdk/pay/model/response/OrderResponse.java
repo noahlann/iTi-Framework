@@ -73,6 +73,11 @@ public class OrderResponse implements IResponse {
     private Map<String, Object> extra;
 
     /**
+     * 支付额外信息(渠道异步通知信息)
+     */
+    private Map<String, Object> paymentExtra;
+
+    /**
      * 退款金额
      */
     private String refundAmount;

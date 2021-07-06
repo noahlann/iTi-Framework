@@ -6,6 +6,7 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.lan.iti.common.pay.constants.PayConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -35,14 +36,13 @@ public class PayCommonUtil {
             StringBuilder content = new StringBuilder();
             List<String> keys = new ArrayList<>(params.keySet());
             Collections.sort(keys);
-            for (int i = 0; i < keys.size(); ++i) {
-                String key = keys.get(i);
+            for (String key : keys) {
                 if (!StrUtil.isBlankIfStr(params.get(key))) {
                     String value = Convert.toStr(params.get(key));
-                    content.append(key).append("=").append(value).append("\n");
+                    content.append(key).append(PayConstants.SYMBOL_EQUAL).append(value).append(PayConstants.SYMBOL_WRAP);
                 }
             }
-            return content.toString();
+            return Convert.toStr(content);
         }
     }
 
@@ -149,13 +149,13 @@ public class PayCommonUtil {
         return objectMap;
     }
 
-    public boolean isAmountEquals(Double totalAmount, Double notifyAmount) {
-        if (!StrUtil.isBlankIfStr(totalAmount) && !StrUtil.isBlankIfStr(notifyAmount)) {
-            BigDecimal totalAmountBigDecimal = new BigDecimal(totalAmount);
-            BigDecimal notifyAmountBigDecimal = new BigDecimal(notifyAmount);
-            return totalAmountBigDecimal.compareTo(notifyAmountBigDecimal) != 0;
+    public boolean isAmountEquals(String compareAmount, String toBeComparedAmount) {
+        if (StrUtil.isNotBlank(compareAmount) && StrUtil.isNotBlank(toBeComparedAmount)) {
+            BigDecimal compareAmountBigDecimal = new BigDecimal(compareAmount);
+            BigDecimal toBeComparedAmountBigDecimal = new BigDecimal(toBeComparedAmount);
+            return compareAmountBigDecimal.compareTo(toBeComparedAmountBigDecimal) == 0;
         } else {
-            return true;
+            return false;
         }
     }
 
