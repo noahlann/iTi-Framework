@@ -37,6 +37,7 @@
         <module>iti-common-dependencies</module>
         <module>iti-common-parent</module>
         <module>iti-common-core</module>
+        <module>iti-common-extension</module>
         <module>iti-codegen</module>
         <module>iti-common-pay</module>
     </modules>

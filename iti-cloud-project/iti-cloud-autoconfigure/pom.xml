@@ -53,6 +53,11 @@
         </dependency>
         <dependency>
             <groupId>org.lan</groupId>
+            <artifactId>iti-cloud-strategy</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.lan</groupId>
             <artifactId>iti-cloud-axon</artifactId>
             <optional>true</optional>
         </dependency>

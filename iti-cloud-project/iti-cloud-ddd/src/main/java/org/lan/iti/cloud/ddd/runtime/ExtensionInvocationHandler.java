@@ -21,7 +21,7 @@ package org.lan.iti.cloud.ddd.runtime;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.cloud.ddd.runtime.registry.ExtensionMeta;
 import org.lan.iti.cloud.ddd.runtime.registry.InternalIndexer;
-import org.lan.iti.cloud.support.NamedThreadFactory;
+import org.lan.iti.common.core.support.NamedThreadFactory;
 import org.lan.iti.common.core.util.Formatter;
 import org.lan.iti.common.ddd.ext.IDomainExtension;
 import org.slf4j.MDC;

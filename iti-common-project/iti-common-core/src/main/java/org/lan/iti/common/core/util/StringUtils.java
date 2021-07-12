@@ -16,6 +16,9 @@
 
 package org.lan.iti.common.core.util;
 
+import cn.hutool.core.util.StrUtil;
+import lombok.experimental.UtilityClass;
+
 /**
  * 字符串 工具类
  *
@@ -23,7 +26,8 @@ package org.lan.iti.common.core.util;
  * @date 2020-02-24
  * @url https://noahlan.com
  */
-public class StringUtils {
+@UtilityClass
+public class StringUtils extends StrUtil {
 
     /**
      * 判断字符串是否为null | "null" | "undefined"

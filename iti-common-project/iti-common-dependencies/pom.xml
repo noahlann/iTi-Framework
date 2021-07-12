@@ -54,6 +54,11 @@
             </dependency>
             <dependency>
                 <groupId>org.lan</groupId>
+                <artifactId>iti-common-extension</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.lan</groupId>
                 <artifactId>iti-codegen</artifactId>
                 <version>${revision}</version>
             </dependency>

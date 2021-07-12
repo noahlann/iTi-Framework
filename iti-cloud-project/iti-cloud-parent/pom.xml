@@ -35,10 +35,23 @@
     </properties>
 
     <dependencies>
+        <!-- Provided -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -111,7 +124,7 @@
                                     <excludes>
                                         <exclude>com.zaxxer:HikariCP-*</exclude>
                                         <exclude>org.hamcrest:hamcrest-*</exclude>
-<!--                                        <exclude>javax.*:*:*</exclude>-->
+                                        <!--                                        <exclude>javax.*:*:*</exclude>-->
                                     </excludes>
                                     <includes>
                                         <include>javax.batch:*:*</include>

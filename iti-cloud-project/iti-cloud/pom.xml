@@ -41,6 +41,10 @@
             <artifactId>iti-common-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-common-extension</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
