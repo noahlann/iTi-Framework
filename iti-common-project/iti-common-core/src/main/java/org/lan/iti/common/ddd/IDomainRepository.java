@@ -30,6 +30,7 @@ import java.util.Optional;
  * @date 2021-02-05
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IDomainRepository<Domain extends IDomain> {
     /**
      * 通过ID获取聚合根
