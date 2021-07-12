@@ -21,7 +21,6 @@ package org.lan.iti.cloud.extension;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.adapter.AbstractExtensionAdapter;
 import org.lan.iti.common.extension.adapter.parameter.ExtensionAdapterParameter;
-import org.lan.iti.common.extension.annotation.Extension;
 import org.lan.iti.common.extension.support.NamedClassCache;
 import org.springframework.context.ApplicationContext;
 
@@ -56,8 +55,9 @@ public class SpringExtensionAdapter extends AbstractExtensionAdapter {
 
     @Override
     public void init() {
-        Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Extension.class);
-        for (Map.Entry<String, Object> entry : beans.entrySet()) {
+        // TODO 优化启动过程
+        Map<String, IExtension> beans = applicationContext.getBeansOfType(IExtension.class);
+        for (Map.Entry<String, IExtension> entry : beans.entrySet()) {
             String beanName = entry.getKey();
             Object bean = entry.getValue();
             Class<?> beanClass = bean.getClass();

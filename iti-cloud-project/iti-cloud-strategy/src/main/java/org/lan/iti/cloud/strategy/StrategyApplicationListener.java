@@ -25,6 +25,8 @@ import org.lan.iti.common.extension.adapter.parameter.ExtensionAdapterParameter;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.lang.NonNull;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @url https://noahlan.com
  */
 @Slf4j
-public class StrategyApplicationListener implements ApplicationContextAware {
+public class StrategyApplicationListener implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
     private final AtomicBoolean once = new AtomicBoolean();
 
     @Override
@@ -50,5 +52,10 @@ public class StrategyApplicationListener implements ApplicationContextAware {
                 .applicationContext(applicationContext)
                 .build();
         ExtensionLoader.getAdapterFactory().addParameter(parameter);
+    }
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        ExtensionLoader.getAdapterFactory().init();
     }
 }
