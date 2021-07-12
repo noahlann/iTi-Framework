@@ -18,8 +18,6 @@
 
 package org.lan.iti.cloud.strategy.annotation;
 
-import org.lan.iti.common.extension.annotation.Extension;
-
 import java.lang.annotation.*;
 
 /**
@@ -32,7 +30,6 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Extension
 public @interface Strategy {
     /**
      * 策略编号
