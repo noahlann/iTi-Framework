@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.lan.iti.common.extension.ExtensionConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * 扩展适配器 参数
+ *
  * @author NorthLan
  * @date 2021-07-09
  * @url https://noahlan.com
@@ -70,7 +73,7 @@ public class ExtensionAdapterParameter {
     }
 
     public List<String> getPackageNames() {
-        List<String> lists = getByKey(ExtensionConstants.KEY_PACKAGE_NAMES);
+        List<String> lists = getByKey(ExtensionConstants.KEY_PACKAGE_NAMES, new ArrayList<>());
         return lists.stream().distinct().collect(Collectors.toList());
     }
 

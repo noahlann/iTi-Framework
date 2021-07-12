@@ -54,6 +54,12 @@ public class SpringExtensionAdapter extends AbstractExtensionAdapter {
     }
 
     @Override
+    protected void reset() {
+        this.applicationContext = null;
+        this.beans = null;
+    }
+
+    @Override
     public void init() {
         // TODO 优化启动过程
         Map<String, IExtension> beans = applicationContext.getBeansOfType(IExtension.class);

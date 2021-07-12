@@ -52,8 +52,7 @@ public class ExtensionAdapterFactory implements ExtensionAdapter {
         for (Object obj : adapters) {
             AbstractExtensionAdapter adapter = (AbstractExtensionAdapter) obj;
             adapter.setParameter(parameter);
-            // whatever
-            adapter.init();
+            adapter.load();
         }
     }
 }

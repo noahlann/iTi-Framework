@@ -47,5 +47,14 @@ public abstract class AbstractExtensionAdapter implements ExtensionAdapter {
         this.loaded = true;
     }
 
+    public void load() {
+        if (matches(null)) {
+            this.init();
+            this.reset();
+        }
+    }
+
     protected abstract void loadParameter(ExtensionAdapterParameter parameter);
+
+    protected abstract void reset();
 }

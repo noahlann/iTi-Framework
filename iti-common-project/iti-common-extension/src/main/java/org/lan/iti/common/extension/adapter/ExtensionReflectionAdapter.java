@@ -71,6 +71,14 @@ public class ExtensionReflectionAdapter extends AbstractExtensionAdapter {
     }
 
     @Override
+    protected void reset() {
+        this.packageNames = null;
+        this.classLoader = null;
+        this.checkInterfaceClass = false;
+        this.interfaceClass = null;
+    }
+
+    @Override
     public void init() {
         log.debug("{} init...", this.getClass().getSimpleName());
         Reflections reflections = new Reflections(new ConfigurationBuilder()

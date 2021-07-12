@@ -237,10 +237,7 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
                         }
                     }
                     // load from cache first
-                    instance = instanceCache.getByValueClass(clazz);
-                    if (instance == null) {
-                        instance = createInstance(clazz);
-                    }
+                    instance = createInstance(clazz, instanceCache);
                     // cache it
                     instanceCache.cache(name, instance);
                 }
@@ -285,15 +282,19 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
         NamedClassCache<Class<?>> classes = getExtensionClasses(this.type, true, false);
         for (Map.Entry<String, Class<?>> entry : classes.getMap().entrySet()) {
             if (instanceCache.getByName(entry.getKey()) == null) {
-                instanceCache.cache(entry.getKey(), createInstance(entry.getValue()));
+                instanceCache.cache(entry.getKey(), createInstance(entry.getValue(), instanceCache));
             }
         }
         return instanceCache;
     }
 
-    private Object createInstance(Class<?> clazz) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+    private Object createInstance(Class<?> clazz, NamedClassCache<Object> instanceCache) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         if (clazz == null) {
             return null;
+        }
+        Object instance = instanceCache.getByValueClass(clazz);
+        if (instance != null) {
+            return instance;
         }
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
         for (Constructor<?> constructor : constructors) {

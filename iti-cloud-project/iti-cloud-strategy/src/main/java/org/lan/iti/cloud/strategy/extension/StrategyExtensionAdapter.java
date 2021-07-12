@@ -52,6 +52,11 @@ public class StrategyExtensionAdapter extends AbstractExtensionAdapter {
     }
 
     @Override
+    protected void reset() {
+        this.applicationContext = null;
+    }
+
+    @Override
     public void init() {
         Map<String, Object> beanMap = applicationContext.getBeansWithAnnotation(Strategy.class);
         for (Map.Entry<String, Object> entry : beanMap.entrySet()) {

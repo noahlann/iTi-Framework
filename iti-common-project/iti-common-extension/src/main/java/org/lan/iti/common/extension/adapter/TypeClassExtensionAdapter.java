@@ -25,7 +25,6 @@ import org.lan.iti.common.extension.adapter.parameter.ExtensionAdapterParameter;
 import org.lan.iti.common.extension.support.NamedClassCache;
 
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 /**
@@ -51,6 +50,12 @@ public class TypeClassExtensionAdapter extends AbstractExtensionAdapter {
     public void loadParameter(ExtensionAdapterParameter param) {
         this.type = param.getType();
         this.classes = param.getClasses();
+    }
+
+    @Override
+    protected void reset() {
+        this.type = null;
+        this.classes = null;
     }
 
     @Override
