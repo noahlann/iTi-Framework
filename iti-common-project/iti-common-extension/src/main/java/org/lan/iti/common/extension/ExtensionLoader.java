@@ -26,9 +26,7 @@ import org.lan.iti.common.core.util.ClassLoaderUtil;
 import org.lan.iti.common.core.util.StringUtils;
 import org.lan.iti.common.extension.adapter.ExtensionAdapter;
 import org.lan.iti.common.extension.adapter.ExtensionAdapterFactory;
-import org.lan.iti.common.extension.annotation.Extension;
 import org.lan.iti.common.extension.support.NamedClassCache;
-import org.lan.iti.common.extension.util.ExtensionUtil;
 import org.lan.iti.common.extension.util.Holder;
 
 import java.lang.reflect.Constructor;
@@ -142,10 +140,6 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
         }
         if (!type.isInterface()) {
             throw new IllegalArgumentException("Extension type (" + type + ") is not an interface!");
-        }
-        if (!ExtensionUtil.withAnnotation(type, Extension.class)) {
-            throw new IllegalArgumentException("Extension type (" + type +
-                    ") is not an extension, because it is NOT annotated with @" + Extension.class.getSimpleName() + "!");
         }
         return (ExtensionLoader<T, P>) EXTENSION_LOADERS.computeIfAbsent(type, ExtensionLoader::new);
     }
