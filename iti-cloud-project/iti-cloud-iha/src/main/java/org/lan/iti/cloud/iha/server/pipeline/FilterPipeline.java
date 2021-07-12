@@ -18,6 +18,9 @@
 
 package org.lan.iti.cloud.iha.server.pipeline;
 
+import org.lan.iti.common.extension.IExtension;
+import org.lan.iti.common.extension.annotation.Extension;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -41,7 +44,12 @@ import javax.servlet.ServletResponse;
  * @date 2021-07-06
  * @url https://noahlan.com
  */
-public interface FilterPipeline extends Pipeline<Object> {
+@Extension
+public interface FilterPipeline extends Pipeline<Object>, IExtension<Object> {
+    @Override
+    default boolean matches(Object params) {
+        return true;
+    }
 
     /**
      * Callback when the program is abnormal

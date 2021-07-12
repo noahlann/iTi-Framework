@@ -16,66 +16,37 @@
  *
  */
 
-package org.lan.iti.cloud.iha.core;
+package org.lan.iti.cloud.iha.simple;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
+import org.lan.iti.cloud.iha.core.model.AbstractCredentials;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
- * 基本用户
- *
  * @author NorthLan
- * @date 2021-07-05
+ * @date 2021-07-07
  * @url https://noahlan.com
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @SuperBuilder(toBuilder = true)
-public class IhaUser implements Serializable {
-    private static final long serialVersionUID = -8066382503410442934L;
+@NoArgsConstructor
+@AllArgsConstructor
+public class SimpleCredentials extends AbstractCredentials {
+    private static final long serialVersionUID = -413528654736698197L;
 
-    /**
-     * The id of the user in the business system
-     */
-    private String userId;
-
-    /**
-     * User name in the business system
-     */
-    private String username;
-
-    /**
-     * User mobile in business system
-     */
-    private String mobile;
-
-    /**
-     * User email in business system
-     */
-    private String email;
-
-    /**
-     * User password in business system
-     */
+    private String principal;
+    private String code;
     private String password;
+    private String type;
 
-    /**
-     * Additional information about users in the developer's business system returned when obtaining user data.
-     * Please do not save private data, such as secret keys, token.
-     */
-    private Map<String, Object> additionalInformation;
-
-    /**
-     * token
-     */
-    private String token;
-
-    /**
-     * remember me
-     */
+    private Map<String, String> extra;
     private boolean rememberMe;
 }

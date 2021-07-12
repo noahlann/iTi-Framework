@@ -16,20 +16,21 @@
  *
  */
 
-package org.lan.iti.cloud.iha.core.repository;
+package org.lan.iti.cloud.iha.core;
 
-import org.lan.iti.cloud.iha.core.IhaUser;
 import org.lan.iti.cloud.iha.core.config.AuthenticateConfig;
 import org.lan.iti.cloud.iha.core.model.AbstractCredentials;
 
 import java.util.Map;
 
 /**
+ * Abstract the user-related function interface, which is implemented by the caller business system.
+ *
  * @author NorthLan
- * @date 2021-07-05
+ * @date 2021-07-07
  * @url https://noahlan.com
  */
-public interface IhaUserRepository {
+public interface IhaUserService {
 
     /**
      * Get user info by params

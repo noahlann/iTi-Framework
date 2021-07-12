@@ -19,11 +19,18 @@
 package org.lan.iti.cloud.iha.server.pipeline;
 
 import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.common.extension.IExtension;
+import org.lan.iti.common.extension.annotation.Extension;
 
 /**
  * @author NorthLan
  * @date 2021-07-06
  * @url https://noahlan.com
  */
-public interface LogoutPipeline extends Pipeline<User> {
+@Extension
+public interface LogoutPipeline extends Pipeline<User>, IExtension<Object> {
+    @Override
+    default boolean matches(Object params) {
+        return true;
+    }
 }

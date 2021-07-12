@@ -16,23 +16,15 @@
  *
  */
 
-package org.lan.iti.cloud.iha.server.pipeline;
-
-import org.lan.iti.cloud.iha.server.model.User;
-import org.lan.iti.common.extension.IExtension;
-import org.lan.iti.common.extension.annotation.Extension;
+package org.lan.iti.cloud.iha.simple;
 
 /**
- * Pipeline for sign in flow
- *
  * @author NorthLan
- * @date 2021-07-06
+ * @date 2021-07-07
  * @url https://noahlan.com
  */
-@Extension
-public interface SignInPipeline extends Pipeline<User>, IExtension<Object> {
-    @Override
-    default boolean matches(Object params) {
-        return true;
-    }
+public interface AuthenticationTypes {
+    String USERNAME = "username";
+    String MOBILE = "mobile";
+    String EMAIL = "email";
 }

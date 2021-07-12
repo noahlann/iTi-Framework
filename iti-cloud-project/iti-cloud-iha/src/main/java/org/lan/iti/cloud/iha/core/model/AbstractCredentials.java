@@ -16,23 +16,21 @@
  *
  */
 
-package org.lan.iti.cloud.iha.server.pipeline;
+package org.lan.iti.cloud.iha.core.model;
 
-import org.lan.iti.cloud.iha.server.model.User;
-import org.lan.iti.common.extension.IExtension;
-import org.lan.iti.common.extension.annotation.Extension;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.io.Serializable;
 
 /**
- * Pipeline for sign in flow
- *
  * @author NorthLan
- * @date 2021-07-06
+ * @date 2021-07-07
  * @url https://noahlan.com
  */
-@Extension
-public interface SignInPipeline extends Pipeline<User>, IExtension<Object> {
-    @Override
-    default boolean matches(Object params) {
-        return true;
-    }
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+public abstract class AbstractCredentials implements Serializable {
+    private static final long serialVersionUID = 3361598545075534983L;
+
 }

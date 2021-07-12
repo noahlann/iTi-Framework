@@ -20,6 +20,8 @@ package org.lan.iti.cloud.iha.server.service;
 
 import org.lan.iti.cloud.iha.server.IhaServer;
 import org.lan.iti.cloud.iha.server.config.JwtConfig;
+import org.lan.iti.common.extension.IExtension;
+import org.lan.iti.common.extension.annotation.Extension;
 
 /**
  * User/organization/enterprise and other identity service related interfaces
@@ -28,7 +30,13 @@ import org.lan.iti.cloud.iha.server.config.JwtConfig;
  * @date 2021-07-06
  * @url https://noahlan.com
  */
-public interface IdentityService {
+@Extension
+public interface IdentityService extends IExtension<Object> {
+    @Override
+    default boolean matches(Object params) {
+        return true;
+    }
+
     /**
      * Get the jwt token encryption key string, The default is the scoped global jwt config configured in ids config.
      *

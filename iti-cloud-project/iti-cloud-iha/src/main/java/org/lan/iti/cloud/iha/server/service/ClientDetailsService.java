@@ -20,6 +20,8 @@ package org.lan.iti.cloud.iha.server.service;
 
 import org.lan.iti.cloud.iha.server.exception.IhaServerException;
 import org.lan.iti.cloud.iha.server.model.ClientDetails;
+import org.lan.iti.common.extension.IExtension;
+import org.lan.iti.common.extension.annotation.Extension;
 
 import java.util.List;
 
@@ -28,7 +30,13 @@ import java.util.List;
  * @date 2021-07-06
  * @url https://noahlan.com
  */
-public interface ClientDetailsService {
+@Extension
+public interface ClientDetailsService extends IExtension<Object> {
+    @Override
+    default boolean matches(Object params) {
+        return true;
+    }
+
     /**
      * Query client information through client id
      *

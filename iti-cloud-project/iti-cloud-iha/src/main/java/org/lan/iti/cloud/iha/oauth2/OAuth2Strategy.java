@@ -119,7 +119,7 @@ public class OAuth2Strategy extends AbstractIhaStrategy {
 
         OAuth2Util.checkOauthResponse(userInfo, "OAuth2Strategy failed to get userInfo with accessToken.");
 
-        IhaUser user = this.userRepository.createAndGetOauth2User(oAuthConfig.getPlatform(), userInfo, accessToken);
+        IhaUser user = this.userRepository.createAndGetOAuth2User(oAuthConfig.getPlatform(), userInfo, accessToken);
         if (ObjectUtil.isNull(user)) {
             return null;
         }

@@ -16,23 +16,14 @@
  *
  */
 
-package org.lan.iti.cloud.iha.server.pipeline;
+package org.lan.iti.cloud.iha.mfa;
 
-import org.lan.iti.cloud.iha.server.model.User;
-import org.lan.iti.common.extension.IExtension;
-import org.lan.iti.common.extension.annotation.Extension;
+import com.warrenstrange.googleauth.ICredentialRepository;
 
 /**
- * Pipeline for sign in flow
- *
  * @author NorthLan
- * @date 2021-07-06
+ * @date 2021-07-12
  * @url https://noahlan.com
  */
-@Extension
-public interface SignInPipeline extends Pipeline<User>, IExtension<Object> {
-    @Override
-    default boolean matches(Object params) {
-        return true;
-    }
+public interface IhaMfaService extends ICredentialRepository {
 }

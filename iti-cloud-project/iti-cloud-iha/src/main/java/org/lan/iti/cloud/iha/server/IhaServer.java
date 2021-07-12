@@ -19,7 +19,6 @@
 package org.lan.iti.cloud.iha.server;
 
 import lombok.experimental.UtilityClass;
-import org.lan.iti.cloud.iha.core.spi.IhaServiceLoader;
 import org.lan.iti.cloud.iha.server.config.IhaServerConfig;
 import org.lan.iti.cloud.iha.server.context.IhaServerContext;
 import org.lan.iti.cloud.iha.server.exception.IhaServerException;
@@ -31,6 +30,7 @@ import org.lan.iti.cloud.iha.server.service.ClientDetailsService;
 import org.lan.iti.cloud.iha.server.service.IdentityService;
 import org.lan.iti.cloud.iha.server.service.UserDetailService;
 import org.lan.iti.cloud.iha.server.service.UserStoreService;
+import org.lan.iti.common.extension.ExtensionLoader;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
@@ -60,28 +60,28 @@ public class IhaServer implements Serializable {
 
     private static void loadService() {
         if (null == context.getClientDetailsService()) {
-            context.setClientDetailsService(IhaServiceLoader.loadFirst(ClientDetailsService.class));
+            context.setClientDetailsService(ExtensionLoader.getLoader(ClientDetailsService.class).getFirstExtension());
         }
         if (null == context.getIdentityService()) {
-            context.setIdentityService(IhaServiceLoader.loadFirst(IdentityService.class));
+            context.setIdentityService(ExtensionLoader.getLoader(IdentityService.class).getFirstExtension());
         }
         if (null == context.getUserDetailService()) {
-            context.setUserDetailService(IhaServiceLoader.loadFirst(UserDetailService.class));
+            context.setUserDetailService(ExtensionLoader.getLoader(UserDetailService.class).getFirstExtension());
         }
         if (null == context.getUserStoreService()) {
-            context.setUserStoreService(IhaServiceLoader.loadFirst(UserStoreService.class));
+            context.setUserStoreService(ExtensionLoader.getLoader(UserStoreService.class).getFirstExtension());
         }
     }
 
     private static void loadPipeline() {
         if (null == context.getFilterPipeline()) {
-            context.setFilterPipeline(IhaServiceLoader.loadFirst(FilterPipeline.class));
+            context.setFilterPipeline(ExtensionLoader.getLoader(FilterPipeline.class).getFirstExtension());
         }
         if (null == context.getSignInPipeline()) {
-            context.setSignInPipeline(IhaServiceLoader.loadFirst(SignInPipeline.class));
+            context.setSignInPipeline(ExtensionLoader.getLoader(SignInPipeline.class).getFirstExtension());
         }
         if (null == context.getLogoutPipeline()) {
-            context.setLogoutPipeline(IhaServiceLoader.loadFirst(LogoutPipeline.class));
+            context.setLogoutPipeline(ExtensionLoader.getLoader(LogoutPipeline.class).getFirstExtension());
         }
     }
 

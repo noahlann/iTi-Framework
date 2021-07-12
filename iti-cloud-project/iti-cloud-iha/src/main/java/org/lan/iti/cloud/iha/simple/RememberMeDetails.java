@@ -16,23 +16,27 @@
  *
  */
 
-package org.lan.iti.cloud.iha.server.pipeline;
+package org.lan.iti.cloud.iha.simple;
 
-import org.lan.iti.cloud.iha.server.model.User;
-import org.lan.iti.common.extension.IExtension;
-import org.lan.iti.common.extension.annotation.Extension;
+import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
- * Pipeline for sign in flow
- *
  * @author NorthLan
- * @date 2021-07-06
+ * @date 2021-07-07
  * @url https://noahlan.com
  */
-@Extension
-public interface SignInPipeline extends Pipeline<User>, IExtension<Object> {
-    @Override
-    default boolean matches(Object params) {
-        return true;
-    }
+@Data
+@Accessors(chain = true)
+@Builder
+public class RememberMeDetails implements Serializable {
+    private static final long serialVersionUID = -237001200538723322L;
+
+    private String principal;
+    private long expiryTime;
+    private String type;
+    private String encoded;
 }
