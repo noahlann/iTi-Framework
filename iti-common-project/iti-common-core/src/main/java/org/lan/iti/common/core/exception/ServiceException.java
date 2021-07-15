@@ -29,9 +29,9 @@ public class ServiceException extends AbstractException {
     private static final long serialVersionUID = -6476522626904036566L;
 
     @Getter
-    private final String code;
+    private final Integer code;
 
-    public ServiceException(String code, String message) {
+    public ServiceException(Integer code, String message) {
         super(message);
         this.code = code;
     }

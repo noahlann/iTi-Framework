@@ -63,7 +63,7 @@ public class BusinessException extends AbstractException {
         return new BusinessException(errorReason);
     }
 
-    public String code() {
+    public Integer code() {
         return errorReason.getCode();
     }
 
@@ -84,7 +84,7 @@ public class BusinessException extends AbstractException {
     }
 
     @Override
-    public String getCode() {
+    public Integer getCode() {
         return this.code();
     }
 

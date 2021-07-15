@@ -20,11 +20,11 @@ package org.lan.iti.cloud.security.endpoint.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.lan.iti.common.core.constants.SecurityConstants;
-import org.lan.iti.common.core.exception.ServiceException;
 import org.lan.iti.cloud.security.endpoint.constants.PassportConstants;
 import org.lan.iti.cloud.security.model.ITIUserDetails;
 import org.lan.iti.cloud.security.util.SecurityUtils;
+import org.lan.iti.common.core.constants.SecurityConstants;
+import org.lan.iti.common.core.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
@@ -63,7 +63,7 @@ public abstract class AbstractPassportService implements PassportService {
     public Map<String, String> grant(Map<String, String> params) {
         Map<String, Object> token = innerGrant(params);
         if (token == null) {
-            throw new ServiceException("1000", "登录失败");
+            throw new ServiceException(1000, "登录失败");
         }
         return transferToken(token);
     }
@@ -76,7 +76,7 @@ public abstract class AbstractPassportService implements PassportService {
         try {
             userDetails = objectMapper.convertValue(token.get(SecurityConstants.DETAILS_USER_DETAILS), ITIUserDetails.class);
         } catch (IllegalArgumentException e) {
-            throw new ServiceException("1000", "登录失败，无法获取用户基本信息");
+            throw new ServiceException(1000, "登录失败，无法获取用户基本信息");
         }
         cacheRefreshToken(userDetails.getUserId(),
                 token.get(PassportConstants.REFRESH_TOKEN).toString(),
@@ -87,12 +87,12 @@ public abstract class AbstractPassportService implements PassportService {
     @Override
     public Map<String, String> refreshToken() {
         ITIUserDetails user = SecurityUtils.getUser()
-                .orElseThrow(() -> new ServiceException("1000", "无法刷新访问凭证，请确认当前已正常登录"));
+                .orElseThrow(() -> new ServiceException(1000, "无法刷新访问凭证，请确认当前已正常登录"));
         // 从缓存中获取
         String cacheKey = cacheKey(user.getUserId());
         String refreshToken = redisTemplate.opsForValue().get(cacheKey);
         if (StrUtil.isBlank(refreshToken)) {
-            throw new ServiceException("1001", "Token已彻底过期，无法自动刷新。");
+            throw new ServiceException(1001, "Token已彻底过期，无法自动刷新。");
         }
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -111,7 +111,7 @@ public abstract class AbstractPassportService implements PassportService {
         Map<String, Object> newToken = restTemplate.postForObject(protectedResourceDetails.getAccessTokenUri(),
                 requestEntity, Map.class);
         if (newToken == null) {
-            throw new ServiceException("1002", "刷新Token失败，请联系管理员。");
+            throw new ServiceException(1002, "刷新Token失败，请联系管理员。");
         }
         return transferToken(newToken);
     }
