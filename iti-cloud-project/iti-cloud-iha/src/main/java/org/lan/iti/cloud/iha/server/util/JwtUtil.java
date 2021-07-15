@@ -1,17 +1,19 @@
 /*
- * Copyright (c) 2020-2040, 北京符节科技有限公司 (support@fujieid.com & https://www.fujieid.com).
- * <p>
- * Licensed under the GNU LESSER GENERAL PUBLIC LICENSE 3.0;
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.gnu.org/licenses/lgpl.html
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *
+ *  * Copyright (c) [2019-2021] [NorthLan](lan6995@gmail.com)
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
  */
 package org.lan.iti.cloud.iha.server.util;
 
@@ -40,7 +42,7 @@ import org.lan.iti.cloud.iha.server.config.JwtConfig;
 import org.lan.iti.cloud.iha.server.exception.IhaTokenException;
 import org.lan.iti.cloud.iha.server.exception.InvalidJwksException;
 import org.lan.iti.cloud.iha.server.exception.InvalidTokenException;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.model.enums.*;
 
 import java.util.List;
@@ -64,21 +66,21 @@ public class JwtUtil {
      * https://bitbucket.org/b_c/jose4j/wiki/JWT%20Examples
      *
      * @param clientId      Client Identifier
-     * @param user          User Profile
+     * @param userDetails   User Profile
      * @param tokenExpireIn Id Token validity (seconds)
      * @param nonce         Random string
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return jwt token
      */
-    public static String createJwtToken(String clientId, User user, Long tokenExpireIn, String nonce, String issuer) {
-        return createJwtToken(clientId, user, tokenExpireIn, nonce, null, null, issuer);
+    public static String createJwtToken(String clientId, UserDetails userDetails, Long tokenExpireIn, String nonce, String issuer) {
+        return createJwtToken(clientId, userDetails, tokenExpireIn, nonce, null, null, issuer);
     }
 
     /**
      * https://bitbucket.org/b_c/jose4j/wiki/JWT%20Examples
      *
      * @param clientId      Client Identifier
-     * @param user          User Profile
+     * @param userDetails   User Profile
      * @param tokenExpireIn Id Token validity (seconds)
      * @param nonce         Random string
      * @param scopes        Scopes
@@ -86,14 +88,14 @@ public class JwtUtil {
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return jwt token
      */
-    public static String createJwtToken(String clientId, User user, Long tokenExpireIn, String nonce, Set<String> scopes, String responseType, String issuer) {
+    public static String createJwtToken(String clientId, UserDetails userDetails, Long tokenExpireIn, String nonce, Set<String> scopes, String responseType, String issuer) {
         JwtClaims claims = new JwtClaims();
 
         // required
         // A unique identity of the person providing the authentication information. Usually an HTTPS URL (excl. queryString and Fragment)
         claims.setIssuer(issuer);
         // The LOGO of EU provided by ISS is unique within the scope of ISS. It is used by the RP to identify a unique user. The maximum length is 255 ASCII characters
-        claims.setSubject(null == user ? clientId : user.getId());
+        claims.setSubject(null == userDetails ? clientId : userDetails.getId());
         // Identify the audience for ID Token. OAuth2's client_ID must be included
         claims.setAudience(clientId);
         // Expiration time. ID Token beyond this time will become invalid and will no longer be authenticated
@@ -109,7 +111,7 @@ public class JwtUtil {
         // Time of completion of EU certification. This Claim is required if the RP carries the max_AGE parameter when sending the AuthN request
 //        claims.setClaim("auth_time", "auth_time");
 
-        setUserInfoClaim(user, scopes, responseType, claims);
+        setUserInfoClaim(userDetails, scopes, responseType, claims);
 
         // A JWT is a JWS and/or a JWE with JSON claims as the payload.
         // In this example it is a JWS so we create a JsonWebSignature object.
@@ -153,14 +155,14 @@ public class JwtUtil {
         return idToken;
     }
 
-    private static void setUserInfoClaim(User user, Set<String> scopes, String responseType, JwtClaims claims) {
-        if (null != user) {
+    private static void setUserInfoClaim(UserDetails userDetails, Set<String> scopes, String responseType, JwtClaims claims) {
+        if (null != userDetails) {
             // If you include other claim reference: https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-            claims.setStringClaim("username", user.getUsername());
+            claims.setStringClaim("username", userDetails.getUsername());
             if (ObjectUtil.isNotNull(scopes) && ResponseType.ID_TOKEN.getType().equalsIgnoreCase(responseType)) {
                 // This scope value requests access to the End-User's default profile Claims,
                 // which are: name, family_name, given_name, middle_name, nickname, preferred_username, profile, picture, website, gender, birthdate, zoneinfo, locale, and updated_at.
-                Map<String, Object> userInfoMap = JsonUtil.parseKv(JsonUtil.toJsonString(user));
+                Map<String, Object> userInfoMap = JsonUtil.parseKv(JsonUtil.toJsonString(userDetails));
                 if (scopes.contains("profile")) {
                     ScopeClaimsMapping scopeClaimsMapping = ScopeClaimsMapping.PROFILE;
                     List<String> claimList = scopeClaimsMapping.getClaims();
@@ -193,6 +195,16 @@ public class JwtUtil {
                 // This scope value requests access to the address Claim.
                 if (scopes.contains("address")) {
                     ScopeClaimsMapping scopeClaimsMapping = ScopeClaimsMapping.ADDRESS;
+                    List<String> claimList = scopeClaimsMapping.getClaims();
+                    for (String claim : claimList) {
+                        if (userInfoMap.containsKey(claim) && null != userInfoMap.get(claim)) {
+                            claims.setClaim(claim, userInfoMap.get(claim));
+                        }
+                    }
+                }
+                // This scope value requests access to the roles Claim.
+                if (scopes.contains("roles")) {
+                    ScopeClaimsMapping scopeClaimsMapping = ScopeClaimsMapping.ROLES;
                     List<String> claimList = scopeClaimsMapping.getClaims();
                     for (String claim : claimList) {
                         if (userInfoMap.containsKey(claim) && null != userInfoMap.get(claim)) {

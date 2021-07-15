@@ -23,7 +23,7 @@ import lombok.experimental.Accessors;
 import org.lan.iti.cloud.iha.core.cache.IhaCache;
 import org.lan.iti.cloud.iha.core.cache.IhaLocalCache;
 import org.lan.iti.cloud.iha.server.config.IhaServerConfig;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.pipeline.Pipeline;
 import org.lan.iti.cloud.iha.server.service.ClientDetailsService;
 import org.lan.iti.cloud.iha.server.service.IdentityService;
@@ -51,8 +51,8 @@ public class IhaServerContext implements Serializable {
     private UserStoreService userStoreService = new UserStoreServiceImpl();
     private IhaServerConfig config;
     private Pipeline<Object> filterPipeline;
-    private Pipeline<User> signInPipeline;
-    private Pipeline<User> logoutPipeline;
+    private Pipeline<UserDetails> signInPipeline;
+    private Pipeline<UserDetails> logoutPipeline;
 
 
     public IhaCache getCache() {

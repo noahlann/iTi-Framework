@@ -24,7 +24,7 @@ import org.lan.iti.cloud.iha.server.exception.InvalidScopeException;
 import org.lan.iti.cloud.iha.server.model.ClientDetails;
 import org.lan.iti.cloud.iha.server.model.IhaServerRequestParam;
 import org.lan.iti.cloud.iha.server.model.IhaServerResponse;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.cloud.iha.server.model.enums.ResponseType;
 import org.lan.iti.cloud.iha.server.provider.AuthorizationProvider;
@@ -70,8 +70,8 @@ public class AuthorizationEndpoint extends AbstractEndpoint {
         OAuthUtil.validateScope(param.getScope(), clientDetail.getScopes());
 
         if (IhaServer.isAuthenticated(request)) {
-            User userInfo = IhaServer.getUser(request);
-            String url = generateResponseUrl(param, param.getResponseType(), clientDetail, userInfo, EndpointUtil.getIssuer(request));
+            UserDetails userDetails = IhaServer.getUser(request);
+            String url = generateResponseUrl(param, param.getResponseType(), clientDetail, userDetails, EndpointUtil.getIssuer(request));
             return new IhaServerResponse<String, String>().data(url);
         }
 
@@ -106,8 +106,8 @@ public class AuthorizationEndpoint extends AbstractEndpoint {
         OAuthUtil.validClientDetail(clientDetail);
 
         String responseType = param.getResponseType();
-        User user = IhaServer.getUser(request);
-        String url = generateResponseUrl(param, responseType, clientDetail, user, EndpointUtil.getIssuer(request));
+        UserDetails userDetails = IhaServer.getUser(request);
+        String url = generateResponseUrl(param, responseType, clientDetail, userDetails, EndpointUtil.getIssuer(request));
         return new IhaServerResponse<String, String>().data(url);
     }
 
@@ -119,27 +119,27 @@ public class AuthorizationEndpoint extends AbstractEndpoint {
      * @param clientDetail Currently authorized client
      * @return Callback url
      */
-    private String generateResponseUrl(IhaServerRequestParam param, String responseType, ClientDetails clientDetail, User userInfo, String issuer) {
+    private String generateResponseUrl(IhaServerRequestParam param, String responseType, ClientDetails clientDetail, UserDetails userDetails, String issuer) {
         if (ResponseType.CODE.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateAuthorizationCodeResponse(userInfo, param, clientDetail);
+            return idsAuthorizationProvider.generateAuthorizationCodeResponse(userDetails, param, clientDetail);
         }
         if (ResponseType.TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateImplicitGrantResponse(userInfo, param, clientDetail, issuer);
+            return idsAuthorizationProvider.generateImplicitGrantResponse(userDetails, param, clientDetail, issuer);
         }
         if (ResponseType.ID_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateIdTokenAuthorizationResponse(userInfo, param, clientDetail, issuer);
+            return idsAuthorizationProvider.generateIdTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
         }
         if (ResponseType.ID_TOKEN_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateIdTokenTokenAuthorizationResponse(userInfo, param, clientDetail, issuer);
+            return idsAuthorizationProvider.generateIdTokenTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
         }
         if (ResponseType.CODE_ID_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateCodeIdTokenAuthorizationResponse(userInfo, param, clientDetail, issuer);
+            return idsAuthorizationProvider.generateCodeIdTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
         }
         if (ResponseType.CODE_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateCodeTokenAuthorizationResponse(userInfo, param, clientDetail, issuer);
+            return idsAuthorizationProvider.generateCodeTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
         }
         if (ResponseType.CODE_ID_TOKEN_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateCodeIdTokenTokenAuthorizationResponse(userInfo, param, clientDetail, issuer);
+            return idsAuthorizationProvider.generateCodeIdTokenTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
         }
         // none
         return idsAuthorizationProvider.generateNoneAuthorizationResponse(param);

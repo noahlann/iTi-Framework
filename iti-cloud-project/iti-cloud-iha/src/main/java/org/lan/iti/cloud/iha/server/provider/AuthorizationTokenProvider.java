@@ -58,7 +58,7 @@ public class AuthorizationTokenProvider {
         AuthorizationCode codeInfo = oAuth2Service.validateAndGetAuthorizationCode(param.getGrantType(), param.getCode());
 
         String scope = codeInfo.getScope();
-        User user = codeInfo.getUser();
+        UserDetails userDetails = codeInfo.getUserDetails();
         String nonce = codeInfo.getNonce();
 
         ClientDetails clientDetails = IhaServer.getContext().getClientDetailsService().getByClientId(param.getClientId());
@@ -72,7 +72,7 @@ public class AuthorizationTokenProvider {
 
         long expiresIn = OAuthUtil.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
 
-        AccessToken accessToken = TokenUtil.createAccessToken(user, clientDetails, param.getGrantType(), scope, nonce, EndpointUtil.getIssuer(request));
+        AccessToken accessToken = TokenUtil.createAccessToken(userDetails, clientDetails, param.getGrantType(), scope, nonce, EndpointUtil.getIssuer(request));
         IhaServerResponse<String, Object> response = new IhaServerResponse<String, Object>()
                 .add(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getAccessToken())
                 .add(OAuth2ParameterNames.REFRESH_TOKEN, accessToken.getRefreshToken())
@@ -80,7 +80,7 @@ public class AuthorizationTokenProvider {
                 .add(OAuth2ParameterNames.TOKEN_TYPE, IhaServerConstants.TOKEN_TYPE_BEARER)
                 .add(OAuth2ParameterNames.SCOPE, scope);
         if (OAuthUtil.isOidcProtocol(scope)) {
-            response.add(OidcParameterNames.ID_TOKEN, TokenUtil.createIdToken(clientDetails, user, nonce, EndpointUtil.getIssuer(request)));
+            response.add(OidcParameterNames.ID_TOKEN, TokenUtil.createIdToken(clientDetails, userDetails, nonce, EndpointUtil.getIssuer(request)));
         }
         return response;
     }
@@ -97,11 +97,11 @@ public class AuthorizationTokenProvider {
         String username = param.getUsername();
         String password = param.getPassword();
         String clientId = param.getClientId();
-        User user = IhaServer.getContext().getUserDetailService().loginByUsernameAndPassword(username, password, clientId);
-        if (null == user) {
+        UserDetails userDetails = IhaServer.getContext().getUserDetailService().loginByUsernameAndPassword(username, password, clientId);
+        if (null == userDetails) {
             throw new IhaServerException(ErrorResponse.INVALID_USER_CERTIFICATE);
         }
-        IhaServer.saveUser(user, request);
+        IhaServer.saveUser(userDetails, request);
 
         ClientDetails clientDetails = IhaServer.getContext().getClientDetailsService().getByClientId(param.getClientId());
         String requestScope = param.getScope();
@@ -113,7 +113,7 @@ public class AuthorizationTokenProvider {
 
         long expiresIn = OAuthUtil.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
 
-        AccessToken accessToken = TokenUtil.createAccessToken(user, clientDetails, param.getGrantType(), requestScope, param.getNonce(), EndpointUtil.getIssuer(request));
+        AccessToken accessToken = TokenUtil.createAccessToken(userDetails, clientDetails, param.getGrantType(), requestScope, param.getNonce(), EndpointUtil.getIssuer(request));
         IhaServerResponse<String, Object> response = new IhaServerResponse<String, Object>()
                 .add(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getAccessToken())
                 .add(OAuth2ParameterNames.REFRESH_TOKEN, accessToken.getRefreshToken())
@@ -122,7 +122,7 @@ public class AuthorizationTokenProvider {
                 .add(OAuth2ParameterNames.SCOPE, requestScope);
 
         if (OAuthUtil.isOidcProtocol(requestScope)) {
-            response.add(OidcParameterNames.ID_TOKEN, TokenUtil.createIdToken(clientDetails, user, param.getNonce(), EndpointUtil.getIssuer(request)));
+            response.add(OidcParameterNames.ID_TOKEN, TokenUtil.createIdToken(clientDetails, userDetails, param.getNonce(), EndpointUtil.getIssuer(request)));
         }
         return response;
     }
@@ -184,11 +184,11 @@ public class AuthorizationTokenProvider {
             OAuthUtil.validateGrantType(param.getGrantType(), clientDetails.getGrantTypes(), GrantType.REFRESH_TOKEN);
             OAuthUtil.validateSecret(param, clientDetails, oAuth2Service);
 
-            User user = IhaServer.getContext().getUserDetailService().getById(token.getUserId());
+            UserDetails userDetails = IhaServer.getContext().getUserDetailService().getById(token.getUserId());
 
             long expiresIn = OAuthUtil.getRefreshTokenExpiresIn(clientDetails.getRefreshTokenTimeToLive());
 
-            AccessToken accessToken = TokenUtil.refreshAccessToken(user, clientDetails, token, param.getNonce(), EndpointUtil.getIssuer(request));
+            AccessToken accessToken = TokenUtil.refreshAccessToken(userDetails, clientDetails, token, param.getNonce(), EndpointUtil.getIssuer(request));
             return new IhaServerResponse<String, Object>()
                     .add(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getAccessToken())
                     .add(OAuth2ParameterNames.REFRESH_TOKEN, accessToken.getRefreshToken())

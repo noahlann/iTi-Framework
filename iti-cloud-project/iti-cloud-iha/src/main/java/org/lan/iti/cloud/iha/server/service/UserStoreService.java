@@ -18,7 +18,7 @@
 
 package org.lan.iti.cloud.iha.server.service;
 
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
 
@@ -43,10 +43,10 @@ public interface UserStoreService extends IExtension<Object> {
      * <p>
      * Developers can implement this method to save user information in other media, such as cache, database, etc.
      *
-     * @param user    User information after login
+     * @param userDetails    User information after login
      * @param request current HTTP request
      */
-    void save(User user, HttpServletRequest request);
+    void save(UserDetails userDetails, HttpServletRequest request);
 
     /**
      * Get logged-in user information
@@ -54,7 +54,7 @@ public interface UserStoreService extends IExtension<Object> {
      * @param request current HTTP request
      * @return User
      */
-    User get(HttpServletRequest request);
+    UserDetails get(HttpServletRequest request);
 
     /**
      * Delete logged-in user information

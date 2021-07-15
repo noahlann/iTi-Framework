@@ -24,7 +24,7 @@ import org.lan.iti.cloud.iha.server.exception.IhaServerException;
 import org.lan.iti.cloud.iha.server.model.ClientDetails;
 import org.lan.iti.cloud.iha.server.model.IhaServerRequestParam;
 import org.lan.iti.cloud.iha.server.model.IhaServerResponse;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.cloud.iha.server.pipeline.Pipeline;
 import org.lan.iti.cloud.iha.server.provider.RequestParamProvider;
@@ -106,26 +106,26 @@ public class LoginEndpoint extends AbstractEndpoint {
      */
     public IhaServerResponse<String, String> login(ServletRequest servletRequest, ServletResponse servletResponse) {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        Pipeline<User> signInPipeline = IhaServer.getContext().getSignInPipeline();
+        Pipeline<UserDetails> signInPipeline = IhaServer.getContext().getSignInPipeline();
         signInPipeline = this.getUserInfoIdsPipeline(signInPipeline);
         if (!signInPipeline.preHandle(request, servletResponse)) {
             throw new IhaServerException("SignInPipeline<User>.preHandle returns false, the process is blocked.");
         }
         IhaServerRequestParam param = RequestParamProvider.parseRequest(request);
-        User user = signInPipeline.postHandle(request, servletResponse);
-        if (null == user) {
+        UserDetails userDetails = signInPipeline.postHandle(request, servletResponse);
+        if (null == userDetails) {
             String username = param.getUsername();
             String password = param.getPassword();
             if (ObjectUtil.hasEmpty(username, password)) {
                 throw new IhaServerException(ErrorResponse.INVALID_USER_CERTIFICATE);
             }
-            user = IhaServer.getContext().getUserDetailService().loginByUsernameAndPassword(username, password, param.getClientId());
-            if (null == user) {
+            userDetails = IhaServer.getContext().getUserDetailService().loginByUsernameAndPassword(username, password, param.getClientId());
+            if (null == userDetails) {
                 throw new IhaServerException(ErrorResponse.INVALID_USER_CERTIFICATE);
             }
         }
 
-        IhaServer.saveUser(user, request);
+        IhaServer.saveUser(userDetails, request);
 
         ClientDetails clientDetails = IhaServer.getContext().getClientDetailsService().getByClientId(param.getClientId());
         OAuthUtil.validClientDetail(clientDetails);

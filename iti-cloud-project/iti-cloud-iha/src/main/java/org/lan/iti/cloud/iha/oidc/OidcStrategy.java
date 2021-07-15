@@ -69,15 +69,15 @@ public class OidcStrategy extends OAuth2Strategy {
 
         OidcDiscovery discoveryDto;
 
-        IhaCache japCache = this.context.getCache();
+        IhaCache ihaCache = this.context.getCache();
 
         String discoveryCacheKey = OidcConstants.DISCOVERY_CACHE_KEY.concat(issuer);
-        if (japCache.containsKey(discoveryCacheKey)) {
-            discoveryDto = (OidcDiscovery) japCache.get(discoveryCacheKey);
+        if (ihaCache.containsKey(discoveryCacheKey)) {
+            discoveryDto = (OidcDiscovery) ihaCache.get(discoveryCacheKey);
         } else {
             try {
                 discoveryDto = OidcUtil.getOidcDiscovery(issuer);
-                japCache.set(discoveryCacheKey, discoveryDto);
+                ihaCache.set(discoveryCacheKey, discoveryDto);
             } catch (IhaOidcException e) {
                 return IhaResponse.error(e.getCode(), e.getMessage());
             }

@@ -25,7 +25,7 @@ import org.lan.iti.cloud.iha.server.IhaServerConstants;
 import org.lan.iti.cloud.iha.server.model.AccessToken;
 import org.lan.iti.cloud.iha.server.model.ClientDetails;
 import org.lan.iti.cloud.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.service.OAuth2Service;
 import org.lan.iti.cloud.iha.server.util.OAuthUtil;
 import org.lan.iti.cloud.iha.server.util.StringUtil;
@@ -48,15 +48,15 @@ public class AuthorizationProvider {
     /**
      * 4.2.  Implicit Grant
      *
-     * @param user          Logged-in user information
+     * @param userDetails          Logged-in user information
      * @param param         Request parameter
      * @param clientDetails Application information
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return String
      * @see <a href="https://tools.ietf.org/html/rfc6749#section-4.2">4.2.  Implicit Grant</a>
      */
-    public String generateImplicitGrantResponse(User user, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
-        AccessToken accessToken = TokenUtil.createAccessToken(user, clientDetails, param.getGrantType(), param.getScope(), param.getNonce(), issuer);
+    public String generateImplicitGrantResponse(UserDetails userDetails, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
+        AccessToken accessToken = TokenUtil.createAccessToken(userDetails, clientDetails, param.getGrantType(), param.getScope(), param.getNonce(), issuer);
         Map<String, String> tokenResponse = new HashMap<>(9);
         // https://tools.ietf.org/html/rfc6749#section-4.2.2
         // The authorization server MUST NOT issue a refresh token.
@@ -65,7 +65,7 @@ public class AuthorizationProvider {
         tokenResponse.put(OAuth2ParameterNames.TOKEN_TYPE, IhaServerConstants.TOKEN_TYPE_BEARER);
         tokenResponse.put(OAuth2ParameterNames.SCOPE, param.getScope());
         if (OAuthUtil.isOidcProtocol(param.getScope())) {
-            tokenResponse.put(OidcParameterNames.ID_TOKEN, TokenUtil.createIdToken(clientDetails, user, param.getNonce(), issuer));
+            tokenResponse.put(OidcParameterNames.ID_TOKEN, TokenUtil.createIdToken(clientDetails, userDetails, param.getNonce(), issuer));
         }
         if (StringUtil.isNotEmpty(param.getState())) {
             tokenResponse.put(OAuth2ParameterNames.STATE, param.getState());
@@ -77,14 +77,14 @@ public class AuthorizationProvider {
     /**
      * 4.1.  Authorization Code Grant
      *
-     * @param user          Logged-in user information
+     * @param userDetails          Logged-in user information
      * @param param         Request parameter
      * @param clientDetails Application information
      * @return String
      * @see <a href="https://tools.ietf.org/html/rfc6749#section-4.1">4.1.  Authorization Code Grant</a>
      */
-    public String generateAuthorizationCodeResponse(User user, IhaServerRequestParam param, ClientDetails clientDetails) {
-        String authorizationCode = oAuth2Service.createAuthorizationCode(param, user, OAuthUtil.getCodeExpiresIn(clientDetails.getCodeTimeToLive()));
+    public String generateAuthorizationCodeResponse(UserDetails userDetails, IhaServerRequestParam param, ClientDetails clientDetails) {
+        String authorizationCode = oAuth2Service.createAuthorizationCode(param, userDetails, OAuthUtil.getCodeExpiresIn(clientDetails.getCodeTimeToLive()));
         String params = "?code=" + authorizationCode;
         if (StringUtil.isNotEmpty(param.getState())) {
             params = params + "&state=" + param.getState();
@@ -95,30 +95,30 @@ public class AuthorizationProvider {
     /**
      * When the value of {@code response_type} is {@code code id_token}, return {@code code} and {@code id_token} from the authorization endpoint
      *
-     * @param user          Logged-in user information
+     * @param userDetails          Logged-in user information
      * @param param         Request parameter
      * @param clientDetails Application information
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return String
      * @see <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations">Definitions of Multiple-Valued Response Type Combinations</a>
      */
-    public String generateCodeIdTokenAuthorizationResponse(User user, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
-        String params = "&id_token=" + TokenUtil.createIdToken(clientDetails, user, param.getNonce(), issuer);
-        return this.generateAuthorizationCodeResponse(user, param, clientDetails) + params;
+    public String generateCodeIdTokenAuthorizationResponse(UserDetails userDetails, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
+        String params = "&id_token=" + TokenUtil.createIdToken(clientDetails, userDetails, param.getNonce(), issuer);
+        return this.generateAuthorizationCodeResponse(userDetails, param, clientDetails) + params;
     }
 
     /**
      * When the value of {@code response_type} is {@code id_token}, an {@code id_token} is returned from the authorization endpoint.
      * This mode does not require the use of token endpoints.
      *
-     * @param user          Logged-in user information
+     * @param userDetails          Logged-in user information
      * @param param         Request parameter
      * @param clientDetails Application information
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return String
      */
-    public String generateIdTokenAuthorizationResponse(User user, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
-        String params = "?id_token=" + TokenUtil.createIdToken(clientDetails, user, param, issuer);
+    public String generateIdTokenAuthorizationResponse(UserDetails userDetails, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
+        String params = "?id_token=" + TokenUtil.createIdToken(clientDetails, userDetails, param, issuer);
         return param.getRedirectUri() + params;
     }
 
@@ -126,48 +126,48 @@ public class AuthorizationProvider {
      * When the value of {@code response_type} is {@code id_token token}, the {@code id_token} and {@code access_token} are returned from the authorization endpoint.
      * This mode does not require the use of token endpoints.
      *
-     * @param user          Logged-in user information
+     * @param userDetails          Logged-in user information
      * @param param         Request parameter
      * @param clientDetails Application information
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return String
      * @see <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations">Definitions of Multiple-Valued Response Type Combinations</a>
      */
-    public String generateIdTokenTokenAuthorizationResponse(User user, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
-        AccessToken accessToken = TokenUtil.createAccessToken(user, clientDetails, param.getGrantType(), param.getScope(), param.getNonce(), issuer);
-        String params = "?access_token=" + accessToken.getAccessToken() + "&id_token=" + TokenUtil.createIdToken(clientDetails, user, param.getNonce(), issuer);
+    public String generateIdTokenTokenAuthorizationResponse(UserDetails userDetails, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
+        AccessToken accessToken = TokenUtil.createAccessToken(userDetails, clientDetails, param.getGrantType(), param.getScope(), param.getNonce(), issuer);
+        String params = "?access_token=" + accessToken.getAccessToken() + "&id_token=" + TokenUtil.createIdToken(clientDetails, userDetails, param.getNonce(), issuer);
         return param.getRedirectUri() + params;
     }
 
     /**
      * When the value of {@code response_type} is {@code code token}, return {@code code} and {@code token} from the authorization endpoint
      *
-     * @param user          Logged-in user information
+     * @param userDetails          Logged-in user information
      * @param param         Request parameter
      * @param clientDetails Application information
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return String
      * @see <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations">Definitions of Multiple-Valued Response Type Combinations</a>
      */
-    public String generateCodeTokenAuthorizationResponse(User user, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
-        AccessToken accessToken = TokenUtil.createAccessToken(user, clientDetails, param.getGrantType(), param.getScope(), param.getNonce(), issuer);
+    public String generateCodeTokenAuthorizationResponse(UserDetails userDetails, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
+        AccessToken accessToken = TokenUtil.createAccessToken(userDetails, clientDetails, param.getGrantType(), param.getScope(), param.getNonce(), issuer);
         String params = "&access_token=" + accessToken.getAccessToken();
-        return this.generateAuthorizationCodeResponse(user, param, clientDetails) + params;
+        return this.generateAuthorizationCodeResponse(userDetails, param, clientDetails) + params;
     }
 
     /**
      * When the value of {@code response_type} is {@code code id_token token}, return {@code code},{@code id_token} and {@code token} from the authorization endpoint
      *
-     * @param user          Logged-in user information
+     * @param userDetails          Logged-in user information
      * @param param         Request parameter
      * @param clientDetails Application information
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return String
      * @see <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations">Definitions of Multiple-Valued Response Type Combinations</a>
      */
-    public String generateCodeIdTokenTokenAuthorizationResponse(User user, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
-        String params = "&id_token=" + TokenUtil.createIdToken(clientDetails, user, param.getNonce(), issuer);
-        return this.generateCodeTokenAuthorizationResponse(user, param, clientDetails, issuer) + params;
+    public String generateCodeIdTokenTokenAuthorizationResponse(UserDetails userDetails, IhaServerRequestParam param, ClientDetails clientDetails, String issuer) {
+        String params = "&id_token=" + TokenUtil.createIdToken(clientDetails, userDetails, param.getNonce(), issuer);
+        return this.generateCodeTokenAuthorizationResponse(userDetails, param, clientDetails, issuer) + params;
     }
 
     /**

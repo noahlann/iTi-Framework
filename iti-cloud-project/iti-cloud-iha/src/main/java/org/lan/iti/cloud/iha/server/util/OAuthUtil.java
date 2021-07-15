@@ -109,7 +109,7 @@ public class OAuthUtil {
                     "A redirect_uri can only be used by implicit or authorization_code grant types.");
         }
 
-        List<String> clientRedirectUris = StrUtil.split(clientDetail.getRedirectUris(), IhaServerConstants.SEPARATOR_COMMA);
+        List<String> clientRedirectUris = StrUtil.split(clientDetail.getRedirectUris(), IhaServerConstants.SPACE);
         if (requestRedirectUri == null || !clientRedirectUris.contains(requestRedirectUri)) {
             throw new InvalidRedirectUriException(ErrorResponse.INVALID_REDIRECT_URI);
         }
@@ -304,7 +304,7 @@ public class OAuthUtil {
             model.put(PkceParams.CODE_CHALLENGE, param.getCodeChallenge());
         }
         if (StringUtil.isNotEmpty(param.getAutoApprove())) {
-            model.put(IhaServerConstants.AUTOAPPROVE, param.getAutoApprove());
+            model.put(OAuth2ParameterNames.AUTOAPPROVE, param.getAutoApprove());
         }
         String uriParams = URLUtil.buildQuery(model, StandardCharsets.UTF_8);
         if (authorizeUrl.contains("?")) {

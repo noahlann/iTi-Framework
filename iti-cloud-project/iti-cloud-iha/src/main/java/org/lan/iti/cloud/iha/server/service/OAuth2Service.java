@@ -20,7 +20,7 @@ package org.lan.iti.cloud.iha.server.service;
 
 import org.lan.iti.cloud.iha.server.model.AuthorizationCode;
 import org.lan.iti.cloud.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 
 /**
  * @author NorthLan
@@ -32,11 +32,11 @@ public interface OAuth2Service {
      * Generate authorization code
      *
      * @param param         Parameters requested by the client
-     * @param user          User Info
+     * @param userDetails          User Info
      * @param codeExpiresIn code expiration time
      * @return String
      */
-    String createAuthorizationCode(IhaServerRequestParam param, User user, Long codeExpiresIn);
+    String createAuthorizationCode(IhaServerRequestParam param, UserDetails userDetails, Long codeExpiresIn);
 
     /**
      * Verification authorization code

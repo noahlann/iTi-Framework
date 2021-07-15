@@ -18,7 +18,7 @@
 
 package org.lan.iti.cloud.iha.server.pipeline;
 
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
 
@@ -30,7 +30,7 @@ import org.lan.iti.common.extension.annotation.Extension;
  * @url https://noahlan.com
  */
 @Extension
-public interface SignInPipeline extends Pipeline<User>, IExtension<Object> {
+public interface SignInPipeline extends Pipeline<UserDetails>, IExtension<Object> {
     @Override
     default boolean matches(Object params) {
         return true;

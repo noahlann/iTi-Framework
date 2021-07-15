@@ -22,7 +22,7 @@ import lombok.experimental.UtilityClass;
 import org.lan.iti.cloud.iha.server.config.IhaServerConfig;
 import org.lan.iti.cloud.iha.server.context.IhaServerContext;
 import org.lan.iti.cloud.iha.server.exception.IhaServerException;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.pipeline.FilterPipeline;
 import org.lan.iti.cloud.iha.server.pipeline.LogoutPipeline;
 import org.lan.iti.cloud.iha.server.pipeline.SignInPipeline;
@@ -96,11 +96,11 @@ public class IhaServer implements Serializable {
         return null != getUser(request);
     }
 
-    public static void saveUser(User user, HttpServletRequest request) {
-        getContext().getUserStoreService().save(user, request);
+    public static void saveUser(UserDetails userDetails, HttpServletRequest request) {
+        getContext().getUserStoreService().save(userDetails, request);
     }
 
-    public static User getUser(HttpServletRequest request) {
+    public static UserDetails getUser(HttpServletRequest request) {
         return getContext().getUserStoreService().get(request);
     }
 

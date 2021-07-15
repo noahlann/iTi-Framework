@@ -19,7 +19,7 @@
 package org.lan.iti.cloud.iha.server.service.impl;
 
 import org.lan.iti.cloud.iha.server.IhaServerConstants;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.service.UserStoreService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,13 +31,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class UserStoreServiceImpl implements UserStoreService {
     @Override
-    public void save(User user, HttpServletRequest request) {
-        request.getSession().setAttribute(IhaServerConstants.OAUTH_USER_CACHE_KEY, user);
+    public void save(UserDetails userDetails, HttpServletRequest request) {
+        request.getSession().setAttribute(IhaServerConstants.OAUTH_USER_CACHE_KEY, userDetails);
     }
 
     @Override
-    public User get(HttpServletRequest request) {
-        return (User) request.getSession().getAttribute(IhaServerConstants.OAUTH_USER_CACHE_KEY);
+    public UserDetails get(HttpServletRequest request) {
+        return (UserDetails) request.getSession().getAttribute(IhaServerConstants.OAUTH_USER_CACHE_KEY);
     }
 
     @Override

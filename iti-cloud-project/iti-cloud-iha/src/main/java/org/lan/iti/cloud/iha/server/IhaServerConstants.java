@@ -27,7 +27,8 @@ import java.time.Duration;
  */
 public interface IhaServerConstants {
     String SLASH = "/";
-    String SEPARATOR_COMMA = ",";
+    String COMMA = ",";
+    String SPACE = " ";
 
     String TOKEN_URL = "/oauth2/token";
     String ERROR_URL = "/oauth2/error";
@@ -95,6 +96,8 @@ public interface IhaServerConstants {
      */
     String OAUTH_CODE_CACHE_KEY = IHA_SERVER_OAUTH_CACHE_KEY + "CODE:";
 
+    /**
+     * uid
+     */
     String UID = "uid";
-    String AUTOAPPROVE = "autoapprove";
 }

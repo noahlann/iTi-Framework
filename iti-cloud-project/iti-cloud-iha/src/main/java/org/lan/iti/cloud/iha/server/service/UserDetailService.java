@@ -20,7 +20,7 @@ package org.lan.iti.cloud.iha.server.service;
 
 import org.lan.iti.cloud.iha.server.exception.IhaServerException;
 import org.lan.iti.cloud.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
 
@@ -42,7 +42,7 @@ public interface UserDetailService extends IExtension<Object> {
      * @param param RequestParam
      * @return User
      */
-    default User loginByRequest(IhaServerRequestParam param) {
+    default UserDetails loginByRequest(IhaServerRequestParam param) {
         throw new IhaServerException("Not implemented `loginByRequest(HttpServletRequest)`");
     }
 
@@ -58,7 +58,7 @@ public interface UserDetailService extends IExtension<Object> {
      * @param clientId The unique code of the currently logged-in client
      * @return User
      */
-    default User loginByUsernameAndPassword(String username, String password, String clientId) {
+    default UserDetails loginByUsernameAndPassword(String username, String password, String clientId) {
         throw new IhaServerException("Not implemented `loginByUsernameAndPassword(String, String, String)`");
     }
 
@@ -68,7 +68,7 @@ public interface UserDetailService extends IExtension<Object> {
      * @param userId userId of the business system
      * @return User
      */
-    default User getById(String userId) {
+    default UserDetails getById(String userId) {
         throw new IhaServerException("Not implemented `getById(String)`");
     }
 
@@ -83,7 +83,7 @@ public interface UserDetailService extends IExtension<Object> {
      * @param clientId The unique code of the currently logged-in client
      * @return User
      */
-    default User getByUsername(String username, String clientId) {
+    default UserDetails getByUsername(String username, String clientId) {
         throw new IhaServerException("Not implemented `getByName(String, String)`");
     }
 }

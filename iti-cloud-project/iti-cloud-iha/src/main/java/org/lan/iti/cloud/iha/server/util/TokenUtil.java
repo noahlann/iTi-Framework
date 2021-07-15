@@ -29,7 +29,7 @@ import org.lan.iti.cloud.iha.server.exception.InvalidTokenException;
 import org.lan.iti.cloud.iha.server.model.AccessToken;
 import org.lan.iti.cloud.iha.server.model.ClientDetails;
 import org.lan.iti.cloud.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.cloud.iha.server.model.enums.TokenAuthenticationMethod;
 
@@ -104,32 +104,32 @@ public class TokenUtil {
         return RequestUtil.getCookieVal(request, OAuth2ParameterNames.ACCESS_TOKEN);
     }
 
-    public static String createIdToken(ClientDetails clientDetails, User user, String nonce, String issuer) {
+    public static String createIdToken(ClientDetails clientDetails, UserDetails userDetails, String nonce, String issuer) {
         long idTokenExpiresIn = OAuthUtil.getIdTokenExpiresIn(clientDetails.getIdTokenTimeToLive());
-        return JwtUtil.createJwtToken(clientDetails.getClientId(), user, idTokenExpiresIn, nonce, issuer);
+        return JwtUtil.createJwtToken(clientDetails.getClientId(), userDetails, idTokenExpiresIn, nonce, issuer);
     }
 
-    public static String createIdToken(ClientDetails clientDetails, User user, IhaServerRequestParam param, String issuer) {
+    public static String createIdToken(ClientDetails clientDetails, UserDetails userDetails, IhaServerRequestParam param, String issuer) {
         long idTokenExpiresIn = OAuthUtil.getIdTokenExpiresIn(clientDetails.getIdTokenTimeToLive());
-        return JwtUtil.createJwtToken(clientDetails.getClientId(), user, idTokenExpiresIn, param.getNonce(), StringUtil.convertStrToList(param.getScope()), param.getResponseType(), issuer);
+        return JwtUtil.createJwtToken(clientDetails.getClientId(), userDetails, idTokenExpiresIn, param.getNonce(), StringUtil.convertStrToList(param.getScope()), param.getResponseType(), issuer);
     }
 
-    public static AccessToken createAccessToken(User user, ClientDetails clientDetails, String grantType, String scope, String nonce, String issuer) {
+    public static AccessToken createAccessToken(UserDetails userDetails, ClientDetails clientDetails, String grantType, String scope, String nonce, String issuer) {
         String clientId = clientDetails.getClientId();
 
         long accessTokenExpiresIn = OAuthUtil.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
         long refreshTokenExpiresIn = OAuthUtil.getRefreshTokenExpiresIn(clientDetails.getRefreshTokenTimeToLive());
 
-        String accessTokenStr = JwtUtil.createJwtToken(clientId, user, accessTokenExpiresIn, nonce, issuer);
+        String accessTokenStr = JwtUtil.createJwtToken(clientId, userDetails, accessTokenExpiresIn, nonce, issuer);
         String refreshTokenStr = SecureUtil.sha256(clientId.concat(scope).concat(System.currentTimeMillis() + ""));
 
         AccessToken accessToken = new AccessToken();
         accessToken.setAccessToken(accessTokenStr);
         accessToken.setRefreshToken(refreshTokenStr);
         accessToken.setGrantType(grantType);
-        if (null != user) {
-            accessToken.setUserName(user.getUsername());
-            accessToken.setUserId(user.getId());
+        if (null != userDetails) {
+            accessToken.setUserName(userDetails.getUsername());
+            accessToken.setUserId(userDetails.getId());
         }
         accessToken.setClientId(clientId);
         accessToken.setScope(scope);
@@ -147,10 +147,10 @@ public class TokenUtil {
         return accessToken;
     }
 
-    public static AccessToken refreshAccessToken(User user, ClientDetails clientDetails, AccessToken accessToken, String nonce, String issuer) {
+    public static AccessToken refreshAccessToken(UserDetails userDetails, ClientDetails clientDetails, AccessToken accessToken, String nonce, String issuer) {
         String rawToken = accessToken.getAccessToken();
         long accessTokenExpiresIn = OAuthUtil.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
-        String accessTokenStr = JwtUtil.createJwtToken(clientDetails.getClientId(), user, accessTokenExpiresIn, nonce, issuer);
+        String accessTokenStr = JwtUtil.createJwtToken(clientDetails.getClientId(), userDetails, accessTokenExpiresIn, nonce, issuer);
         accessToken.setAccessToken(accessTokenStr);
         accessToken.setAccessTokenExpiresIn(accessTokenExpiresIn);
 

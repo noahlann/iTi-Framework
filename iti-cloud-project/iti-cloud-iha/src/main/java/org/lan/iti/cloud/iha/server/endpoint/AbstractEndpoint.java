@@ -18,7 +18,7 @@
 
 package org.lan.iti.cloud.iha.server.endpoint;
 
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.pipeline.Pipeline;
 import org.lan.iti.cloud.iha.server.service.OAuth2Service;
 import org.lan.iti.cloud.iha.server.service.impl.OAuth2ServiceImpl;
@@ -40,16 +40,16 @@ public abstract class AbstractEndpoint {
         this.oAuth2Service = new OAuth2ServiceImpl();
     }
 
-    protected Pipeline<User> getUserInfoIdsPipeline(Pipeline<User> idsSigninPipeline) {
+    protected Pipeline<UserDetails> getUserInfoIdsPipeline(Pipeline<UserDetails> idsSigninPipeline) {
         if (null == idsSigninPipeline) {
-            idsSigninPipeline = new Pipeline<User>() {
+            idsSigninPipeline = new Pipeline<UserDetails>() {
                 @Override
                 public boolean preHandle(ServletRequest servletRequest, ServletResponse servletResponse) {
                     return Pipeline.super.preHandle(servletRequest, servletResponse);
                 }
 
                 @Override
-                public User postHandle(ServletRequest servletRequest, ServletResponse servletResponse) {
+                public UserDetails postHandle(ServletRequest servletRequest, ServletResponse servletResponse) {
                     return Pipeline.super.postHandle(servletRequest, servletResponse);
                 }
             };

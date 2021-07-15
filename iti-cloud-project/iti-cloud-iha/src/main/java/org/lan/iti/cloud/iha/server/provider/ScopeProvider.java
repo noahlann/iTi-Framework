@@ -41,6 +41,7 @@ public class ScopeProvider {
         addScope(new Scope("email", "Allow access to user's mailbox."));
         addScope(new Scope("phone", "Allow access to the user’s phone number."));
         addScope(new Scope("address", "Allow access to the user's address."));
+        addScope(new Scope("roles", "Allow access to the user's roles."));
     }
 
     /**

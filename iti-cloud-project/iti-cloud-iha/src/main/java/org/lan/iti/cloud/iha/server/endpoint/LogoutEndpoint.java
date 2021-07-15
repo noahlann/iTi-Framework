@@ -21,7 +21,7 @@ package org.lan.iti.cloud.iha.server.endpoint;
 import org.lan.iti.cloud.iha.server.IhaServer;
 import org.lan.iti.cloud.iha.server.exception.IhaServerException;
 import org.lan.iti.cloud.iha.server.model.IhaServerResponse;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.pipeline.Pipeline;
 import org.lan.iti.cloud.iha.server.util.EndpointUtil;
 
@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LogoutEndpoint extends AbstractEndpoint {
 
     public IhaServerResponse<String, String> logout(HttpServletRequest request, ServletResponse response) {
-        Pipeline<User> logoutPipeline = IhaServer.getContext().getLogoutPipeline();
+        Pipeline<UserDetails> logoutPipeline = IhaServer.getContext().getLogoutPipeline();
         logoutPipeline = this.getUserInfoIdsPipeline(logoutPipeline);
         if (!logoutPipeline.preHandle(request, response)) {
             throw new IhaServerException("LogoutPipeline<User>.preHandle returns false, the process is blocked.");

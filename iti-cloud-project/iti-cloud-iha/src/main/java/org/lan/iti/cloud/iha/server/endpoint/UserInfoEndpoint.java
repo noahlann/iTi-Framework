@@ -24,14 +24,13 @@ import org.lan.iti.cloud.iha.server.exception.IhaServerException;
 import org.lan.iti.cloud.iha.server.exception.InvalidTokenException;
 import org.lan.iti.cloud.iha.server.model.AccessToken;
 import org.lan.iti.cloud.iha.server.model.IhaServerResponse;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.cloud.iha.server.model.enums.ScopeClaimsMapping;
 import org.lan.iti.cloud.iha.server.util.StringUtil;
 import org.lan.iti.cloud.iha.server.util.TokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,48 +56,42 @@ public class UserInfoEndpoint extends AbstractEndpoint {
         if (null == accessToken) {
             throw new InvalidTokenException(ErrorResponse.INVALID_TOKEN);
         }
-        User user = IhaServer.getContext().getUserDetailService().getById(accessToken.getUserId());
-        if (null == user) {
+        UserDetails userDetails = IhaServer.getContext().getUserDetailService().getById(accessToken.getUserId());
+        if (null == userDetails) {
             throw new IhaServerException(ErrorResponse.ACCESS_DENIED);
         }
         String scope = accessToken.getScope();
         Set<String> scopes = StringUtil.convertStrToList(scope);
-        Map<String, Object> userInfoMap = JsonUtil.parseKv(JsonUtil.toJsonString(user));
+        Map<String, Object> userInfoMap = JsonUtil.parseKv(JsonUtil.toJsonString(userDetails));
         // This scope value requests access to the End-User's default profile Claims,
         // which are: name, family_name, given_name, middle_name, nickname, preferred_username, profile, picture, website, gender, birthdate, zoneinfo, locale, and updated_at.
         if (!scopes.contains("profile")) {
-            ScopeClaimsMapping scopeClaimsMapping = ScopeClaimsMapping.PROFILE;
-            List<String> claims = scopeClaimsMapping.getClaims();
-            for (String claim : claims) {
-                userInfoMap.remove(claim);
-            }
+            removeClaims(userInfoMap, ScopeClaimsMapping.PROFILE);
         }
         // This scope value requests access to the email and email_verified Claims.
         if (!scopes.contains("email")) {
-            ScopeClaimsMapping scopeClaimsMapping = ScopeClaimsMapping.EMAIL;
-            List<String> claims = scopeClaimsMapping.getClaims();
-            for (String claim : claims) {
-                userInfoMap.remove(claim);
-            }
+            removeClaims(userInfoMap, ScopeClaimsMapping.EMAIL);
         }
         // This scope value requests access to the phone_number and phone_number_verified Claims.
         if (!scopes.contains("phone")) {
-            ScopeClaimsMapping scopeClaimsMapping = ScopeClaimsMapping.PHONE;
-            List<String> claims = scopeClaimsMapping.getClaims();
-            for (String claim : claims) {
-                userInfoMap.remove(claim);
-            }
+            removeClaims(userInfoMap, ScopeClaimsMapping.PHONE);
         }
         // This scope value requests access to the address Claim.
         if (!scopes.contains("address")) {
-            ScopeClaimsMapping scopeClaimsMapping = ScopeClaimsMapping.ADDRESS;
-            List<String> claims = scopeClaimsMapping.getClaims();
-            for (String claim : claims) {
-                userInfoMap.remove(claim);
-            }
+            removeClaims(userInfoMap, ScopeClaimsMapping.ADDRESS);
+        }
+        // This scope value requests access to the roles Claim.
+        if (!scopes.contains("roles")) {
+            removeClaims(userInfoMap, ScopeClaimsMapping.ROLES);
         }
         IhaServerResponse<String, Object> idsResponse = new IhaServerResponse<>();
         idsResponse.putAll(userInfoMap);
         return idsResponse;
+    }
+
+    private void removeClaims(Map<String, Object> userInfoMap, ScopeClaimsMapping claimsMapping) {
+        for (String claim : claimsMapping.getClaims()) {
+            userInfoMap.remove(claim);
+        }
     }
 }

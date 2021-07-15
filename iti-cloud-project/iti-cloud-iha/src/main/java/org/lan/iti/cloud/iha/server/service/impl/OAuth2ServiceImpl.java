@@ -28,7 +28,7 @@ import org.lan.iti.cloud.iha.server.exception.InvalidCodeException;
 import org.lan.iti.cloud.iha.server.exception.UnsupportedGrantTypeException;
 import org.lan.iti.cloud.iha.server.model.AuthorizationCode;
 import org.lan.iti.cloud.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.cloud.iha.server.model.User;
+import org.lan.iti.cloud.iha.server.model.UserDetails;
 import org.lan.iti.cloud.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.cloud.iha.server.service.OAuth2Service;
 import org.lan.iti.cloud.iha.server.util.OAuthUtil;
@@ -42,10 +42,10 @@ import org.lan.iti.cloud.iha.server.util.OAuthUtil;
 public class OAuth2ServiceImpl implements OAuth2Service {
 
     @Override
-    public String createAuthorizationCode(IhaServerRequestParam param, User user, Long codeExpiresIn) {
+    public String createAuthorizationCode(IhaServerRequestParam param, UserDetails userDetails, Long codeExpiresIn) {
         String code = RandomUtil.randomString(12);
         AuthorizationCode authorizationCode = AuthorizationCode.builder()
-                .user(user)
+                .userDetails(userDetails)
                 .scope(param.getScope())
                 .nonce(param.getNonce())
                 .codeChallenge(param.getCodeChallenge())
@@ -61,7 +61,7 @@ public class OAuth2ServiceImpl implements OAuth2Service {
             throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
         }
         AuthorizationCode authCode = this.getCodeInfo(code);
-        if (null == authCode || ObjectUtil.hasNull(authCode.getUser(), authCode.getScope())) {
+        if (null == authCode || ObjectUtil.hasNull(authCode.getUserDetails(), authCode.getScope())) {
             throw new InvalidCodeException(ErrorResponse.INVALID_CODE);
         }
         return authCode;

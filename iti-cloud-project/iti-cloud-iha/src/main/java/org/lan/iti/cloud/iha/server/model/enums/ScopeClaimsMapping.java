@@ -59,6 +59,11 @@ public enum ScopeClaimsMapping {
      * This scope value requests access to the address Claim.
      */
     ADDRESS(Collections.singletonList("address")),
+
+    /**
+     * This scope value requests access to the roles Claim.
+     */
+    ROLES(Collections.singletonList("roles")),
     ;
     private final List<String> claims;
 }

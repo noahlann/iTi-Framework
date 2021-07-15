@@ -97,7 +97,7 @@ public class IhaServerRequestParam extends Mapped {
     }
 
     public String getAutoApprove() {
-        return map(IhaServerConstants.AUTOAPPROVE);
+        return map(OAuth2ParameterNames.AUTOAPPROVE);
     }
 
     public String getUsername() {

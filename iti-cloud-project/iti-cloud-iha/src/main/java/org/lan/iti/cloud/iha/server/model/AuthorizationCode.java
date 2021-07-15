@@ -36,7 +36,7 @@ public class AuthorizationCode implements Serializable {
     private static final long serialVersionUID = -3445239288573746732L;
 
     private String scope;
-    private User user;
+    private UserDetails userDetails;
     private String nonce;
     private String codeChallengeMethod;
     private String codeChallenge;
