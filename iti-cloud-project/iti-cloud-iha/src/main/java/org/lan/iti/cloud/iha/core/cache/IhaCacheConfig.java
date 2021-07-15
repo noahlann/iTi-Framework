@@ -37,7 +37,7 @@ public class IhaCacheConfig {
     /**
      * Turn on the timed task of clearing the local memory cache.
      * After it is turned on, the {@link IhaLocalCache#pruneCache()} method will be called to automatically clear the cache.
-     * If you customize the implemented jap cache interface, you can ignore this config.
+     * If you customize the implemented iha cache interface, you can ignore this config.
      */
     public static boolean schedulePrune = true;
 }

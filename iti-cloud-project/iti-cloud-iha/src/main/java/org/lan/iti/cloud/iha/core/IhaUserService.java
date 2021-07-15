@@ -80,7 +80,7 @@ public interface IhaUserService {
     }
 
     /**
-     * Save the social login user information to the database and return JapUser
+     * Save the social login user information to the database and return IhaUser
      * <p>
      * It is suitable for the {@code iha-social} module
      *
@@ -92,14 +92,14 @@ public interface IhaUserService {
     }
 
     /**
-     * Save the oauth login user information to the database and return JapUser
+     * Save the oauth login user information to the database and return IhaUser
      * <p>
-     * It is suitable for the {@code jap-oauth2} module
+     * It is suitable for the {@code iha-oauth2} module
      *
      * @param platform  oauth2 platform name
      * @param userInfo  The basic user information returned by the OAuth platform
      * @param tokenInfo The token information returned by the OAuth platform, developers can store tokens
-     *                  , type {@code com.fujieid.jap.oauth2.helper.AccessToken}
+     *                  , type {@code org.lan.iti.cloud.iha.oauth2.token.AccessToken}
      * @return When saving successfully, return {@code IhaUser}, otherwise return {@code null}
      */
     default IhaUser createAndGetOAuth2User(String platform, Map<String, Object> userInfo, Object tokenInfo) {

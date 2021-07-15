@@ -42,15 +42,15 @@ public class SsoIhaUserStore extends SessionIhaUserStore {
     protected IhaUserRepository userRepository;
 
     /**
-     * Jap Sso configuration.
+     * Iha Sso configuration.
      */
     protected IhaSsoConfig ssoConfig;
 
     @Override
     public IhaUser save(HttpServletRequest request, HttpServletResponse response, IhaUser ihaUser) {
-        String token = IhaSsoHelper.login(ihaUser.getUserId(), ihaUser.getUsername(), this.ssoConfig, request, response);
+        String token = IhaSsoHelper.login(ihaUser.getId(), ihaUser.getUsername(), this.ssoConfig, request, response);
         super.save(request, response, ihaUser);
-        IhaTokenHelper.saveUserToken(ihaUser.getUserId(), token);
+        IhaTokenHelper.saveUserToken(ihaUser.getId(), token);
         return ihaUser.setToken(token);
     }
 
@@ -58,7 +58,7 @@ public class SsoIhaUserStore extends SessionIhaUserStore {
     public void remove(HttpServletRequest request, HttpServletResponse response) {
         IhaUser user = this.get(request, response);
         if (null != user) {
-            IhaTokenHelper.removeUserToken(user.getUserId());
+            IhaTokenHelper.removeUserToken(user.getId());
         }
         super.remove(request, response);
         IhaSsoHelper.logout(request, response);
@@ -81,7 +81,7 @@ public class SsoIhaUserStore extends SessionIhaUserStore {
             which indicates that an endpoint logs out and then logs in again.
             At this time, the session needs to be updated
          */
-        if (null == sessionUser || !sessionUser.getUserId().equals(userId)) {
+        if (null == sessionUser || !sessionUser.getId().equals(userId)) {
             sessionUser = this.userRepository.getById(userId);
             // Back-to-back operation to prevent anomalies
             if (null == sessionUser) {

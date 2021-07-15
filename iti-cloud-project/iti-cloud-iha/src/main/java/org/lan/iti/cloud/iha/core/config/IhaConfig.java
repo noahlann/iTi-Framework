@@ -50,7 +50,7 @@ public class IhaConfig {
     private long tokenExpireTime = TimeUnit.DAYS.toMillis(7);
 
     /**
-     * The expiration time of the jap cache, in milliseconds, the default validity period is 7 days
+     * The expiration time of the iha cache, in milliseconds, the default validity period is 7 days
      */
     private long cacheExpireTime = TimeUnit.DAYS.toMillis(7);
 
@@ -60,8 +60,8 @@ public class IhaConfig {
 
     public IhaConfig enableSso(Consumer<IhaSsoConfig> ssoConfig) {
         setSso(true);
-        IhaSsoConfig japSsoConfig = new IhaSsoConfig();
-        ssoConfig.accept(japSsoConfig);
-        return setSsoConfig(japSsoConfig);
+        IhaSsoConfig ihaSsoConfig = new IhaSsoConfig();
+        ssoConfig.accept(ihaSsoConfig);
+        return setSsoConfig(ihaSsoConfig);
     }
 }

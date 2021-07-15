@@ -76,14 +76,14 @@ public class IhaResponse implements Serializable {
      * Methods provided for social, oauth, and oidc login strategy. The business flow is as follows:
      * <p>
      * 1. When not logged in, call the <code>strategy.authenticate(x)</code> method,
-     * and the returned <code>JapResponse.data</code> is the authorize url of the third-party platform
+     * and the returned <code>IhaResponse.data</code> is the authorize url of the third-party platform
      * <p>
      * 2. When the third-party login completes the callback, call the <code>strategy.authenticate(x)</code> method,
-     * and the returned <code>JapResponse.data</code> is jap user
+     * and the returned <code>IhaResponse.data</code> is iha user
      * <p>
      * After calling the <code>strategy.authenticate(x)</code> method,
-     * the developer can use <code>japResponse.isRedirectUrl()</code> to determine whether the current processing result
-     * is the authorize url that needs to be redirected, or the jap user after successful login
+     * the developer can use <code>ihaResponse.isRedirectUrl()</code> to determine whether the current processing result
+     * is the authorize url that needs to be redirected, or the iha user after successful login
      * <p>
      *
      * @return boolean

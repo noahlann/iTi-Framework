@@ -32,6 +32,6 @@ public class IhaUtil {
     private static final String REDIRECT_ERROR = "IHA failed to redirect via HttpServletResponse.";
 
     public static String createToken(IhaUser ihaUser, HttpServletRequest request) {
-        return IhaSsoUtil.createToken(ihaUser.getUserId(), ihaUser.getUsername(), request);
+        return IhaSsoUtil.createToken(ihaUser.getId(), ihaUser.getUsername(), request);
     }
 }

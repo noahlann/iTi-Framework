@@ -100,7 +100,7 @@ public class IhaAuthentication implements Serializable {
     }
 
     /**
-     * Verify the legitimacy of JAP Token
+     * Verify the legitimacy of IHA Token
      *
      * @param token jwt token
      * @return Map
@@ -109,8 +109,8 @@ public class IhaAuthentication implements Serializable {
         if (null == context || ObjectUtil.isEmpty(token)) {
             return null;
         }
-        IhaCache japCache = context.getCache();
-        if (null == japCache) {
+        IhaCache cache = context.getCache();
+        if (null == cache) {
             return null;
         }
         Map<String, Object> tokenMap = IhaTokenHelper.checkToken(token);
@@ -119,9 +119,9 @@ public class IhaAuthentication implements Serializable {
             kv.putAll(tokenMap);
             // Get the token creation time, multiplied by 1000 is the number of milliseconds
             long iat = kv.getLong("iat") * 1000;
-            IhaConfig japConfig = context.getConfig();
+            IhaConfig ihaConfig = context.getConfig();
             // Get token expiration time
-            long tokenExpireTime = japConfig.getTokenExpireTime();
+            long tokenExpireTime = ihaConfig.getTokenExpireTime();
             // The token is available when the token creation time plus the token expiration time is later than the current time,
             // otherwise the token has expired
             if (new Date(iat + tokenExpireTime).after(new Date())) {
@@ -139,11 +139,11 @@ public class IhaAuthentication implements Serializable {
      * @return boolean
      */
     public static boolean logout(HttpServletRequest request, HttpServletResponse response) {
-        IhaUserStore japUserStore = context.getUserStore();
-        if (null == japUserStore) {
+        IhaUserStore ihaUserStore = context.getUserStore();
+        if (null == ihaUserStore) {
             return false;
         }
-        japUserStore.remove(request, response);
+        ihaUserStore.remove(request, response);
 
         // Clear all cookie information
         Map<String, Cookie> cookieMap = RequestUtil.getCookieMap(request);

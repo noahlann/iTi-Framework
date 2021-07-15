@@ -19,10 +19,12 @@
 package org.lan.iti.cloud.iha.core;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,18 +37,29 @@ import java.util.Map;
 @Data
 @Accessors(chain = true)
 @SuperBuilder(toBuilder = true)
+@NoArgsConstructor
 public class IhaUser implements Serializable {
     private static final long serialVersionUID = -8066382503410442934L;
 
     /**
      * The id of the user in the business system
      */
-    private String userId;
+    private String id;
+
+    /**
+     * zoneId
+     */
+    private String zoneId;
 
     /**
      * User name in the business system
      */
     private String username;
+
+    /**
+     * User nickname in the business system
+     */
+    private String nickname;
 
     /**
      * User mobile in business system
@@ -59,15 +72,35 @@ public class IhaUser implements Serializable {
     private String email;
 
     /**
+     * User avatar in business system
+     */
+    private String avatar;
+
+    /**
+     * Description in business system
+     */
+    private String description;
+
+    /**
      * User password in business system
      */
     private String password;
+
+    /**
+     * Profile url in business system
+     */
+    private String profile;
 
     /**
      * Additional information about users in the developer's business system returned when obtaining user data.
      * Please do not save private data, such as secret keys, token.
      */
     private Map<String, Object> additionalInformation;
+
+    /**
+     * Roles in business system
+     */
+    private List<Map<String, String>> roles;
 
     /**
      * token

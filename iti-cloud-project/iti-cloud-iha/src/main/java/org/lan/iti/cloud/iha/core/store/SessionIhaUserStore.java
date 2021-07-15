@@ -19,6 +19,7 @@
 package org.lan.iti.cloud.iha.core.store;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import org.lan.iti.cloud.iha.core.IhaConstants;
 import org.lan.iti.cloud.iha.core.IhaUser;
 import org.lan.iti.cloud.iha.core.config.IhaConfig;
@@ -40,14 +41,15 @@ public class SessionIhaUserStore implements IhaUserStore {
     @Override
     public IhaUser save(HttpServletRequest request, HttpServletResponse response, IhaUser ihaUser) {
         HttpSession session = request.getSession();
-        IhaUser newUser = BeanUtil.copyProperties(ihaUser, IhaUser.class);
+        IhaUser newUser = new IhaUser();
+        BeanUtil.copyProperties(ihaUser, newUser, CopyOptions.create().ignoreNullValue());
         newUser.setPassword(null);
         session.setAttribute(IhaConstants.SESSION_USER_KEY, newUser);
 
-        IhaConfig japConfig = IhaAuthentication.getContext().getConfig();
-        if (!japConfig.isSso()) {
+        IhaConfig config = IhaAuthentication.getContext().getConfig();
+        if (!config.isSso()) {
             String token = IhaUtil.createToken(ihaUser, request);
-            IhaTokenHelper.saveUserToken(ihaUser.getUserId(), token);
+            IhaTokenHelper.saveUserToken(ihaUser.getId(), token);
             ihaUser.setToken(token);
         }
         return ihaUser;
@@ -55,11 +57,11 @@ public class SessionIhaUserStore implements IhaUserStore {
 
     @Override
     public void remove(HttpServletRequest request, HttpServletResponse response) {
-        IhaConfig japConfig = IhaAuthentication.getContext().getConfig();
-        if (!japConfig.isSso()) {
+        IhaConfig config = IhaAuthentication.getContext().getConfig();
+        if (!config.isSso()) {
             IhaUser user = this.get(request, response);
             if (null != user) {
-                IhaTokenHelper.removeUserToken(user.getUserId());
+                IhaTokenHelper.removeUserToken(user.getId());
             }
         }
 

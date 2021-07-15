@@ -1,17 +1,19 @@
 /*
- * Copyright (c) 2020-2040, 北京符节科技有限公司 (support@fujieid.com & https://www.fujieid.com).
- * <p>
- * Licensed under the GNU LESSER GENERAL PUBLIC LICENSE 3.0;
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.gnu.org/licenses/lgpl.html
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *
+ *  * Copyright (c) [2019-2021] [NorthLan](lan6995@gmail.com)
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
  */
 package org.lan.iti.cloud.iha.core.strategy;
 
@@ -39,11 +41,11 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * General policy handling methods and parameters, policies of other platforms can inherit
- * {@code AbstractJapStrategy}, and override the constructor
+ * {@code AbstractIhaStrategy}, and override the constructor
  *
- * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0.0
- * @since 1.0.0
+ * @author NorthLan
+ * @date 2021-07-05
+ * @url https://noahlan.com
  */
 public abstract class AbstractIhaStrategy implements IhaStrategy {
 
@@ -51,16 +53,17 @@ public abstract class AbstractIhaStrategy implements IhaStrategy {
      * Abstract the user-related function interface, which is implemented by the caller business system.
      */
     protected IhaUserRepository userRepository;
+
     /**
-     * Jap configuration.
+     * Iha configuration.
      */
     protected IhaContext context;
 
     /**
      * `Strategy` constructor.
      *
-     * @param userRepository japUserService
-     * @param ihaConfig      japConfig
+     * @param userRepository ihaUserRepository
+     * @param ihaConfig      ihaConfig
      */
     public AbstractIhaStrategy(IhaUserRepository userRepository, IhaConfig ihaConfig) {
         this(userRepository, ihaConfig, new IhaLocalCache());
@@ -80,10 +83,10 @@ public abstract class AbstractIhaStrategy implements IhaStrategy {
     /**
      * `Strategy` constructor.
      *
-     * @param userRepository japUserService
+     * @param userRepository userRepository
      * @param ihaConfig      ihaConfig
-     * @param ihaUserStore   JapUserStore
-     * @param ihaCache       Jap cache
+     * @param ihaUserStore   IhaUserStore
+     * @param ihaCache       Iha cache
      */
     public AbstractIhaStrategy(IhaUserRepository userRepository, IhaConfig ihaConfig, IhaUserStore ihaUserStore, IhaCache ihaCache) {
         this.userRepository = userRepository;
@@ -100,9 +103,9 @@ public abstract class AbstractIhaStrategy implements IhaStrategy {
     }
 
     /**
-     * Verify whether the user logs in. If so, jump to {@code japConfig.getSuccessRedirect()}. Otherwise, return {@code false}
+     * Verify whether the user logs in. If so, jump to {@code ihaConfig.getSuccessRedirect()}. Otherwise, return {@code false}
      *
-     * @param request  Current JapAuthentication Request
+     * @param request  Current IhaAuthentication Request
      * @param response current HTTP response
      * @return boolean
      */
