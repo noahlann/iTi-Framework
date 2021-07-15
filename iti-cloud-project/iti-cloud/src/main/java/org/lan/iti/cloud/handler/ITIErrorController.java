@@ -78,12 +78,12 @@ public class ITIErrorController extends AbstractErrorController {
             return ResponseEntity
                     .status(status)
                     .body(ApiResult
-                            .error(String.valueOf(status.value()), status.getReasonPhrase()));
+                            .error(status.value(), status.getReasonPhrase()));
         }
         Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
         return ResponseEntity
                 .status(status)
-                .body(ApiResult.error(String.valueOf(status.value()), status.getReasonPhrase(), body));
+                .body(ApiResult.error(status.value(), status.getReasonPhrase(), body));
     }
 
 

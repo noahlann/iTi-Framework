@@ -55,23 +55,23 @@ public class ITICommenceAuthExceptionEntryPoint implements AuthenticationEntryPo
     @Override
     @SneakyThrows
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-        ApiResult<String> result = ApiResult.error(String.valueOf(HttpStatus.UNAUTHORIZED.value()), authException.getMessage());
+        ApiResult<String> result = ApiResult.error(HttpStatus.UNAUTHORIZED.value(), authException.getMessage());
         if (authException instanceof CredentialsExpiredException
                 || authException instanceof InsufficientAuthenticationException) {
             String msg = SpringSecurityMessageSource.getAccessor().getMessage(
                     "AbstractUserDetailsAuthenticationProvider.credentialsExpired", authException.getMessage(), Locale.CHINA);
-            result.setMessage(msg);
+            result.message(msg);
         }
         if (authException instanceof UsernameNotFoundException) {
             String msg = SpringSecurityMessageSource.getAccessor().getMessage(
                     "AbstractUserDetailsAuthenticationProvider.noopBindAccount", authException.getMessage(), Locale.CHINA);
-            result.setMessage(msg);
+            result.message(msg);
         }
 
         if (authException instanceof BadCredentialsException) {
             String msg = SpringSecurityMessageSource.getAccessor().getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badClientCredentials", authException.getMessage());
-            result.setMessage(msg);
+            result.message(msg);
         }
 
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());

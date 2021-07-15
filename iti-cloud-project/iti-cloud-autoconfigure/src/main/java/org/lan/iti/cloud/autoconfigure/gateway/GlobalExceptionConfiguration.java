@@ -75,7 +75,7 @@ public class GlobalExceptionConfiguration implements ErrorWebExceptionHandler {
             if (rawStatusCode == null) {
                 rawStatusCode = 500;
             }
-            String errorCode = rawStatusCode.toString();
+            Integer errorCode = rawStatusCode;
             String msg = ex.getMessage();
             if (ex instanceof ResponseStatusException) {
                 msg = ((ResponseStatusException) ex).getReason();

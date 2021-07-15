@@ -28,7 +28,6 @@ import org.lan.iti.common.core.validator.ArgumentInvalidResult;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -49,7 +48,7 @@ public class ExceptionHandlerHelper {
 
     public ResponseEntity<ApiResult<String>> handle(Throwable e, Logger log) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        String code = ApiResult.DefaultEnum.FAIL.getCode();
+        Integer code = ApiResult.DefaultEnum.FAIL.getCode();
         String message = e.getMessage();
         if (e instanceof AbstractException) {
             code = ((AbstractException) e).getCode();
@@ -64,12 +63,13 @@ public class ExceptionHandlerHelper {
             status = HttpStatus.BAD_REQUEST;
             log.error("缺少请求参数：", e);
         } else if (e instanceof SQLException) {
-            code = String.valueOf(((SQLException) e).getErrorCode());
+            code = ((SQLException) e).getErrorCode();
             log.error("数据库异常：", e);
-        } else if (e instanceof BadSqlGrammarException) {
-            code = ITIExceptionEnum.BAD_SQL.getCode();
-            message = ITIExceptionEnum.BAD_SQL.getMessage();
-            log.error("SQL异常：", e);
+            // TODO jdbc依赖问题
+//        } else if (e instanceof BadSqlGrammarException) {
+//            code = ITIExceptionEnum.BAD_SQL.getCode();
+//            message = ITIExceptionEnum.BAD_SQL.getMessage();
+//            log.error("SQL异常：", e);
         } else if (e instanceof RuntimeException) {
             log.error("运行时异常，未知错误：", e);
         } else if (e instanceof Exception) {
@@ -88,7 +88,7 @@ public class ExceptionHandlerHelper {
 
     private ResponseEntity<ApiResult<String>> handleArgumentResult(List<ArgumentInvalidResult> results, Logger log) {
         log.error("参数验证错误, {}", results.toString());
-        String errorCode = String.valueOf(ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode());
+        Integer errorCode = ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getCode();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResult.error(errorCode,
                 ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMessage(),
                 results.stream().map(ArgumentInvalidResult::getDefaultMessage).collect(Collectors.joining("|"))));

@@ -23,8 +23,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.Accessors;
-import org.lan.iti.common.core.exception.IExceptionSpec;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -39,10 +37,9 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 @ToString
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Accessors(chain = true)
 @ApiModel(description = "API返回结果类")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ApiResult<T> implements Serializable {
@@ -51,8 +48,8 @@ public class ApiResult<T> implements Serializable {
     /**
      * 返回编码
      */
-    @ApiModelProperty("返回编码")
-    private String code = null;
+    @ApiModelProperty("返回码")
+    private Integer code = null;
 
     /**
      * 消息描述以及说明
@@ -71,7 +68,7 @@ public class ApiResult<T> implements Serializable {
      * 预留扩展属性
      */
     @ApiModelProperty("预留扩展属性")
-    private Map<String, Object> ext = new HashMap<>();
+    private Map<String, Object> extra = new HashMap<>();
 
     // region Static-method
 
@@ -86,9 +83,9 @@ public class ApiResult<T> implements Serializable {
      */
     public static <T> ApiResult<T> from(ApiResult<?> other) {
         return new ApiResult<T>()
-                .setCode(other.getCode())
-                .setMessage(other.getMessage())
-                .setExt(other.getExt());
+                .code(other.getCode())
+                .message(other.getMessage())
+                .extra(other.getExtra());
     }
 
     /**
@@ -114,18 +111,6 @@ public class ApiResult<T> implements Serializable {
 
     /**
      * 成功结果
-     * <pre>
-     *     当T为CharSequence子类时，无法选择将参数赋值给data还是msg
-     * </pre>
-     *
-     * @param message 成功描述信息
-     */
-    public static <T> ApiResult<T> ok(String message) {
-        return ok(null, message, null);
-    }
-
-    /**
-     * 成功结果
      *
      * @param data 数据域
      */
@@ -138,18 +123,18 @@ public class ApiResult<T> implements Serializable {
      *
      * @param data 数据域
      */
-    public static <T> ApiResult<T> ok(String code, String message, T data) {
+    public static <T> ApiResult<T> ok(Integer code, String message, T data) {
         ApiResult<T> result = new ApiResult<>();
-        if (StrUtil.isBlank(message)) {
+        if (StrUtil.isEmpty(message)) {
             message = DefaultEnum.SUCCESS.getMessage();
         }
-        if (StrUtil.isBlank(code)) {
+        if (code == null) {
             code = DefaultEnum.SUCCESS.getCode();
         }
         return result
-                .setMessage(message)
-                .setCode(code)
-                .setData(data);
+                .message(message)
+                .code(code)
+                .data(data);
     }
 
     /**
@@ -157,19 +142,19 @@ public class ApiResult<T> implements Serializable {
      *
      * @param code 错误码
      */
-    public static <T> ApiResult<T> error(String code) {
+    public static <T> ApiResult<T> error(Integer code) {
         return error(code, null, null);
     }
 
     /**
      * 失败结果
      *
-     * @param data 数据
-     * @param <T>  数据类型
+     * @param message 错误消息
+     * @param <T>     数据类型
      * @return ApiResult实例
      */
-    public static <T> ApiResult<T> error(T data) {
-        return error(null, null, data);
+    public static <T> ApiResult<T> error(String message) {
+        return error(null, message, null);
     }
 
     /**
@@ -179,7 +164,7 @@ public class ApiResult<T> implements Serializable {
      * @param message 错误消息
      * @return ApiResult实例
      */
-    public static <T> ApiResult<T> error(String code, String message) {
+    public static <T> ApiResult<T> error(Integer code, String message) {
         return error(code, message, null);
     }
 
@@ -192,31 +177,68 @@ public class ApiResult<T> implements Serializable {
      * @param data    结果集，数据
      * @return ApiResult实例
      */
-    public static <T> ApiResult<T> error(String code, String message, T data) {
+    public static <T> ApiResult<T> error(Integer code, String message, T data) {
         ApiResult<T> result = new ApiResult<>();
 
         if (StrUtil.isBlank(message)) {
             message = DefaultEnum.FAIL.getMessage();
         }
-        if (StrUtil.isBlank(code)) {
+        if (code == null) {
             code = DefaultEnum.FAIL.getCode();
         }
 
         return result
-                .setCode(code)
-                .setMessage(message)
-                .setData(data);
+                .code(code)
+                .message(message)
+                .data(data);
+    }
+
+    // endregion
+
+    // region Methods
+    public ApiResult<T> code(Integer code) {
+        if (code == null) {
+            throw new IllegalArgumentException("code cannot be null");
+        }
+        this.code = code;
+        return this;
+    }
+
+    public ApiResult<T> message(String message) {
+        this.message = message;
+        return this;
+    }
+
+    public ApiResult<T> data(T data) {
+        this.data = data;
+        return this;
+    }
+
+    public ApiResult<T> extra(String key, Object value) {
+        if (key == null) {
+            throw new IllegalArgumentException("key cannot be null");
+        }
+        this.extra.put(key, value);
+        return this;
+    }
+
+    public ApiResult<T> extra(Map<String, Object> extra) {
+        if (extra == null) {
+            throw new IllegalArgumentException("extra cannot be null");
+        }
+        this.extra = extra;
+        return this;
     }
     // endregion
 
     @SuppressWarnings("AlibabaEnumConstantsMustHaveComment")
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static enum DefaultEnum implements IExceptionSpec {
-        SUCCESS("SUCCESS", "成功"),
-        FAIL("FAIL", "失败"),
+    public static enum DefaultEnum {
+        SUCCESS(200, "成功"),
+        FAIL(-1, "失败"),
         ;
-        private final String code;
+        private final Integer code;
         private final String message;
     }
 }

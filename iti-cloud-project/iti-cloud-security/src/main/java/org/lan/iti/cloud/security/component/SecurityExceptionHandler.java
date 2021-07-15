@@ -42,6 +42,6 @@ public class SecurityExceptionHandler {
         String msg = SpringSecurityMessageSource.getAccessor()
                 .getMessage("AbstractAccessDecisionManager.accessDenied", e.getMessage());
         log.error("拒绝授权异常信息, ex: {}", msg);
-        return ApiResult.error(String.valueOf(HttpStatus.FORBIDDEN.value()), msg);
+        return ApiResult.error(HttpStatus.FORBIDDEN.value(), msg);
     }
 }

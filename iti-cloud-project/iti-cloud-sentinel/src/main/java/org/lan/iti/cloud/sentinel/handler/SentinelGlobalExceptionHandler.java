@@ -52,7 +52,6 @@ public class SentinelGlobalExceptionHandler {
         // 交给Sentinel处理
         Tracer.trace(e);
 
-        String errorCode = ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode();
-        return ApiResult.error(errorCode, e.getLocalizedMessage());
+        return ApiResult.error(ITIExceptionEnum.INTERNAL_SERVER_ERROR.getCode(), e.getLocalizedMessage());
     }
 }

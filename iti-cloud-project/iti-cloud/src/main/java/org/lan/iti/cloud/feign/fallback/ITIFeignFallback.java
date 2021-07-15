@@ -54,7 +54,7 @@ public class ITIFeignFallback<T> implements MethodInterceptor {
         }
         log.error("ITIFeignFallback [{}.{}] serviceId [{}] message [{}]", targetType.getName(), method.getName(), targetName, errorMessage);
         if (ApiResult.class == method.getReturnType()) {
-            return ApiResult.error(String.valueOf(HttpStatus.SERVICE_UNAVAILABLE.value()),
+            return ApiResult.error(HttpStatus.SERVICE_UNAVAILABLE.value(),
                     Formatter.format("自动降级,服务间调用异常: [{}]", errorMessage),
                     cause);
         }

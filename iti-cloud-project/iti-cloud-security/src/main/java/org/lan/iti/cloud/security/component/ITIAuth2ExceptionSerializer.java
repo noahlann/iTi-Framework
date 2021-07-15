@@ -20,8 +20,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.core.api.ApiResult;
 import org.lan.iti.cloud.security.exception.ITIAuth2Exception;
+import org.lan.iti.common.core.api.ApiResult;
+import org.lan.iti.common.core.util.StringPool;
 
 import java.io.IOException;
 
@@ -43,6 +44,6 @@ public class ITIAuth2ExceptionSerializer extends StdSerializer<ITIAuth2Exception
     @Override
     public void serialize(ITIAuth2Exception value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         // status errorCode msg data -> ApiResult
-        gen.writeObject(ApiResult.error(value.getErrorCode(), value.getMessage()));
+        gen.writeObject(ApiResult.error(value.getErrorCode() + StringPool.SPACE + value.getMessage()));
     }
 }
