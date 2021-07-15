@@ -172,7 +172,7 @@ public class SimpleStrategy extends AbstractIhaStrategy {
     /**
      * The value of the encrypted cookie
      *
-     * @param user         Jap user
+     * @param user         Iha user
      * @param simpleConfig Authenticate Config
      * @return Encode cookie value string
      */
@@ -189,11 +189,11 @@ public class SimpleStrategy extends AbstractIhaStrategy {
         val map = ServletUtil.getParamMap(request);
         String principal = map.get(simpleConfig.getPrincipalField());
         String password = map.get(simpleConfig.getPasswordField());
-        if (null == principal || null == password) {
+        String type = map.get(simpleConfig.getTypeField());
+        if (null == principal) {
             return null;
         }
         String code = map.get(simpleConfig.getCodeField());
-        String type = map.get(simpleConfig.getTypeField());
         String rememberMe = map.get(simpleConfig.getRememberMeField());
 
         MapUtil.removeAny(map,
