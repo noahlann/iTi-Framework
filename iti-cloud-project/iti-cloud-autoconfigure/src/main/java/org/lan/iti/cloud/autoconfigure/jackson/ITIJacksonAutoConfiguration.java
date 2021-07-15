@@ -22,6 +22,9 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.util.ReflectUtil;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterMixin;
 import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterProvider;
 import org.lan.iti.cloud.jackson.module.ITIJavaTimeModule;
@@ -70,6 +73,9 @@ public class ITIJacksonAutoConfiguration {
             }
             modules.add(new ITIJavaTimeModule());
             modules.add(new ITILongModule());
+            modules.add(new ParameterNamesModule());
+            modules.add(new Jdk8Module());
+            modules.add(new JavaTimeModule());
             builder.modules(modules);
         };
     }
