@@ -126,7 +126,7 @@ public class OAuth2Strategy extends AbstractIhaStrategy {
         return user;
     }
 
-    private String getAuthorizationUrl(OAuthConfig oAuthConfig) {
+    public String getAuthorizationUrl(OAuthConfig oAuthConfig) {
         String url = null;
         // 4.1.  Authorization Code Grant https://tools.ietf.org/html/rfc6749#section-4.1
         // 4.2.  Implicit Grant https://tools.ietf.org/html/rfc6749#section-4.2
@@ -147,7 +147,7 @@ public class OAuth2Strategy extends AbstractIhaStrategy {
      * @see <a href="https://tools.ietf.org/html/rfc6749#section-4.2" target="_blank">4.2.  Implicit Grant</a>
      */
     private String generateAuthorizationCodeGrantUrl(OAuthConfig oAuthConfig) {
-        Map<String, Object> params = new HashMap<>(6);
+        Map<String, Object> params = new HashMap<>(7);
         params.put(OAuth2ParameterNames.RESPONSE_TYPE, oAuthConfig.getResponseType());
         params.put(OAuth2ParameterNames.CLIENT_ID, oAuthConfig.getClientId());
         if (StrUtil.isNotBlank(oAuthConfig.getCallbackUrl())) {
@@ -160,6 +160,8 @@ public class OAuth2Strategy extends AbstractIhaStrategy {
         if (StrUtil.isBlank(state)) {
             state = RandomUtil.randomString(6);
         }
+        // autoapprove
+        params.put(OAuth2ParameterNames.AUTOAPPROVE, oAuthConfig.isAutoapprove() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
         params.put(OAuth2ParameterNames.STATE, oAuthConfig.getState());
         IhaAuthentication.getContext().getCache().set(OAuth2Constants.STATE_CACHE_KEY.concat(oAuthConfig.getClientId()), state);
         // Pkce is only applicable to authorization code mode

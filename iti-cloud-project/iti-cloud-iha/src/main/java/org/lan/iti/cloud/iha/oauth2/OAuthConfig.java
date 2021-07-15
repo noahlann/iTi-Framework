@@ -102,6 +102,11 @@ public class OAuthConfig extends AuthenticateConfig {
     private boolean requireProofKey;
 
     /**
+     * auto approve
+     */
+    private boolean autoapprove;
+
+    /**
      * After the pkce enhancement protocol is enabled, the generation method of challenge code derived from
      * the code verifier sent in the authorization request is `s256` by default
      *

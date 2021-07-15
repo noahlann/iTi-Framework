@@ -24,7 +24,6 @@ package org.lan.iti.cloud.iha.oauth2.pkce;
  * @author NorthLan
  * @date 2021-07-05
  * @url https://noahlan.com
- * @see <a href="https://docs.fujieid.com/college/protocol/oauth-2.0/oauth-2.0-pkce" target="_blank">https://docs.fujieid.com/college/protocol/oauth-2.0/oauth-2.0-pkce</a>
  * @see <a href="https://tools.ietf.org/html/rfc7636" target="_blank">https://tools.ietf.org/html/rfc7636</a>
  */
 public enum PkceCodeChallengeMethod {

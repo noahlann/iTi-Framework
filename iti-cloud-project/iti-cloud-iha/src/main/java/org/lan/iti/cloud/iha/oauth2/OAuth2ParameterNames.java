@@ -30,6 +30,11 @@ package org.lan.iti.cloud.iha.oauth2;
  */
 public interface OAuth2ParameterNames {
     /**
+     * user consent
+     */
+    String AUTOAPPROVE = "autoapprove";
+
+    /**
      * {@code grant_type} - used in Access Token Request.
      */
     String GRANT_TYPE = "grant_type";
