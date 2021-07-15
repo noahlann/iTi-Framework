@@ -41,7 +41,7 @@ public enum ITIExceptionEnum implements IExceptionSpec {
     /**
      * 参数错误 600开始
      */
-    METHOD_ARGUMENT_NOT_VALID("600", "请求参数验证错误"),
+    METHOD_ARGUMENT_NOT_VALID(600, "请求参数验证错误"),
     CHECK_ERROR("参数检查错误"),
     PAGE_NOT_FOUND("页面不存在"),
     BAD_SQL("SQL语句错误"),
@@ -49,25 +49,25 @@ public enum ITIExceptionEnum implements IExceptionSpec {
     /**
      * 其他错误
      */
-    INTERNAL_SERVER_ERROR("620", "服务端错误"),
+    INTERNAL_SERVER_ERROR(620, "服务端错误"),
 
-    BIZ_INSERT_ERROR("800", "插入数据错误"),
+    BIZ_INSERT_ERROR(800, "插入数据错误"),
     BIZ_DELETE_ERROR("删除数据错误"),
     BIZ_SELECT_ERROR("查询数据错误"),
     BIZ_UPDATE_ERROR("更新数据错误"),
     ;
 
-    private final String code;
+    private final Integer code;
     private final String message;
 
     ITIExceptionEnum(String message) {
-        this(Counter.nextValue.toString(), message);
+        this(Counter.nextValue, message);
     }
 
-    ITIExceptionEnum(String code, String message) {
+    ITIExceptionEnum(Integer code, String message) {
         this.code = code;
         this.message = message;
-        Counter.nextValue = Integer.parseInt(code) + 1;
+        Counter.nextValue = ++code;
     }
 
     private static class Counter {

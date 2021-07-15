@@ -32,7 +32,7 @@ public interface IExceptionSpec {
      *
      * @return 规范的错误编码
      */
-    String getCode();
+    Integer getCode();
 
     /**
      * 获取错误消息
