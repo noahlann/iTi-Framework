@@ -38,6 +38,7 @@
         <axon.version>4.5.2</axon.version>
         <security.oauth.version>2.5.1.RELEASE</security.oauth.version>
         <jasypt-boot.version>3.0.3</jasypt-boot.version>
+        <decorator-boot.version>1.7.1</decorator-boot.version>
 
         <!-- docs -->
         <springfox.version>3.0.0</springfox.version>
@@ -215,11 +216,6 @@
                 <artifactId>iti-cloud-strategy</artifactId>
                 <version>${revision}</version>
             </dependency>
-            <dependency>
-                <groupId>org.lan</groupId>
-                <artifactId>iti-cloud-iha</artifactId>
-                <version>${revision}</version>
-            </dependency>
 
             <!-- iti-cloud-starters -->
             <dependency>
@@ -307,6 +303,23 @@
                 <groupId>com.cosium.spring.data</groupId>
                 <artifactId>spring-data-jpa-entity-graph-generator</artifactId>
                 <version>${spring-data-jpa-entity-graph.version}</version>
+            </dependency>
+
+            <!-- DB-Util -->
+            <dependency>
+                <groupId>com.github.gavlyukovskiy</groupId>
+                <artifactId>p6spy-spring-boot-starter</artifactId>
+                <version>${decorator-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.gavlyukovskiy</groupId>
+                <artifactId>datasource-proxy-spring-boot-starter</artifactId>
+                <version>${decorator-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.gavlyukovskiy</groupId>
+                <artifactId>flexy-pool-spring-boot-starter</artifactId>
+                <version>${decorator-boot.version}</version>
             </dependency>
 
             <!-- docs -->

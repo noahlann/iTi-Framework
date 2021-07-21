@@ -38,7 +38,6 @@
         <module>iti-cloud-codegen</module>
         <module>iti-cloud-autoconfigure</module>
         <module>iti-cloud-dependencies</module>
-        <module>iti-cloud-iha</module>
         <module>iti-cloud-parent</module>
         <module>iti-cloud-security</module>
         <module>iti-cloud-strategy</module>

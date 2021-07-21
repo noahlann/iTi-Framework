@@ -84,6 +84,7 @@
         <module>iti-common-project</module>
         <module>iti-dependencies</module>
         <module>iti-sdk-project</module>
+        <module>iti-iha-project</module>
     </modules>
 
     <build>
