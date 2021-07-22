@@ -72,18 +72,13 @@ public class ITIErrorController extends AbstractErrorController {
      * @return
      */
     @RequestMapping
-    public ResponseEntity<ApiResult<?>> error(HttpServletRequest request) {
+    public ApiResult<?> error(HttpServletRequest request) {
         HttpStatus status = getStatus(request);
         if (status == HttpStatus.NO_CONTENT) {
-            return ResponseEntity
-                    .status(status)
-                    .body(ApiResult
-                            .error(status.value(), status.getReasonPhrase()));
+            return ApiResult.error(status.value(), status.getReasonPhrase());
         }
         Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
-        return ResponseEntity
-                .status(status)
-                .body(ApiResult.error(status.value(), status.getReasonPhrase(), body));
+        return ApiResult.error(status.value(), status.getReasonPhrase(), body);
     }
 
 

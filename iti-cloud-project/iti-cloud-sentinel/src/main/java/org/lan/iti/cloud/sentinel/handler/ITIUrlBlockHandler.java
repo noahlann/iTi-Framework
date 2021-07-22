@@ -17,9 +17,9 @@
 package org.lan.iti.cloud.sentinel.handler;
 
 import cn.hutool.http.ContentType;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.xkcoding.json.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.api.ApiResult;
 import org.springframework.http.HttpStatus;
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Slf4j
 public class ITIUrlBlockHandler implements BlockExceptionHandler {
+
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, BlockException e) throws Exception {
         log.error("sentinel 降级 资源名称{}", e.getRule().getResource(), e);
@@ -43,6 +44,6 @@ public class ITIUrlBlockHandler implements BlockExceptionHandler {
         response.setContentType(ContentType.JSON.toString());
         response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         response.getWriter().print(
-                JSONUtil.toJsonStr(ApiResult.error(e.getMessage())));
+                JsonUtil.toJsonString(ApiResult.error(e.getMessage())));
     }
 }
