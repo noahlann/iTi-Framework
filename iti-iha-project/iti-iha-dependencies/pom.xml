@@ -54,13 +54,6 @@
                 <type>pom</type>
             </dependency>
 
-            <!-- core -->
-            <dependency>
-                <groupId>com.xkcoding.json</groupId>
-                <artifactId>simple-json</artifactId>
-                <version>${simple-json.version}</version>
-            </dependency>
-
             <!-- mfa -->
             <dependency>
                 <groupId>com.google.zxing</groupId>
@@ -78,13 +71,6 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>kisso</artifactId>
                 <version>${kisso.version}</version>
-            </dependency>
-
-            <!-- OAuth2 -->
-            <dependency>
-                <groupId>com.xkcoding.http</groupId>
-                <artifactId>simple-http</artifactId>
-                <version>${simple-http.version}</version>
             </dependency>
 
             <!-- server -->
