@@ -28,6 +28,7 @@ import java.util.List;
  * @date 2021-02-08
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IDecideStepsExt extends IDomainExtension {
 
     /**

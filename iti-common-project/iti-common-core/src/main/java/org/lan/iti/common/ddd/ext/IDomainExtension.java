@@ -29,6 +29,7 @@ package org.lan.iti.common.ddd.ext;
  * @date 2021-02-08
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IDomainExtension extends IPlugable {
     String DEFAULT_CODE = "_default_";
 }

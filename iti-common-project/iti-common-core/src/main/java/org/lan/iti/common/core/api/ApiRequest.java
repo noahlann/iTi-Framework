@@ -36,6 +36,7 @@ import java.util.Map;
 @Data
 @Accessors(chain = true)
 @ToString
+@Deprecated
 public class ApiRequest implements Serializable {
     private static final long serialVersionUID = -4954567647794108371L;
 

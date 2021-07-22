@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
  * @date 2021-01-26
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IDomainEvent {
     /**
      * 获取事件版本号

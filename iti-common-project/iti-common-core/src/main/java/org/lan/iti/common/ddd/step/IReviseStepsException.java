@@ -35,6 +35,7 @@ import java.util.List;
  * @date 2021-02-07
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IReviseStepsException {
     /**
      * 修订后的后续步骤编号

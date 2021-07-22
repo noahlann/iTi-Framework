@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-24
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IExtPolicy {
     /**
      * 根据 给定条件，定位匹配的扩展点.

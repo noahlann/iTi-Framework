@@ -27,6 +27,7 @@ package org.lan.iti.common.ddd.model;
  * @date 2021-02-01
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IEntity {
     /**
      * 获取实体唯一标识

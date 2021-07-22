@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-24
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IIdentityResolver extends IPlugable {
 
     /**

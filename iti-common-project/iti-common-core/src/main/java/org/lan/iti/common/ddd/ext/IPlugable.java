@@ -32,5 +32,6 @@ package org.lan.iti.common.ddd.ext;
  * @date 2021-02-07
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IPlugable {
 }

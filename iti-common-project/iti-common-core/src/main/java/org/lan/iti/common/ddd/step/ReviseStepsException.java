@@ -36,6 +36,7 @@ import java.util.List;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
+@Deprecated
 public class ReviseStepsException extends RuntimeException implements IReviseStepsException {
     private static final long serialVersionUID = -5673564807243684991L;
 

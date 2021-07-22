@@ -38,6 +38,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-07
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IDomainStep<Model extends IDomain, Ex extends RuntimeException> extends IDomainService {
     /**
      * 执行步骤

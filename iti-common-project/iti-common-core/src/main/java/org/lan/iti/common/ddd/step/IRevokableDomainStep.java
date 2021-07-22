@@ -32,6 +32,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-07
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IRevokableDomainStep<Model extends IDomain, Ex extends RuntimeException> extends IDomainStep<Model, Ex> {
 
     /**

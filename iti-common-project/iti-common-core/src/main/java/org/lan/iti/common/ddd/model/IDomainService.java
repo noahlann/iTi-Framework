@@ -36,5 +36,6 @@ package org.lan.iti.common.ddd.model;
  * @date 2021-02-05
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IDomainService {
 }

@@ -48,6 +48,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021-02-24
  * @url https://noahlan.com
  */
+@Deprecated
 public interface IModelAttachmentExt<Model extends IDomain> extends IDomainExtension {
     /**
      * 扩展属性数据的解析和处理.
