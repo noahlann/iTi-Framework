@@ -122,7 +122,7 @@ public class AccessTokenHelper {
                 .idToken(request.getParameter(OAuth2ParameterNames.ID_TOKEN))
                 .tokenType(request.getParameter(OAuth2ParameterNames.TOKEN_TYPE))
                 .scope(request.getParameter(OAuth2ParameterNames.SCOPE))
-                .expiresIn(Convert.toInt(request.getParameter(OAuth2ParameterNames.EXPIRES_IN)))
+                .expiresIn(Convert.toLong(request.getParameter(OAuth2ParameterNames.EXPIRES_IN)))
                 .build();
     }
 
@@ -185,7 +185,7 @@ public class AccessTokenHelper {
                 .idToken(tokenMap.getString(OAuth2ParameterNames.ID_TOKEN))
                 .tokenType(tokenMap.getString(OAuth2ParameterNames.TOKEN_TYPE))
                 .scope(tokenMap.getString(OAuth2ParameterNames.SCOPE))
-                .expiresIn(tokenMap.getInteger(OAuth2ParameterNames.EXPIRES_IN))
+                .expiresIn(tokenMap.getLong(OAuth2ParameterNames.EXPIRES_IN))
                 .build();
     }
 }

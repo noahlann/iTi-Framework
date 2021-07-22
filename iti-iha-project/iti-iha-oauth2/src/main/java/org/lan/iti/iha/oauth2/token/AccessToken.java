@@ -39,7 +39,7 @@ public class AccessToken implements Serializable {
 
     private String accessToken;
     private String tokenType;
-    private Integer expiresIn;
+    private Long expiresIn;
     private String refreshToken;
     private String idToken;
     private String scope;
