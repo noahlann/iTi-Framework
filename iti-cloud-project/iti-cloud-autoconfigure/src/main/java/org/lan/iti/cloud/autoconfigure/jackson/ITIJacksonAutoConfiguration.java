@@ -27,7 +27,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterMixin;
 import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterProvider;
-import org.lan.iti.cloud.jackson.module.ITIJavaTimeModule;
 import org.lan.iti.cloud.jackson.module.ITILongModule;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -71,7 +70,7 @@ public class ITIJacksonAutoConfiguration {
             if (originalModulesObj instanceof List) {
                 modules.addAll((List<Module>) originalModulesObj);
             }
-            modules.add(new ITIJavaTimeModule());
+//            modules.add(new ITIJavaTimeModule());
             modules.add(new ITILongModule());
             modules.add(new ParameterNamesModule());
             modules.add(new Jdk8Module());
