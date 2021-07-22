@@ -17,9 +17,11 @@
 package org.lan.iti.cloud.jackson.dynamicfilter.support;
 
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
+import org.lan.iti.cloud.constants.AopConstants;
 import org.lan.iti.cloud.jackson.dynamicfilter.resolver.DynamicFilterResolver;
 import org.lan.iti.cloud.jackson.dynamicfilter.resolver.ITIFilterResolver;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -40,6 +42,7 @@ import java.util.*;
  * @url https://noahlan.com
  */
 @ControllerAdvice
+@Order(AopConstants.DYNAMIC_FILTER_ADVICE)
 public class DynamicFilterResponseBodyAdvice extends AbstractMappingJacksonResponseBodyAdvice {
     private final Map<Class<Annotation>, DynamicFilterResolver<?>> resolvers = new HashMap<>();
 
