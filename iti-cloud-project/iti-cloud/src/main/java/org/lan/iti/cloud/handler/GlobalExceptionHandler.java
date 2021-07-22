@@ -19,11 +19,13 @@
 package org.lan.iti.cloud.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.cloud.constants.AopConstants;
 import org.lan.iti.common.core.api.ApiResult;
+import org.lan.iti.cloud.constants.AopConstants;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
@@ -39,10 +41,37 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     /**
-     * 全局异常
+     * 避免 404 重定向到 /error 导致NPE ,ignore-url 需要配置对应端点
+     *
+     * @return ApiResult
      */
-    @ExceptionHandler
-    public ResponseEntity<ApiResult<String>> handleException(Exception e) {
-        return ExceptionHandlerHelper.handle(e, log);
+    @DeleteMapping("/error")
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiResult<String> noHandlerFoundException() {
+        return ApiResult.error(HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase());
+    }
+
+    /**
+     * 运行时异常处理,一般用作未知异常的处理器
+     *
+     * @param e 异常信息
+     * @return 错误消息
+     */
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResult<String> handleRuntimeException(RuntimeException e) {
+        log.error("运行时异常，未知错误：", e);
+        return ApiResult.error(e.getMessage());
+    }
+
+    /**
+     * 全局异常（所有其它异常）
+     */
+    @ExceptionHandler(Throwable.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResult<String> handleException(Throwable e) {
+        log.error("全局非预期异常：", e);
+        return ApiResult.error(e.getMessage());
     }
 }

@@ -19,14 +19,15 @@
 package org.lan.iti.cloud.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.cloud.constants.AopConstants;
 import org.lan.iti.common.core.api.ApiResult;
+import org.lan.iti.cloud.constants.AopConstants;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.PersistenceException;
 import java.sql.SQLException;
 
 /**
@@ -42,12 +43,16 @@ import java.sql.SQLException;
 public class SqlExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ApiResult<String>> handleSqlException(SQLException e) {
-        return ExceptionHandlerHelper.handle(e, log);
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResult<String> handleSqlException(SQLException e) {
+        log.error("数据库异常：", e);
+        return ExceptionHandlerHelper.sqlException(e, "数据库（SQL）错误");
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiResult<String>> handleBadSqlException(BadSqlGrammarException e) {
-        return ExceptionHandlerHelper.handle(e, log);
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResult<String> handleBadSqlException(PersistenceException e) {
+        log.error("数据库异常（持久化）：", e);
+        return ApiResult.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "数据库（持久化）错误", e.getLocalizedMessage());
     }
 }

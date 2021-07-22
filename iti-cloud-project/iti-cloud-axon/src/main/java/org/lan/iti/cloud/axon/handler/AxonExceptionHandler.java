@@ -19,13 +19,12 @@
 package org.lan.iti.cloud.axon.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.common.AxonException;
 import org.axonframework.messaging.annotation.MessageHandlerInvocationException;
 import org.lan.iti.cloud.constants.AopConstants;
-import org.lan.iti.cloud.handler.ExceptionHandlerHelper;
 import org.lan.iti.common.core.api.ApiResult;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -49,8 +48,15 @@ public class AxonExceptionHandler {
      */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ApiResult<String>> handleServiceException(MessageHandlerInvocationException e) {
+    public ApiResult<String> handleMessageException(MessageHandlerInvocationException e) {
         log.error("消息发布异常：", e);
-        return ExceptionHandlerHelper.handle(e.getCause() != null ? e.getCause() : e, log);
+        return ApiResult.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "消息发布错误", e.getLocalizedMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResult<String> handleAxonException(AxonException e) {
+        log.error("Axon异常：", e);
+        return ApiResult.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务器错误（Axon）", e.getLocalizedMessage());
     }
 }

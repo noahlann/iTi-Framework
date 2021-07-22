@@ -32,6 +32,7 @@ org.lan.iti.cloud.autoconfigure.sequence.SequenceAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.swagger.SwaggerAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.swagger.GatewaySwaggerAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.tenant.ITITenantAutoConfiguration,\
+org.lan.iti.cloud.autoconfigure.web.ApiResultWrapperAdviceAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.web.ITIWebMvcAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.web.ITIWebFluxAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.web.ErrorMvcAutoConfiguration
