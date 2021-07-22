@@ -18,7 +18,6 @@
 
 package org.lan.iti.cloud.tenant;
 
-import org.jetbrains.annotations.NotNull;
 import org.lan.iti.common.core.constants.CommonConstants;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -37,11 +36,11 @@ import java.io.IOException;
  */
 public class TenantClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
-    @NotNull
+    @NonNull
     @Override
-    public ClientHttpResponse intercept(@NotNull HttpRequest request,
+    public ClientHttpResponse intercept(@NonNull HttpRequest request,
                                         @NonNull byte[] body,
-                                        @NotNull ClientHttpRequestExecution execution) throws IOException {
+                                        @NonNull ClientHttpRequestExecution execution) throws IOException {
         if (TenantContextHolder.hasTenant()) {
             request.getHeaders().set(CommonConstants.TENANT_ID_HEADER_NAME, TenantContextHolder.getTenantId());
         }

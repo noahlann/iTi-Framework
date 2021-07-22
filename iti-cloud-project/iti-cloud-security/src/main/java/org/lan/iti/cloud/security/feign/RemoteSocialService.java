@@ -19,8 +19,8 @@
 package org.lan.iti.cloud.security.feign;
 
 import feign.Headers;
-import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.common.core.api.ApiResult;
+import org.lan.iti.common.core.constants.SecurityConstants;
 import org.lan.iti.cloud.security.model.SecuritySocialDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

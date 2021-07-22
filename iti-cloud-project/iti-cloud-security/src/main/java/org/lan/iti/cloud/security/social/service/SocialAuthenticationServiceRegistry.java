@@ -19,7 +19,6 @@
 package org.lan.iti.cloud.security.social.service;
 
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +51,6 @@ public class SocialAuthenticationServiceRegistry {
         return this;
     }
 
-    @NotNull
     public SocialAuthenticationService getAuthenticationService(String providerId) {
         SocialAuthenticationService authenticationService = AUTHENTICATION_SERVICE_MAP.get(providerId);
         if (authenticationService == null) {
