@@ -30,6 +30,7 @@ org.lan.iti.cloud.autoconfigure.sentinel.SentinelAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.sentinel.SentinelFeignAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.sequence.SequenceAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.swagger.SwaggerAutoConfiguration,\
+org.lan.iti.cloud.autoconfigure.swagger.SpringfoxRuleAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.swagger.GatewaySwaggerAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.tenant.ITITenantAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.web.ApiResultWrapperAdviceAutoConfiguration,\
