@@ -37,27 +37,27 @@ public interface AopConstants {
     /**
      * ArgumentsExceptionHandler
      */
-    int ARGUMENTS_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER + 1;
+    int ARGUMENTS_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 1;
 
     /**
      * SQLExceptionHandler
      */
-    int SQL_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER + 2;
+    int SQL_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 2;
 
     /**
      * SpringJdbcExceptionHandler
      */
-    int SPRING_JDBC_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER + 3;
+    int SPRING_JDBC_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 3;
 
     /**
      * 业务异常处理器Order
      */
-    int BIZ_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER + 4;
+    int BIZ_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 4;
 
     /**
      * Axon 异常处理器 Order
      */
-    int AXON_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER + 5;
+    int AXON_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 5;
 
     /**
      * 动态过滤顺序
