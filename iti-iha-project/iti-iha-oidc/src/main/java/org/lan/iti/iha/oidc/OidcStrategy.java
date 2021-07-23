@@ -20,6 +20,7 @@ package org.lan.iti.iha.oidc;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import org.lan.iti.common.core.util.StringUtils;
 import org.lan.iti.iha.core.cache.IhaCache;
 import org.lan.iti.iha.core.config.AuthenticateConfig;
 import org.lan.iti.iha.core.config.IhaConfig;
@@ -77,6 +78,12 @@ public class OidcStrategy extends OAuth2Strategy {
         } else {
             try {
                 discoveryDto = OidcUtil.getOidcDiscovery(issuer);
+                if (StringUtils.hasEmpty(
+                        discoveryDto.getTokenEndpoint(),
+                        discoveryDto.getAuthorizationEndpoint(),
+                        discoveryDto.getUserinfoEndpoint())) {
+                    throw new IhaOidcException("Unable to parse IDP service discovery configuration information.");
+                }
                 ihaCache.set(discoveryCacheKey, discoveryDto);
             } catch (IhaOidcException e) {
                 return IhaResponse.error(e.getCode(), e.getMessage());
