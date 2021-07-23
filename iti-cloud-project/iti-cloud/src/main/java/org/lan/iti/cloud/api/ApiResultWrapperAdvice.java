@@ -18,11 +18,13 @@
 
 package org.lan.iti.cloud.api;
 
+import cn.hutool.core.collection.CollUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.lan.iti.cloud.constants.AopConstants;
 import org.lan.iti.common.core.api.ApiResult;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Page;
@@ -54,6 +56,7 @@ import java.lang.reflect.Method;
 public class ApiResultWrapperAdvice implements ResponseBodyAdvice<Object> {
     private final ObjectMapper objectMapper;
     private final ApiResultWrapperProperties properties;
+    private final SpringDataWebProperties webProperties;
     // matcher
     private final AntPathMatcher matcher = new AntPathMatcher();
 
@@ -72,6 +75,10 @@ public class ApiResultWrapperAdvice implements ResponseBodyAdvice<Object> {
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request,
                                   @NonNull ServerHttpResponse response) {
+        // URL匹配过滤
+        if (filterUrl(request)) {
+            return body;
+        }
         if (body == null) {
             // 返回值为空，默认返回success
             // 当类型为String时将发生 cast异常，处理
@@ -117,8 +124,12 @@ public class ApiResultWrapperAdvice implements ResponseBodyAdvice<Object> {
                     .totalPages(page.getTotalPages())
                     .totalElements(page.getTotalElements())
                     .size(page.getSize())
-                    .page(page.getNumber());
+                    .page(webProperties.getPageable().isOneIndexedParameters() ? page.getNumber() + 1 : page.getNumber());
         }
+    }
+
+    private boolean filterUrl(ServerHttpRequest request) {
+        return properties.getExcludePath().stream().anyMatch(it -> matcher.match(it, request.getURI().getPath()));
     }
 
     private boolean filter(@NonNull MethodParameter returnType) {
@@ -128,7 +139,13 @@ public class ApiResultWrapperAdvice implements ResponseBodyAdvice<Object> {
         if (method == null) {
             return false;
         }
-        // 配置式自定义包过滤
+        // 配置自定义包过滤
+        if (CollUtil.isNotEmpty(properties.getIncludePackages())) {
+            if (properties.getIncludePackages().stream().noneMatch(it -> matcher.match(it, declaringClass.getPackage().getName()))) {
+                return false;
+            }
+        }
+
         if (properties.getExcludePackages().stream()
                 .anyMatch(it -> matcher.match(it, declaringClass.getPackage().getName()))) {
             return false;

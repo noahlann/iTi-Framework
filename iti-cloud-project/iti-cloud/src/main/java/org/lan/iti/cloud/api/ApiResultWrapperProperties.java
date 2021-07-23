@@ -40,9 +40,21 @@ public class ApiResultWrapperProperties {
     public boolean enabled = true;
 
     /**
+     * 排除的URL-Path列表
+     * <p>Ant规则匹配</p>
+     */
+    public List<String> excludePath = new ArrayList<>();
+
+    /**
      * 排除的包列表
      */
     public List<String> excludePackages = new ArrayList<>();
+
+    /**
+     * 包含的包列表
+     * <p>为空时包含所有包</p>
+     */
+    public List<String> includePackages = new ArrayList<>();
 
     /**
      * 排除的类列表

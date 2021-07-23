@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.lan.iti.cloud.api.ApiResultWrapperAdvice;
 import org.lan.iti.cloud.api.ApiResultWrapperProperties;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,9 +40,10 @@ import org.springframework.context.annotation.Configuration;
 public class ApiResultWrapperAdviceAutoConfiguration {
     private final ApiResultWrapperProperties properties;
     private final ObjectMapper objectMapper;
+    private final SpringDataWebProperties webProperties;
 
     @Bean
     public ApiResultWrapperAdvice apiResultWrapperAdvice() {
-        return new ApiResultWrapperAdvice(objectMapper, properties);
+        return new ApiResultWrapperAdvice(objectMapper, properties, webProperties);
     }
 }
