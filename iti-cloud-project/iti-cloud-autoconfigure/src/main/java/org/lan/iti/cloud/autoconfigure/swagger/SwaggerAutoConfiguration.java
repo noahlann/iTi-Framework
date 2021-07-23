@@ -24,10 +24,8 @@ import org.lan.iti.cloud.swagger.plugins.ApiEnumPlugin;
 import org.lan.iti.cloud.swagger.plugins.LongToStringPlugin;
 import org.lan.iti.cloud.swagger.plugins.QuerydslPredicatePlugin;
 import org.lan.iti.common.core.constants.CommonConstants;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +41,7 @@ import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.OperationBuilderPlugin;
 import springfox.documentation.spi.service.contexts.SecurityContext;
+import springfox.documentation.spring.web.OnServletBasedWebApplication;
 import springfox.documentation.spring.web.plugins.Docket;
 
 import java.util.ArrayList;
@@ -64,12 +63,15 @@ import java.util.function.Predicate;
         Docket.class,
         PathSelectors.class,
         RequestParameter.class,
-        SecurityContext.class
+        SecurityContext.class,
+        OnServletBasedWebApplication.class,
+        SpringDataWebProperties.class
 })
+@ConditionalOnWebApplication
 @EnableOpenApi
 @EnableConfigurationProperties(SwaggerProperties.class)
-@AllArgsConstructor
 @ConditionalOnProperty(prefix = SwaggerProperties.PREFIX, name = "enabled", matchIfMissing = true)
+@AllArgsConstructor
 public class SwaggerAutoConfiguration {
     private final SwaggerProperties properties;
 
