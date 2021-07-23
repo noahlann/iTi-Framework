@@ -18,6 +18,7 @@
 
 package org.lan.iti.cloud.swagger.plugins;
 
+import cn.hutool.core.util.ClassUtil;
 import com.querydsl.core.types.Path;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.lang.NonNull;
 import springfox.documentation.builders.RequestParameterBuilder;
+import springfox.documentation.schema.ScalarType;
 import springfox.documentation.service.ParameterType;
 import springfox.documentation.service.RequestParameter;
 import springfox.documentation.service.ResolvedMethodParameter;
@@ -42,7 +44,10 @@ import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,11 +76,9 @@ public class QuerydslPredicatePlugin implements OperationBuilderPlugin {
     @Override
     public void apply(OperationContext context) {
         List<ResolvedMethodParameter> methodParameters = context.getParameters();
-
         List<RequestParameter> parameters = new ArrayList<>();
 
-        for (int i = 0; i < methodParameters.size(); i++) {
-            ResolvedMethodParameter parameter = methodParameters.get(i);
+        for (ResolvedMethodParameter parameter : methodParameters) {
             QuerydslPredicate predicate = parameter.findAnnotation(QuerydslPredicate.class).orElse(null);
             if (predicate == null) {
                 continue;
@@ -99,20 +102,89 @@ public class QuerydslPredicatePlugin implements OperationBuilderPlugin {
             fieldsToAdd.addAll(aliases);
             fieldsToAdd.addAll(whiteList);
 
+            // if only listed properties should be included, remove all other fields from fieldsToAdd
+            if (getFieldValueOfBoolean(bindings, "excludeUnlistedProperties")) {
+                fieldsToAdd.removeIf(s -> !whiteList.contains(s) && !aliases.contains(s));
+            }
+
             for (String fieldName : fieldsToAdd) {
-//                Type type = getFieldType(fieldName, pathSpecMap, predicate.root());
-                // TODO 这样支持还不够完整,有时间再深入研究,主要是RequestParameterBuilder#query 方法进行build
+                // TODO 这样支持应该有很大的兼容性问题
                 parameters.add(new RequestParameterBuilder()
+                        // TODO 没搞懂这个query怎么构建复杂对象的 大概是 compoundModel 吧
+//                    .query(q -> q.model(m -> m.scalarModel(getScalarTypeByClass(clazz))))
                         .accepts(nullToEmptyList(context.consumes()))
-                        .parameterIndex(i)
                         .description(fieldName)
                         .required(false)
                         .name(fieldName)
                         .in(ParameterType.QUERY)
                         .build());
+//                buildParameters(parameters, fieldName, pathSpecMap, predicate);
             }
         }
         context.operationBuilder().requestParameters(parameters);
+    }
+
+    // TODO 支持复杂对象
+    private static final Map<String, ScalarType> scalarTypeMap = new HashMap<>();
+
+    static {
+        scalarTypeMap.put(Integer.class.getSimpleName().toLowerCase(), ScalarType.INTEGER);
+        scalarTypeMap.put(Long.class.getSimpleName().toLowerCase(), ScalarType.LONG);
+        scalarTypeMap.put(Date.class.getSimpleName().toLowerCase(), ScalarType.DATE);
+        scalarTypeMap.put(LocalDate.class.getSimpleName().toLowerCase(), ScalarType.DATE);
+        scalarTypeMap.put(LocalDateTime.class.getSimpleName().toLowerCase(), ScalarType.DATE_TIME);
+        scalarTypeMap.put(String.class.getSimpleName().toLowerCase(), ScalarType.STRING);
+        scalarTypeMap.put(Boolean.class.getSimpleName().toLowerCase(), ScalarType.BOOLEAN);
+        scalarTypeMap.put(Double.class.getSimpleName().toLowerCase(), ScalarType.DOUBLE);
+        scalarTypeMap.put(Float.class.getSimpleName().toLowerCase(), ScalarType.FLOAT);
+        scalarTypeMap.put(BigInteger.class.getSimpleName().toLowerCase(), ScalarType.BIGINTEGER);
+        scalarTypeMap.put(BigDecimal.class.getSimpleName().toLowerCase(), ScalarType.BIGDECIMAL);
+    }
+
+    private ScalarType getScalarTypeByClass(Class<?> clazz) {
+        return scalarTypeMap.getOrDefault(clazz.getSimpleName().toLowerCase(), ScalarType.OBJECT);
+    }
+
+    private void buildParameters(List<RequestParameter> parameters, String fieldName, Map<String, Object> pathSpecMap, QuerydslPredicate predicate) {
+        Class<?> clazz = getFieldClass(fieldName, pathSpecMap, predicate.root());
+        if (ClassUtil.isBasicType(clazz)) {
+            parameters.add(new RequestParameterBuilder()
+                    // TODO 没搞懂这个query怎么构建复杂对象的 大概是 compoundModel 吧
+//                    .query(q -> q.model(m -> m.scalarModel(getScalarTypeByClass(clazz))))
+//                    .accepts(nullToEmptyList(context.consumes()))
+                    .description(fieldName)
+                    .required(false)
+                    .name(fieldName)
+                    .in(ParameterType.QUERY)
+                    .build());
+        } else {
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+                if (Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
+                buildParameters(parameters, fieldName + "." + field.getName(), pathSpecMap, predicate);
+            }
+        }
+    }
+
+    /**
+     * Gets field value of boolean.
+     *
+     * @param instance  the instance
+     * @param fieldName the field name
+     * @return the field value of boolean
+     */
+    private boolean getFieldValueOfBoolean(QuerydslBindings instance, String fieldName) {
+        try {
+            Field field = FieldUtils.getDeclaredField(instance.getClass(), fieldName, true);
+            if (field != null) {
+                return (boolean) field.get(instance);
+            }
+        } catch (IllegalAccessException e) {
+            log.warn(e.getMessage());
+        }
+        return false;
     }
 
     /**
@@ -176,18 +248,18 @@ public class QuerydslPredicatePlugin implements OperationBuilderPlugin {
      * @param root The root type where the paths are gotten
      * @return The type of the field. Returns
      */
-    private Type getFieldType(String fieldName, Map<String, Object> pathSpecMap, Class<?> root) {
+    private Class<?> getFieldClass(String fieldName, Map<String, Object> pathSpecMap, Class<?> root) {
         try {
             Object pathAndBinding = pathSpecMap.get(fieldName);
             Optional<Path<?>> path = getPathFromPathSpec(pathAndBinding);
 
-            Type genericType;
-            Field declaredField = null;
+            Class<?> genericType;
+            Field declaredField;
             if (path.isPresent()) {
                 genericType = path.get().getType();
             } else {
                 declaredField = root.getDeclaredField(fieldName);
-                genericType = declaredField.getGenericType();
+                genericType = declaredField.getDeclaringClass();
             }
             if (genericType != null) {
                 return genericType;
