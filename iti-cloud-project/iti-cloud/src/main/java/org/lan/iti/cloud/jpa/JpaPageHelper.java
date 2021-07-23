@@ -21,7 +21,7 @@ package org.lan.iti.cloud.jpa;
 import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
 import org.lan.iti.cloud.util.WebUtils;
-import org.lan.iti.cloud.web.PageParameter;
+import org.lan.iti.cloud.web.page.PageParameter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

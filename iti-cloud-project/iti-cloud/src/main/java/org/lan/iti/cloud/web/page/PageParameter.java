@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.cloud.web;
+package org.lan.iti.cloud.web.page;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,9 +32,11 @@ import java.util.List;
  * @date 2021-07-21
  * @url https://noahlan.com
  * @see org.lan.iti.cloud.jpa.JpaPageHelper
+ * @deprecated 暂时弃用，使用jpa的pageable替代
  */
 @Data
 @ApiModel("分页参数")
+@Deprecated
 public class PageParameter {
 
     @ApiModelProperty("页码，从0开始（具体看配置）")
