@@ -165,4 +165,14 @@ public interface OAuth2ParameterNames {
      * {@code id_token} - used in the Access Token Response. (OIDC)
      */
     String ID_TOKEN = "id_token";
+
+    /**
+     * token header name
+     */
+    String AUTHORIZATION_HEADER_NAME = "Authorization";
+
+    /**
+     * Token Type
+     */
+    String TOKEN_TYPE_BEARER = "Bearer";
 }

@@ -22,7 +22,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.lan.iti.iha.core.config.AuthenticateConfig;
-import org.lan.iti.iha.oauth2.pkce.PkceCodeChallengeMethod;
+import org.lan.iti.iha.oauth2.enums.OAuth2EndpointMethodType;
+import org.lan.iti.iha.oauth2.pkce.CodeChallengeMethod;
 
 /**
  * Configuration file of oauth2 module
@@ -34,7 +35,7 @@ import org.lan.iti.iha.oauth2.pkce.PkceCodeChallengeMethod;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class OAuthConfig extends AuthenticateConfig {
+public class OAuth2Config extends AuthenticateConfig {
     /**
      * Name of OAuth platform
      */
@@ -46,7 +47,7 @@ public class OAuthConfig extends AuthenticateConfig {
     private String clientId;
 
     /**
-     * secret used to establish ownership of the client identifer
+     * secret used to establish ownership of the client identifier
      */
     private String clientSecret;
 
@@ -61,7 +62,7 @@ public class OAuthConfig extends AuthenticateConfig {
     private String authorizationUrl;
 
     /**
-     * URL used to obtain an access token
+     * URL used to obtain an access_token
      */
     private String tokenUrl;
 
@@ -112,7 +113,7 @@ public class OAuthConfig extends AuthenticateConfig {
      *
      * @see <a href="https://tools.ietf.org/html/rfc7636#section-4.3" target="_blank"> Client Sends the Code Challenge with the Authorization Request</a>
      */
-    private PkceCodeChallengeMethod codeChallengeMethod = PkceCodeChallengeMethod.S256;
+    private CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.S256;
 
     /**
      * The username in `Resource Owner Password Credentials Grant`

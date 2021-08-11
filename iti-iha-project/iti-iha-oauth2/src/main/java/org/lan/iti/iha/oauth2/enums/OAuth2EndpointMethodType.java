@@ -16,31 +16,14 @@
  *
  */
 
-package org.lan.iti.iha.oauth2.token;
-
-import lombok.Builder;
-import lombok.Data;
-import lombok.experimental.Accessors;
-
-import java.io.Serializable;
+package org.lan.iti.iha.oauth2.enums;
 
 /**
- * AccessToken for client
- *
  * @author NorthLan
  * @date 2021-07-05
  * @url https://noahlan.com
  */
-@Data
-@Accessors(chain = true)
-@Builder
-public class AccessToken implements Serializable {
-    private static final long serialVersionUID = 5702257145706476772L;
-
-    private String accessToken;
-    private String refreshToken;
-    private String tokenType;
-    private Long expiresIn;
-    private String scope;
-    private String idToken;
+public enum OAuth2EndpointMethodType {
+    POST,
+    GET
 }

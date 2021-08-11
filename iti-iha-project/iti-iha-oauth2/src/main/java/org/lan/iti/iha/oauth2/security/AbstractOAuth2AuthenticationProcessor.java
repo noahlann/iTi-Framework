@@ -16,23 +16,19 @@
  *
  */
 
-package org.lan.iti.iha.oauth2.pkce;
+package org.lan.iti.iha.oauth2.security;
+
+import org.lan.iti.iha.security.processor.AuthenticationProcessor;
+import org.lan.iti.iha.security.processor.ProcessorType;
 
 /**
- * Encryption method of pkce challenge code
- *
  * @author NorthLan
- * @date 2021-07-05
- * @url https://noahlan.com
- * @see <a href="https://tools.ietf.org/html/rfc7636" target="_blank">https://tools.ietf.org/html/rfc7636</a>
+ * @date 2021/8/9
+ * @url https://blog.noahlan.com
  */
-public enum PkceCodeChallengeMethod {
-    /**
-     * code_challenge = code_verifier
-     */
-    PLAIN,
-    /**
-     * code_challenge = BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))
-     */
-    S256
+public abstract class AbstractOAuth2AuthenticationProcessor implements AuthenticationProcessor {
+    @Override
+    public boolean matches(String params) {
+        return ProcessorType.OAUTH2.equals(params);
+    }
 }

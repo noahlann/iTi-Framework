@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.iha.oauth2;
+package org.lan.iti.iha.oauth2.util;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.ObjectUtil;
@@ -29,9 +29,14 @@ import com.xkcoding.json.util.Kv;
 import lombok.experimental.UtilityClass;
 import org.lan.iti.iha.core.context.IhaAuthentication;
 import org.lan.iti.iha.core.exception.IhaOAuth2Exception;
-import org.lan.iti.iha.oauth2.pkce.PkceCodeChallengeMethod;
+import org.lan.iti.iha.oauth2.GrantType;
+import org.lan.iti.iha.oauth2.OAuth2Config;
+import org.lan.iti.iha.oauth2.OAuth2Constants;
+import org.lan.iti.iha.oauth2.OAuth2ResponseType;
+import org.lan.iti.iha.oauth2.enums.OAuth2EndpointMethodType;
+import org.lan.iti.iha.oauth2.pkce.CodeChallengeMethod;
+import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
@@ -66,8 +71,8 @@ public class OAuth2Util {
      * @return code challenge
      * @see <a href="https://tools.ietf.org/html/rfc7636#section-4.2" target="_blank">https://tools.ietf.org/html/rfc7636#section-4.2</a>
      */
-    public static String generateCodeChallenge(PkceCodeChallengeMethod codeChallengeMethod, String codeVerifier) {
-        if (PkceCodeChallengeMethod.S256 == codeChallengeMethod) {
+    public static String generateCodeChallenge(CodeChallengeMethod codeChallengeMethod, String codeVerifier) {
+        if (CodeChallengeMethod.S256 == codeChallengeMethod) {
             // https://tools.ietf.org/html/rfc7636#section-4.2
             // code_challenge = BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))
             return Base64.encodeUrlSafe(SecureUtil.sha256().digest(codeVerifier));
@@ -122,53 +127,53 @@ public class OAuth2Util {
      * 4. When GrantType = password:
      * - {@code username} and {@code password} cannot be null
      *
-     * @param oAuthConfig oauth config
+     * @param oAuth2Config oauth config
      */
-    public static void checkOauthConfig(OAuthConfig oAuthConfig) {
-        if (StrUtil.isEmpty(oAuthConfig.getTokenUrl())) {
+    public static void checkOauthConfig(OAuth2Config oAuth2Config) {
+        if (StrUtil.isEmpty(oAuth2Config.getTokenUrl())) {
             throw new IhaOAuth2Exception("Oauth2Strategy requires a tokenUrl");
         }
         // For authorization code mode and implicit authorization mode
         // refer to: https://tools.ietf.org/html/rfc6749#section-4.1
         // refer to: https://tools.ietf.org/html/rfc6749#section-4.2
-        if (StrUtil.equalsAny(oAuthConfig.getResponseType(), OAuth2ResponseType.CODE, OAuth2ResponseType.TOKEN)) {
+        if (StrUtil.equalsAny(oAuth2Config.getResponseType(), OAuth2ResponseType.CODE, OAuth2ResponseType.TOKEN)) {
 
-            if (StrUtil.equals(oAuthConfig.getResponseType(), OAuth2ResponseType.CODE)) {
-                if (oAuthConfig.getGrantType() != GrantType.AUTHORIZATION_CODE) {
-                    throw new IhaOAuth2Exception("Invalid grantType `" + oAuthConfig.getGrantType() + "`. " +
+            if (StrUtil.equals(oAuth2Config.getResponseType(), OAuth2ResponseType.CODE)) {
+                if (oAuth2Config.getGrantType() != GrantType.AUTHORIZATION_CODE) {
+                    throw new IhaOAuth2Exception("Invalid grantType `" + oAuth2Config.getGrantType() + "`. " +
                             "When using authorization code mode, grantType must be `authorization_code`");
                 }
 
-                if (!oAuthConfig.isRequireProofKey() && StrUtil.isEmpty(oAuthConfig.getClientSecret())) {
+                if (!oAuth2Config.isRequireProofKey() && StrUtil.isEmpty(oAuth2Config.getClientSecret())) {
                     throw new IhaOAuth2Exception("Oauth2Strategy requires a clientSecret when PKCE is not enabled.");
                 }
             } else {
-                if (StrUtil.isEmpty(oAuthConfig.getClientSecret())) {
+                if (StrUtil.isEmpty(oAuth2Config.getClientSecret())) {
                     throw new IhaOAuth2Exception("Oauth2Strategy requires a clientSecret");
                 }
 
             }
-            if (StrUtil.isEmpty(oAuthConfig.getClientId())) {
+            if (StrUtil.isEmpty(oAuth2Config.getClientId())) {
                 throw new IhaOAuth2Exception("Oauth2Strategy requires a clientId");
             }
 
-            if (StrUtil.isEmpty(oAuthConfig.getAuthorizationUrl())) {
+            if (StrUtil.isEmpty(oAuth2Config.getAuthorizationUrl())) {
                 throw new IhaOAuth2Exception("Oauth2Strategy requires a authorizationUrl");
             }
 
-            if (StrUtil.isEmpty(oAuthConfig.getUserinfoUrl())) {
+            if (StrUtil.isEmpty(oAuth2Config.getUserinfoUrl())) {
                 throw new IhaOAuth2Exception("Oauth2Strategy requires a userinfoUrl");
             }
         }
         // For password mode
         // refer to: https://tools.ietf.org/html/rfc6749#section-4.3
         else {
-            if (oAuthConfig.getGrantType() != GrantType.PASSWORD && oAuthConfig.getGrantType() != GrantType.CLIENT_CREDENTIALS) {
+            if (oAuth2Config.getGrantType() != GrantType.PASSWORD && oAuth2Config.getGrantType() != GrantType.CLIENT_CREDENTIALS) {
                 throw new IhaOAuth2Exception("When the response type is none in the oauth2 strategy, a grant type other " +
-                        "than the authorization code must be used: " + oAuthConfig.getGrantType());
+                        "than the authorization code must be used: " + oAuth2Config.getGrantType());
             }
-            if (oAuthConfig.getGrantType() != GrantType.PASSWORD) {
-                if (!StrUtil.isAllNotEmpty(oAuthConfig.getUsername(), oAuthConfig.getPassword())) {
+            if (oAuth2Config.getGrantType() != GrantType.PASSWORD) {
+                if (!StrUtil.isAllNotEmpty(oAuth2Config.getUsername(), oAuth2Config.getPassword())) {
                     throw new IhaOAuth2Exception("OAuth2Strategy requires username and password in password certificate grant");
                 }
             }
@@ -181,16 +186,16 @@ public class OAuth2Util {
      * - When {@code response_type} is {@code code}, the {@code code} in the request parameter is empty
      * - When {@code response_type} is {@code token}, the {@code access_token} in the request parameter is empty
      *
-     * @param request     callback request
-     * @param oAuthConfig OAuthConfig
+     * @param parameter    parameter
+     * @param oAuth2Config OAuthConfig
      * @return When true is returned, the current HTTP request is a callback request
      */
-    public static boolean isCallback(HttpServletRequest request, OAuthConfig oAuthConfig) {
-        if (StrUtil.equals(OAuth2ResponseType.CODE, oAuthConfig.getResponseType())) {
-            String code = request.getParameter(OAuth2ParameterNames.CODE);
+    public static boolean isCallback(OAuth2RequestParameter parameter, OAuth2Config oAuth2Config) {
+        if (StrUtil.equals(OAuth2ResponseType.CODE, oAuth2Config.getResponseType())) {
+            String code = parameter.getCode();
             return !StrUtil.isEmpty(code);
-        } else if (StrUtil.equals(oAuthConfig.getResponseType(), OAuth2ResponseType.TOKEN)) {
-            String accessToken = request.getParameter(OAuth2ParameterNames.ACCESS_TOKEN);
+        } else if (StrUtil.equals(oAuth2Config.getResponseType(), OAuth2ResponseType.TOKEN)) {
+            String accessToken = parameter.getAccessToken();
             return !StrUtil.isEmpty(accessToken);
         }
         return false;

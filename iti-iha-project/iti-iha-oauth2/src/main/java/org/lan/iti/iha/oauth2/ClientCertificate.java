@@ -18,12 +18,30 @@
 
 package org.lan.iti.iha.oauth2;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import org.lan.iti.iha.core.model.BasicCredentials;
+import org.lan.iti.iha.oauth2.enums.ClientAuthenticationMethod;
+
 /**
  * @author NorthLan
- * @date 2021-07-05
+ * @date 2021-07-06
  * @url https://noahlan.com
  */
-public enum OAuth2EndpointMethodType {
-    POST,
-    GET
+@Data
+@Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClientCertificate {
+    private String id;
+    private String secret;
+    private String method;
+
+    public ClientCertificate(BasicCredentials basicCredentials) {
+        this.id = basicCredentials.getId();
+        this.secret = basicCredentials.getSecret();
+        this.method = ClientAuthenticationMethod.CLIENT_SECRET_BASIC.getMethod();
+    }
 }

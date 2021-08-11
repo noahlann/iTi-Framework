@@ -16,31 +16,33 @@
  *
  */
 
-package org.lan.iti.iha.oauth2.token;
+package org.lan.iti.iha.oauth2.pkce;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.experimental.Accessors;
-
-import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * AccessToken for client
+ * Encryption method of pkce challenge code
  *
  * @author NorthLan
  * @date 2021-07-05
  * @url https://noahlan.com
+ * @see <a href="https://tools.ietf.org/html/rfc7636" target="_blank">https://tools.ietf.org/html/rfc7636</a>
  */
-@Data
-@Accessors(chain = true)
-@Builder
-public class AccessToken implements Serializable {
-    private static final long serialVersionUID = 5702257145706476772L;
+public enum CodeChallengeMethod {
+    /**
+     * code_challenge = code_verifier
+     */
+    PLAIN,
+    /**
+     * code_challenge = BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))
+     */
+    S256;
 
-    private String accessToken;
-    private String refreshToken;
-    private String tokenType;
-    private Long expiresIn;
-    private String scope;
-    private String idToken;
+    public static List<String> getAllMethods() {
+        return Arrays.stream(CodeChallengeMethod.values())
+                .map(it -> it.name().toUpperCase())
+                .collect(Collectors.toList());
+    }
 }

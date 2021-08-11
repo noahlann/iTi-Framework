@@ -20,8 +20,8 @@ package org.lan.iti.iha.oauth2.pkce;
 
 import lombok.experimental.UtilityClass;
 import org.lan.iti.iha.core.context.IhaAuthentication;
-import org.lan.iti.iha.oauth2.OAuth2Util;
-import org.lan.iti.iha.oauth2.OAuthConfig;
+import org.lan.iti.iha.oauth2.util.OAuth2Util;
+import org.lan.iti.iha.oauth2.OAuth2Config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,28 +37,28 @@ public class PkceHelper {
     /**
      * Create the parameters required by PKCE
      *
-     * @param oAuthConfig oauth config
+     * @param oAuth2Config oauth config
      * @return Map
      * @see <a href="https://tools.ietf.org/html/rfc7636#section-1.1" target="_blank">1.1. Protocol Flow</a>
      * @see <a href="https://tools.ietf.org/html/rfc7636#section-4.1" target="_blank">4.1. Client Creates a Code Verifier</a>
      * @see <a href="https://tools.ietf.org/html/rfc7636#section-4.2" target="_blank">4.2. Client Creates the Code Challenge</a>
      * @see <a href="https://tools.ietf.org/html/rfc7636#section-4.3" target="_blank"> Client Sends the Code Challenge with the Authorization Request</a>
      */
-    public static Map<String, Object> generatePkceParameters(OAuthConfig oAuthConfig) {
+    public static Map<String, Object> generatePkceParameters(OAuth2Config oAuth2Config) {
         /*
         After the pkce enhancement protocol is enabled, the generation method of challenge code derived from
         the code verifier sent in the authorization request is `s256` by default
          */
-        PkceCodeChallengeMethod pkceCodeChallengeMethod = Optional.ofNullable(oAuthConfig.getCodeChallengeMethod())
-                .orElse(PkceCodeChallengeMethod.S256);
+        CodeChallengeMethod codeChallengeMethod = Optional.ofNullable(oAuth2Config.getCodeChallengeMethod())
+                .orElse(CodeChallengeMethod.S256);
 
         Map<String, Object> params = new HashMap<>(2);
         String codeVerifier = OAuth2Util.generateCodeVerifier();
-        String codeChallenge = OAuth2Util.generateCodeChallenge(pkceCodeChallengeMethod, codeVerifier);
+        String codeChallenge = OAuth2Util.generateCodeChallenge(codeChallengeMethod, codeVerifier);
         params.put(PkceParams.CODE_CHALLENGE, codeChallenge);
-        params.put(PkceParams.CODE_CHALLENGE_METHOD, pkceCodeChallengeMethod);
+        params.put(PkceParams.CODE_CHALLENGE_METHOD, codeChallengeMethod);
         // The default cache is local map.
-        IhaAuthentication.getContext().getCache().set(oAuthConfig.getClientId(), codeVerifier, oAuthConfig.getCodeVerifierTimeout());
+        IhaAuthentication.getContext().getCache().set(oAuth2Config.getClientId(), codeVerifier, oAuth2Config.getCodeVerifierTimeout());
         return params;
     }
 

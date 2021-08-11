@@ -52,6 +52,10 @@
             <artifactId>iti-iha-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-iha-security</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.xkcoding.http</groupId>
             <artifactId>simple-http</artifactId>
         </dependency>
