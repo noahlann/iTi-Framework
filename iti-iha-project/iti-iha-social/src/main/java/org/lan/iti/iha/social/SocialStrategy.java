@@ -39,8 +39,8 @@ import org.lan.iti.iha.core.exception.IhaException;
 import org.lan.iti.iha.core.exception.IhaSocialException;
 import org.lan.iti.iha.core.exception.IhaUserException;
 import org.lan.iti.iha.core.repository.IhaUserRepository;
-import org.lan.iti.iha.core.result.IhaErrorCode;
 import org.lan.iti.iha.core.result.IhaResponse;
+import org.lan.iti.iha.core.result.IhaResponseCode;
 import org.lan.iti.iha.core.strategy.AbstractIhaStrategy;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,7 +81,7 @@ public class SocialStrategy extends AbstractIhaStrategy {
     public IhaResponse authenticate(AuthenticateConfig config, HttpServletRequest request, HttpServletResponse response) {
         IhaUser sessionUser = this.checkSession(request, response);
         if (null != sessionUser) {
-            return IhaResponse.success(sessionUser);
+            return IhaResponse.ok(sessionUser);
         }
 
         AuthRequest authRequest;
@@ -98,7 +98,7 @@ public class SocialStrategy extends AbstractIhaStrategy {
         // If it is not a callback request, it must be a request to jump to the authorization link
         if (!this.isCallback(source, authCallback)) {
             String url = authRequest.authorize(socialConfig.getState());
-            return IhaResponse.success(url);
+            return IhaResponse.ok(url);
         }
 
         try {
@@ -129,7 +129,7 @@ public class SocialStrategy extends AbstractIhaStrategy {
         }
 
         authToken = (AuthToken) authUserAuthResponse.getData();
-        return IhaResponse.success(authToken);
+        return IhaResponse.ok(authToken);
     }
 
     public IhaResponse revokeToken(AuthenticateConfig config, AuthToken authToken) {
@@ -152,7 +152,7 @@ public class SocialStrategy extends AbstractIhaStrategy {
             throw new IhaUserException("Third party refresh access token of `" + source + "` failed. " + authUserAuthResponse.getMsg());
         }
 
-        return IhaResponse.success();
+        return IhaResponse.ok();
     }
 
     public IhaResponse getUserInfo(AuthenticateConfig config, AuthToken authToken) {
@@ -181,7 +181,7 @@ public class SocialStrategy extends AbstractIhaStrategy {
             throw IhaUserException;
         }
         AuthUser authUser = res;
-        return IhaResponse.success(authUser);
+        return IhaResponse.ok(authUser);
     }
 
     private AuthRequest getAuthRequest(AuthenticateConfig config) {
@@ -193,7 +193,7 @@ public class SocialStrategy extends AbstractIhaStrategy {
         // Get the AuthConfig of JustAuth
         AuthConfig authConfig = socialConfig.getJustAuthConfig();
         if (ObjectUtil.isNull(authConfig)) {
-            throw new IhaException(IhaErrorCode.MISS_AUTH_CONFIG);
+            throw new IhaException(IhaResponseCode.MISS_AUTH_CONFIG);
         }
 
         // Instantiate the AuthRequest of JustAuth
@@ -220,7 +220,6 @@ public class SocialStrategy extends AbstractIhaStrategy {
             throw new IhaUserException("Third party login of `" + source + "` cannot obtain user information. "
                     + authUserAuthResponse.getMsg());
         }
-
         AuthUser socialUser = (AuthUser) authUserAuthResponse.getData();
         IhaUser IhaUser = userRepository.getByPlatformAndUid(source, socialUser.getUuid());
         if (ObjectUtil.isNull(IhaUser)) {
