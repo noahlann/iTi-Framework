@@ -20,10 +20,9 @@ package org.lan.iti.iha.core.model;
 
 import cn.hutool.core.lang.Assert;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Mapped generic type
@@ -32,41 +31,64 @@ import java.util.function.Consumer;
  * @date 2021-07-06
  * @url https://noahlan.com
  */
-public class Mapped implements Serializable {
+public abstract class Mapped<Children extends Mapped<Children>> extends HashMap<String, Object> {
     private static final long serialVersionUID = 2870321854370298093L;
 
-    private final Map<String, Object> map;
+    public Mapped(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
+
+    public Mapped(int initialCapacity) {
+        super(initialCapacity);
+    }
 
     public Mapped() {
-        map = new HashMap<>();
+        super();
     }
 
-    public Mapped(Map<String, ?> map) {
-        Assert.notNull(map, "map cannot be null");
-        this.map = new HashMap<>(map);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T map(String name) {
-        Assert.notEmpty(name, "name cannot be empty");
-        return (T) this.map.get(name);
+    public Mapped(Map<? extends String, ?> m) {
+        super(m);
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Mapped> T map(String name, Object value) {
-        Assert.notEmpty(name, "name cannot be empty");
-        Assert.notNull(value, "value cannot be null");
-        this.map.put(name, value);
-        return (T) this;
+    private final Children typedThis = (Children) this;
+
+    public <T> T getByKey(String key) {
+        return getByKey(key, null);
     }
 
-    public Map<String, Object> mapped() {
-        return this.map;
+    public <T> T getByKey(String key, T defaultValue) {
+        return getByKey(key, defaultValue, null);
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Mapped> T map(Consumer<Map<String, Object>> mapConsumer) {
-        mapConsumer.accept(this.map);
-        return (T) this;
+    public <T> T getByKey(String key, T defaultValue, Function<Object, T> cast) {
+        Assert.notEmpty(key, "key cannot be empty");
+        Object obj = this.get(key);
+        if (obj == null) {
+            return defaultValue;
+        }
+        if (cast == null) {
+            return (T) obj;
+        }
+        return cast.apply(obj);
+    }
+
+    @Override
+    public Children put(String name, Object value) {
+        Assert.notEmpty(name, "key cannot be empty");
+        super.put(name, value);
+        return typedThis;
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ?> m) {
+        throw new UnsupportedOperationException("Deprecated: method putAll(Map) in Mapped is forbidden. Use putMap(Map) instead.");
+    }
+
+    public Children putMap(Map<? extends String, ?> m) {
+        Assert.notNull(m, "map cannot be null");
+        super.putAll(m);
+        return typedThis;
     }
 }

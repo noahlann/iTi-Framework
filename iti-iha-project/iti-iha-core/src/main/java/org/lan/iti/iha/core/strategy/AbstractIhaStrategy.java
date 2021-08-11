@@ -29,7 +29,7 @@ import org.lan.iti.iha.core.context.IhaAuthentication;
 import org.lan.iti.iha.core.context.IhaContext;
 import org.lan.iti.iha.core.exception.IhaException;
 import org.lan.iti.iha.core.repository.IhaUserRepository;
-import org.lan.iti.iha.core.result.IhaErrorCode;
+import org.lan.iti.iha.core.result.IhaResponseCode;
 import org.lan.iti.iha.core.result.IhaResponse;
 import org.lan.iti.iha.core.store.IhaUserStore;
 import org.lan.iti.iha.core.store.SessionIhaUserStore;
@@ -115,7 +115,7 @@ public abstract class AbstractIhaStrategy implements IhaStrategy {
 
     protected IhaResponse loginSuccess(IhaUser ihaUser, HttpServletRequest request, HttpServletResponse response) {
         context.getUserStore().save(request, response, ihaUser);
-        return IhaResponse.success(ihaUser);
+        return IhaResponse.ok(ihaUser);
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class AbstractIhaStrategy implements IhaStrategy {
      */
     protected void checkAuthenticateConfig(AuthenticateConfig sourceConfig, Class<?> targetConfigClazz) throws IhaException {
         if (ObjectUtil.isNull(sourceConfig)) {
-            throw new IhaException(IhaErrorCode.MISS_AUTHENTICATE_CONFIG);
+            throw new IhaException(IhaResponseCode.MISS_AUTHENTICATE_CONFIG);
         }
         if (!ClassUtil.isAssignable(sourceConfig.getClass(), targetConfigClazz)) {
             throw new IhaException("Unsupported parameter type, please use " + ClassUtil.getClassName(targetConfigClazz, true) + ", a subclass of AuthenticateConfig");

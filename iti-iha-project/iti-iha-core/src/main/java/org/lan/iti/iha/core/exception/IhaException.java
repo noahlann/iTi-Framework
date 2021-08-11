@@ -19,7 +19,7 @@
 package org.lan.iti.iha.core.exception;
 
 import lombok.Getter;
-import org.lan.iti.iha.core.result.IhaErrorCode;
+import org.lan.iti.iha.core.result.IhaResponseCode;
 
 /**
  * @author NorthLan
@@ -34,10 +34,10 @@ public class IhaException extends RuntimeException {
 
     public IhaException(String message) {
         super(message);
-        this.code = IhaErrorCode.ERROR.getCode();
+        this.code = IhaResponseCode.ERROR.getCode();
     }
 
-    public IhaException(IhaErrorCode errorCode) {
+    public IhaException(IhaResponseCode errorCode) {
         super(errorCode.getMessage());
         this.code = errorCode.getCode();
     }

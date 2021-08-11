@@ -31,7 +31,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum IhaErrorCode {
+public enum IhaResponseCode {
     SUCCESS(200, "success."),
     NOT_LOGGED_IN(401, "Not logged in."),
     ERROR(500, "An error occurred in the system, please refer to the error message."),

@@ -26,7 +26,7 @@ import lombok.Setter;
 import org.lan.iti.iha.core.IhaUser;
 import org.lan.iti.iha.core.cache.IhaCache;
 import org.lan.iti.iha.core.config.IhaConfig;
-import org.lan.iti.iha.core.result.IhaErrorCode;
+import org.lan.iti.iha.core.result.IhaResponseCode;
 import org.lan.iti.iha.core.result.IhaResponse;
 import org.lan.iti.iha.core.store.IhaUserStore;
 import org.lan.iti.iha.core.util.IhaTokenHelper;
@@ -94,9 +94,9 @@ public class IhaAuthentication implements Serializable {
     public static IhaResponse checkUser(HttpServletRequest request, HttpServletResponse response) {
         IhaUser user = getUser(request, response);
         if (null == user) {
-            return IhaResponse.error(IhaErrorCode.NOT_LOGGED_IN);
+            return IhaResponse.error(IhaResponseCode.NOT_LOGGED_IN);
         }
-        return IhaResponse.success(user);
+        return IhaResponse.ok(user);
     }
 
     /**

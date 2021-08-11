@@ -19,7 +19,7 @@
 package org.lan.iti.iha.core.strategy;
 
 import org.lan.iti.iha.core.config.AuthenticateConfig;
-import org.lan.iti.iha.core.result.IhaErrorCode;
+import org.lan.iti.iha.core.result.IhaResponseCode;
 import org.lan.iti.iha.core.result.IhaResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +40,6 @@ public interface IhaStrategy {
      * @return IhaResponse
      */
     default IhaResponse authenticate(AuthenticateConfig config, HttpServletRequest request, HttpServletResponse response) {
-        return IhaResponse.error(IhaErrorCode.ERROR.getCode(), "IhaStrategy#authenticate(AuthenticateConfig, HttpServletRequest, HttpServletResponse) must be overridden by subclass");
+        return IhaResponse.error(IhaResponseCode.ERROR.getCode(), "IhaStrategy#authenticate(AuthenticateConfig, HttpServletRequest, HttpServletResponse) must be overridden by subclass");
     }
 }
