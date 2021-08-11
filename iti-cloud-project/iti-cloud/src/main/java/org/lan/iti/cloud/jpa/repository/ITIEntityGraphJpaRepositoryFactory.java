@@ -20,6 +20,7 @@ package org.lan.iti.cloud.jpa.repository;
 
 import com.cosium.spring.data.jpa.entity.graph.repository.support.EntityGraphJpaRepositoryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.querydsl.EntityPathResolver;
@@ -41,7 +42,8 @@ import java.io.Serializable;
  */
 public class ITIEntityGraphJpaRepositoryFactory extends EntityGraphJpaRepositoryFactory {
     private final EntityManager entityManager;
-    private final JPAQueryFactory factory;
+    private final JPAQueryFactory jpaQueryFactory;
+    private final SQLQueryFactory sqlQueryFactory;
 
     private EntityPathResolver entityPathResolver;
 
@@ -50,10 +52,13 @@ public class ITIEntityGraphJpaRepositoryFactory extends EntityGraphJpaRepository
      *
      * @param entityManager must not be {@literal null}
      */
-    public ITIEntityGraphJpaRepositoryFactory(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
+    public ITIEntityGraphJpaRepositoryFactory(EntityManager entityManager,
+                                              JPAQueryFactory jpaQueryFactory,
+                                              SQLQueryFactory sqlQueryFactory) {
         super(entityManager);
         this.entityManager = entityManager;
-        this.factory = jpaQueryFactory;
+        this.jpaQueryFactory = jpaQueryFactory;
+        this.sqlQueryFactory = sqlQueryFactory;
         this.entityPathResolver = SimpleEntityPathResolver.INSTANCE;
     }
 
@@ -77,7 +82,7 @@ public class ITIEntityGraphJpaRepositoryFactory extends EntityGraphJpaRepository
             JpaEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
             Object baseFragment = getTargetRepositoryViaReflection(BaseJpaExecutorImpl.class, entityInformation,
-                    entityManager, entityPathResolver, factory);
+                    entityManager, entityPathResolver, jpaQueryFactory, sqlQueryFactory);
             fragments = fragments.append(RepositoryFragment.implemented(baseFragment));
         }
         return fragments;

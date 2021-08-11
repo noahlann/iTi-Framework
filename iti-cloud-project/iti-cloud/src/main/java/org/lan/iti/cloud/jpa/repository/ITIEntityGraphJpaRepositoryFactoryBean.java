@@ -20,6 +20,7 @@ package org.lan.iti.cloud.jpa.repository;
 
 import com.cosium.spring.data.jpa.entity.graph.repository.support.EntityGraphJpaRepositoryFactoryBean;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -37,7 +38,8 @@ import java.io.Serializable;
  */
 public class ITIEntityGraphJpaRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
         extends EntityGraphJpaRepositoryFactoryBean<T, S, ID> {
-    private JPAQueryFactory factory;
+    private JPAQueryFactory jpaQueryFactory;
+    private SQLQueryFactory sqlQueryFactory;
 
     /**
      * Creates a new {@link EntityGraphJpaRepositoryFactoryBean} for the given repository interface.
@@ -50,12 +52,17 @@ public class ITIEntityGraphJpaRepositoryFactoryBean<T extends Repository<S, ID>,
 
     @Autowired
     public void setJPAQueryFactory(JPAQueryFactory factory) {
-        this.factory = factory;
+        this.jpaQueryFactory = factory;
+    }
+
+    @Autowired
+    public void setSqlQueryFactory(SQLQueryFactory factory) {
+        this.sqlQueryFactory = factory;
     }
 
     @NonNull
     @Override
     protected RepositoryFactorySupport createRepositoryFactory(@NonNull EntityManager entityManager) {
-        return new ITIEntityGraphJpaRepositoryFactory(entityManager, this.factory);
+        return new ITIEntityGraphJpaRepositoryFactory(entityManager, this.jpaQueryFactory, this.sqlQueryFactory);
     }
 }

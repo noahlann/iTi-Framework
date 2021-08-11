@@ -18,14 +18,10 @@
 
 package org.lan.iti.cloud.jpa.repository;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.impl.JPADeleteClause;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.querydsl.jpa.impl.JPAUpdateClause;
+import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.data.querydsl.EntityPathResolver;
@@ -45,16 +41,21 @@ public class BaseJpaExecutorImpl<T> implements BaseExecutor<T> {
     private final JpaEntityInformation<T, ?> entityInformation;
     private final EntityPath<T> path;
     private final Querydsl querydsl;
-    private final JPAQueryFactory factory;
+    private final JPAQueryFactory jpaQueryFactory;
+    private final SQLQueryFactory sqlQueryFactory;
     private final EntityManager entityManager;
 
-    public BaseJpaExecutorImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager,
-                               EntityPathResolver resolver, JPAQueryFactory factory) {
+    public BaseJpaExecutorImpl(JpaEntityInformation<T, ?> entityInformation,
+                               EntityManager entityManager,
+                               EntityPathResolver resolver,
+                               JPAQueryFactory jpaQueryFactory,
+                               SQLQueryFactory sqlQueryFactory) {
         this.entityInformation = entityInformation;
         this.path = resolver.createPath(entityInformation.getJavaType());
         this.entityManager = entityManager;
         this.querydsl = new Querydsl(entityManager, new PathBuilder<T>(path.getType(), path.getMetadata()));
-        this.factory = factory;
+        this.jpaQueryFactory = jpaQueryFactory;
+        this.sqlQueryFactory = sqlQueryFactory;
     }
 
     @Override
@@ -74,46 +75,16 @@ public class BaseJpaExecutorImpl<T> implements BaseExecutor<T> {
 
     @Override
     public JPAQueryFactory getJPAQueryFactory() {
-        return this.factory;
+        return this.jpaQueryFactory;
+    }
+
+    @Override
+    public SQLQueryFactory getSQLQueryFactory() {
+        return this.sqlQueryFactory;
     }
 
     @Override
     public Querydsl getQueryDSL() {
         return this.querydsl;
-    }
-
-    @Override
-    public JPADeleteClause delete() {
-        return factory.delete(path);
-    }
-
-    @Override
-    public JPAUpdateClause update() {
-        return factory.update(path);
-    }
-
-    @Override
-    public JPAQuery<?> find() {
-        return new JPAQuery<>(entityManager).from(path);
-    }
-
-    @Override
-    public <A> JPAQuery<A> find(Expression<A> expr) {
-        return find().select(expr);
-    }
-
-    @Override
-    public JPAQuery<Tuple> find(Expression<?>... exprs) {
-        return find().select(exprs);
-    }
-
-    @Override
-    public <A> JPAQuery<A> findDistinct(Expression<A> expr) {
-        return find().select(expr).distinct();
-    }
-
-    @Override
-    public JPAQuery<Tuple> findDistinct(Expression<?>... exprs) {
-        return find().select(exprs).distinct();
     }
 }

@@ -19,6 +19,7 @@
 package org.lan.iti.cloud.jpa.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
@@ -41,7 +42,8 @@ import java.io.Serializable;
  */
 public class ITIJpaRepositoryFactory extends JpaRepositoryFactory {
     private final EntityManager entityManager;
-    private final JPAQueryFactory factory;
+    private final JPAQueryFactory jpaQueryFactory;
+    private final SQLQueryFactory sqlQueryFactory;
 
     private EntityPathResolver entityPathResolver;
 
@@ -50,10 +52,13 @@ public class ITIJpaRepositoryFactory extends JpaRepositoryFactory {
      *
      * @param entityManager must not be {@literal null}
      */
-    public ITIJpaRepositoryFactory(EntityManager entityManager, JPAQueryFactory factory) {
+    public ITIJpaRepositoryFactory(EntityManager entityManager,
+                                   JPAQueryFactory jpaQueryFactory,
+                                   SQLQueryFactory sqlQueryFactory) {
         super(entityManager);
         this.entityManager = entityManager;
-        this.factory = factory;
+        this.jpaQueryFactory = jpaQueryFactory;
+        this.sqlQueryFactory = sqlQueryFactory;
         this.entityPathResolver = SimpleEntityPathResolver.INSTANCE;
     }
 
@@ -76,7 +81,7 @@ public class ITIJpaRepositoryFactory extends JpaRepositoryFactory {
             JpaEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
             Object baseFragment = getTargetRepositoryViaReflection(BaseJpaExecutorImpl.class, entityInformation,
-                    entityManager, entityPathResolver, factory);
+                    entityManager, entityPathResolver, jpaQueryFactory, sqlQueryFactory);
             fragments = fragments.append(RepositoryFragment.implemented(baseFragment));
         }
         return fragments;

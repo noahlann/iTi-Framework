@@ -19,6 +19,7 @@
 package org.lan.iti.cloud.jpa.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.Repository;
@@ -36,7 +37,8 @@ import javax.persistence.EntityManager;
  */
 public class ITIJpaRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
         extends JpaRepositoryFactoryBean<T, S, ID> {
-    private JPAQueryFactory factory;
+    private JPAQueryFactory jpaQueryFactory;
+    private SQLQueryFactory sqlQueryFactory;
 
     /**
      * Creates a new {@link JpaRepositoryFactoryBean} for the given repository interface.
@@ -49,12 +51,17 @@ public class ITIJpaRepositoryFactoryBean<T extends Repository<S, ID>, S, ID>
 
     @Autowired
     public void setJPAQueryFactory(JPAQueryFactory factory) {
-        this.factory = factory;
+        this.jpaQueryFactory = factory;
+    }
+
+    @Autowired
+    public void setSQLQueryFactory(SQLQueryFactory factory) {
+        this.sqlQueryFactory = factory;
     }
 
     @NonNull
     @Override
     protected RepositoryFactorySupport createRepositoryFactory(@NonNull EntityManager entityManager) {
-        return new ITIJpaRepositoryFactory(entityManager, this.factory);
+        return new ITIJpaRepositoryFactory(entityManager, this.jpaQueryFactory, this.sqlQueryFactory);
     }
 }
