@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.lan.iti.cloud.api.ApiResultWrapperAdvice;
 import org.lan.iti.cloud.api.ApiResultWrapperProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(ApiResultWrapperProperties.class)
+@ConditionalOnWebApplication
+@ConditionalOnClass(ApiResultWrapperAdvice.class)
 @AllArgsConstructor
 public class ApiResultWrapperAdviceAutoConfiguration {
     private final ApiResultWrapperProperties properties;
