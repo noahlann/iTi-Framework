@@ -7,8 +7,6 @@ org.lan.iti.cloud.autoconfigure.ITIWebMvcAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.cache.RedisCacheManagerConfig,\
 org.lan.iti.cloud.autoconfigure.cache.RedisCacheAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.cache.RedisTemplateConfig,\
-org.lan.iti.cloud.autoconfigure.ddd.DDDAutoLoggerStepConfiguration,\
-org.lan.iti.cloud.autoconfigure.ddd.DDDAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.exception.ITIExceptionHandlerAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.feign.FeignClientEndpointAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.feign.FeignContractAutoConfiguration,\
@@ -17,15 +15,11 @@ org.lan.iti.cloud.autoconfigure.gateway.GlobalExceptionConfiguration,\
 org.lan.iti.cloud.autoconfigure.jackson.ITIJacksonAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.jackson.JacksonDynamicFilterAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.jackson.JacksonHibernateModuleAutoConfiguration,\
-org.lan.iti.cloud.autoconfigure.jpa.JpaAutoConfiguration,\
+org.lan.iti.cloud.autoconfigure.querydsl.QueryDSLAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.loadbalancer.GrayLoadBalancerClientConfiguration,\
 org.lan.iti.cloud.autoconfigure.loadbalancer.GrayLoadBalancerAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.multipart.ITIMultipartAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.oss.OssAutoConfiguration,\
-org.lan.iti.cloud.autoconfigure.security.SecurityAutoConfiguration,\
-org.lan.iti.cloud.autoconfigure.security.SecurityFeignAutoConfiguration,\
-org.lan.iti.cloud.autoconfigure.security.SecurityTokenStoreAutoConfiguration,\
-org.lan.iti.cloud.autoconfigure.security.authority.AuthorityAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.sentinel.SentinelAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.sentinel.SentinelFeignAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.sequence.SequenceAutoConfiguration,\
