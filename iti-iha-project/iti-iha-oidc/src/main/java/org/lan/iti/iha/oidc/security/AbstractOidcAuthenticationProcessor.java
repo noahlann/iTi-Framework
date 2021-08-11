@@ -16,22 +16,19 @@
  *
  */
 
-package org.lan.iti.iha.oidc;
+package org.lan.iti.iha.oidc.security;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import org.lan.iti.iha.oauth2.OAuth2Config;
+import org.lan.iti.iha.security.processor.AuthenticationProcessor;
+import org.lan.iti.iha.security.processor.ProcessorType;
 
 /**
  * @author NorthLan
- * @date 2021-07-05
- * @url https://noahlan.com
+ * @date 2021/8/6
+ * @url https://blog.noahlan.com
  */
-@Data
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-public class OidcConfig extends OAuth2Config {
-    private String issuer;
-    private String usernameAttribute;
+public abstract class AbstractOidcAuthenticationProcessor implements AuthenticationProcessor {
+    @Override
+    public boolean matches(String params) {
+        return ProcessorType.OIDC.equals(params);
+    }
 }
