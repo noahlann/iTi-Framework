@@ -18,22 +18,20 @@
 
 package org.lan.iti.iha.server.endpoint;
 
-import cn.hutool.core.util.ObjectUtil;
+import lombok.AllArgsConstructor;
+import org.lan.iti.common.core.util.StringUtil;
+import org.lan.iti.iha.oauth2.util.ClientCertificateUtil;
+import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.authentication.Authentication;
+import org.lan.iti.iha.security.clientdetails.ClientDetails;
+import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.processor.ProcessorType;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.IhaServer;
-import org.lan.iti.iha.server.exception.IhaServerException;
-import org.lan.iti.iha.server.model.ClientDetails;
-import org.lan.iti.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.iha.server.model.IhaServerResponse;
-import org.lan.iti.iha.server.model.UserDetails;
-import org.lan.iti.iha.server.model.enums.ErrorResponse;
-import org.lan.iti.iha.server.pipeline.Pipeline;
-import org.lan.iti.iha.server.provider.RequestParamProvider;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 import org.lan.iti.iha.server.util.EndpointUtil;
-import org.lan.iti.iha.server.util.OAuthUtil;
-import org.lan.iti.iha.server.util.StringUtil;
+import org.lan.iti.iha.server.util.OAuth2Util;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -46,8 +44,8 @@ import java.nio.charset.StandardCharsets;
  * @date 2021-07-06
  * @url https://noahlan.com
  */
+@AllArgsConstructor
 public class LoginEndpoint extends AbstractEndpoint {
-
     /**
      * 显示默认的登录页面
      *
@@ -83,11 +81,11 @@ public class LoginEndpoint extends AbstractEndpoint {
                 .append("        <h2 class=\"form-signin-heading\">Please sign in</h2>\n")
                 .append("        <p>\n")
                 .append("          <label for=\"username\" class=\"sr-only\">Username</label>\n")
-                .append("          <input type=\"text\" id=\"username\" name=\"").append(IhaServer.getIhaServerConfig().getUsernameField())
+                .append("          <input type=\"text\" id=\"username\" name=\"").append("username")
                 .append("\" class=\"form-control\" placeholder=\"Username\" required autofocus>\n").append("        </p>\n")
                 .append("        <p>\n").append("          <label for=\"password\" class=\"sr-only\">Password</label>\n")
                 .append("          <input type=\"password\" id=\"password\" name=\"")
-                .append(IhaServer.getIhaServerConfig().getPasswordField()).append("\" class=\"form-control\" placeholder=\"Password\" required>\n")
+                .append("password").append("\" class=\"form-control\" placeholder=\"Password\" required>\n")
                 .append("        </p>\n").append("        <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\">Sign in</button>\n")
                 .append("      </form>\n");
 
@@ -100,45 +98,40 @@ public class LoginEndpoint extends AbstractEndpoint {
     /**
      * Login with account password
      *
-     * @param servletRequest  current HTTP request
-     * @param servletResponse current HTTP response
+     * @param request  current HTTP request
+     * @param response current HTTP response
      * @return Confirm authorization page
      */
-    public IhaServerResponse<String, String> login(ServletRequest servletRequest, ServletResponse servletResponse) {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        Pipeline<UserDetails> signInPipeline = IhaServer.getContext().getSignInPipeline();
-        signInPipeline = this.getUserInfoIdsPipeline(signInPipeline);
-        if (!signInPipeline.preHandle(request, servletResponse)) {
-            throw new IhaServerException("SignInPipeline<User>.preHandle returns false, the process is blocked.");
-        }
-        IhaServerRequestParam param = RequestParamProvider.parseRequest(request);
-        UserDetails userDetails = signInPipeline.postHandle(request, servletResponse);
-        if (null == userDetails) {
-            String username = param.getUsername();
-            String password = param.getPassword();
-            if (ObjectUtil.hasEmpty(username, password)) {
-                throw new IhaServerException(ErrorResponse.INVALID_USER_CERTIFICATE);
-            }
-            userDetails = IhaServer.getContext().getUserDetailService().loginByUsernameAndPassword(username, password, param.getClientId());
-            if (null == userDetails) {
-                throw new IhaServerException(ErrorResponse.INVALID_USER_CERTIFICATE);
-            }
+    public String login(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        IhaServerRequestParam parameter = new IhaServerRequestParam(request, response);
+        // TODO simple config
+        parameter.setProcessorType(ProcessorType.SIMPLE);
+
+        Authentication authentication = IhaSecurity.getSecurityManager().authenticate(parameter);
+        if (!authentication.isAuthenticated()) {
+            throw new AuthenticationException("failed");
         }
 
+        // TODO save user
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (userDetails == null) {
+            throw new AuthenticationException("failed");
+        }
         IhaServer.saveUser(userDetails, request);
 
-        ClientDetails clientDetails = IhaServer.getContext().getClientDetailsService().getByClientId(param.getClientId());
-        OAuthUtil.validClientDetail(clientDetails);
+        // TODO 验证 client auth method
+        parameter.setClient(ClientCertificateUtil.getClientCertificate(request));
+        ClientDetails clientDetails = IhaSecurity.getContext().getClientDetailsService().getByClientId(parameter.getClientId());
+        OAuth2Util.validClientDetail(clientDetails);
 
         String redirectUri;
         // When the client supports automatic authorization, it will judge whether the {@code autoapprove} function is enabled
-        if (null != clientDetails.getAutoApprove() && clientDetails.getAutoApprove() &&
-                StringUtil.isNotEmpty(param.getAutoApprove()) && "TRUE".equalsIgnoreCase(param.getAutoApprove())) {
+        if (clientDetails.isAutoApprove() &&
+                StringUtil.isNotEmpty(parameter.getAutoApprove()) && "TRUE".equalsIgnoreCase(parameter.getAutoApprove())) {
             redirectUri = EndpointUtil.getAuthorizeAutoApproveUrl(request);
         } else {
             redirectUri = EndpointUtil.getConfirmPageUrl(request);
         }
-        String fullUrl = OAuthUtil.createAuthorizeUrl(redirectUri, param);
-        return new IhaServerResponse<String, String>().data(fullUrl);
+        return OAuth2Util.createAuthorizeUrl(redirectUri, parameter);
     }
 }

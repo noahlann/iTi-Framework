@@ -21,6 +21,7 @@ package org.lan.iti.iha.server.model;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 
 import java.io.Serializable;
 

@@ -19,24 +19,25 @@
 package org.lan.iti.iha.server.util;
 
 import cn.hutool.core.codec.Base64;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.URLUtil;
+import cn.hutool.core.util.*;
 import cn.hutool.crypto.SecureUtil;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.jose4j.base64url.Base64Url;
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.oauth2.GrantType;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
-import org.lan.iti.iha.oauth2.pkce.PkceCodeChallengeMethod;
+import org.lan.iti.iha.oauth2.pkce.CodeChallengeMethod;
 import org.lan.iti.iha.oauth2.pkce.PkceParams;
 import org.lan.iti.iha.oidc.OidcParameterNames;
+import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.clientdetails.ClientDetails;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.IhaServerConstants;
 import org.lan.iti.iha.server.exception.*;
-import org.lan.iti.iha.server.model.ClientDetails;
-import org.lan.iti.iha.server.model.IhaServerRequestParam;
+import org.lan.iti.iha.server.model.AuthorizationCode;
 import org.lan.iti.iha.server.model.enums.ErrorResponse;
-import org.lan.iti.iha.server.service.OAuth2Service;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -48,7 +49,8 @@ import java.util.*;
  * @url https://noahlan.com
  */
 @UtilityClass
-public class OAuthUtil {
+@Slf4j
+public class OAuth2Util {
     private static final Collection<String> REDIRECT_GRANT_TYPES = Arrays.asList("implicit", "authorization_code");
 
     /**
@@ -56,15 +58,15 @@ public class OAuthUtil {
      * @param clientScopes  Scope in client detail
      * @return After the verification is passed, return the scope list
      */
-    public static Set<String> validateScope(String requestScopes, String clientScopes) {
+    public static List<String> validateScope(String requestScopes, String clientScopes) {
 
         if (StrUtil.isEmpty(requestScopes)) {
             throw new InvalidScopeException(ErrorResponse.INVALID_SCOPE);
         }
-        Set<String> scopes = StringUtil.convertStrToList(requestScopes);
+        List<String> scopes = StringUtil.split(requestScopes, IhaServerConstants.SPACE);
 
         if (StrUtil.isNotEmpty(clientScopes)) {
-            Set<String> appScopes = StringUtil.convertStrToList(clientScopes);
+            List<String> appScopes = StringUtil.split(clientScopes, IhaServerConstants.SPACE);
             for (String scope : scopes) {
                 if (!appScopes.contains(scope)) {
                     throw new InvalidScopeException("Invalid scope: " + scope + ". Only the following scopes are supported: " + clientScopes);
@@ -82,7 +84,7 @@ public class OAuthUtil {
      * @param grantTypes some grant types
      * @return true if the supplied grant types includes one or more of the redirect types
      */
-    private static boolean containsRedirectGrantType(Set<String> grantTypes) {
+    private static boolean containsRedirectGrantType(List<String> grantTypes) {
         for (String type : grantTypes) {
             if (REDIRECT_GRANT_TYPES.contains(type)) {
                 return true;
@@ -99,7 +101,7 @@ public class OAuthUtil {
      */
     public static void validateRedirectUri(String requestRedirectUri, ClientDetails clientDetail) {
         String clientGrantTypes = clientDetail.getGrantTypes();
-        Set<String> clientGrantTypeSet = StringUtil.convertStrToList(clientGrantTypes);
+        List<String> clientGrantTypeSet = StringUtil.split(clientGrantTypes, IhaServerConstants.SPACE);
         if (clientGrantTypeSet.isEmpty()) {
             throw new InvalidGrantException("A client must have at least one authorized grant type.");
         }
@@ -123,12 +125,11 @@ public class OAuthUtil {
      *
      * @param param         request params
      * @param clientDetails client detail
-     * @param oauth2Service oauth2Service
      */
-    public static void validateSecret(IhaServerRequestParam param, ClientDetails clientDetails, OAuth2Service oauth2Service) {
+    public static void validateSecret(IhaServerRequestParam param, ClientDetails clientDetails) {
         if (param.getGrantType().equals(GrantType.AUTHORIZATION_CODE.getType())) {
             if (param.isEnablePkce()) {
-                oauth2Service.validateAuthorizationCodeChallenge(param.getCodeVerifier(), param.getCode());
+                OAuth2Util.validateAuthorizationCodeChallenge(param.getCodeVerifier(), param.getCode());
             } else {
                 if (StrUtil.isEmpty(param.getClientSecret()) || !clientDetails.getClientSecret().equals(param.getClientSecret())) {
                     throw new InvalidClientException(ErrorResponse.INVALID_CLIENT);
@@ -142,13 +143,48 @@ public class OAuthUtil {
     }
 
     /**
+     * When the pkce protocol is enabled, the code challenge needs to be verified
+     *
+     * @param codeVerifier code verifier
+     * @param code         authorization code
+     * @see <a href="https://tools.ietf.org/html/rfc7636">https://tools.ietf.org/html/rfc7636</a>
+     */
+    public static void validateAuthorizationCodeChallenge(String codeVerifier, String code) {
+        log.debug("The client opened the pkce enhanced protocol and began to verify the legitimacy of the code challenge...");
+        AuthorizationCode authCode = getCodeInfo(code);
+        if (ObjectUtil.isNull(authCode)) {
+            throw new InvalidCodeException(ErrorResponse.INVALID_CODE);
+        }
+        if (ObjectUtil.hasNull(authCode.getCodeChallenge(), authCode.getCodeChallengeMethod())) {
+            log.debug("The client opened the pkce enhanced protocol, and the legality verification of the code challenge failed...");
+            throw new InvalidCodeException(ErrorResponse.INVALID_CODE_CHALLENGE);
+        }
+        String codeChallengeMethod = authCode.getCodeChallengeMethod();
+        String cacheCodeChallenge = authCode.getCodeChallenge();
+        String currentCodeChallenge = OAuth2Util.generateCodeChallenge(codeChallengeMethod, codeVerifier);
+        if (!currentCodeChallenge.equals(cacheCodeChallenge)) {
+            throw new InvalidCodeException(ErrorResponse.INVALID_CODE_CHALLENGE);
+        }
+    }
+
+    /**
+     * Obtain auth code info by authorization code
+     *
+     * @param code authorization code
+     * @return string
+     */
+    public static AuthorizationCode getCodeInfo(String code) {
+        return (AuthorizationCode) IhaSecurity.getContext().getCache().get(IhaServerConstants.OAUTH_CODE_CACHE_KEY + code);
+    }
+
+    /**
      * Verify the response type
      *
      * @param requestResponseType The response type in the current HTTP request
      * @param clientResponseTypes Response type in client detail
      */
     public static void validateResponseType(String requestResponseType, String clientResponseTypes) {
-        Set<String> clientResponseTypeSet = StringUtil.convertStrToList(clientResponseTypes);
+        List<String> clientResponseTypeSet = StringUtil.split(clientResponseTypes, IhaServerConstants.SPACE);
         if (!StrUtil.isEmpty(clientResponseTypes) && !clientResponseTypeSet.contains(requestResponseType)) {
             throw new UnsupportedResponseTypeException(ErrorResponse.UNSUPPORTED_RESPONSE_TYPE);
         }
@@ -162,7 +198,7 @@ public class OAuthUtil {
      * @param equalTo          {@code requestGrantType} Must match grant type value
      */
     public static void validateGrantType(String requestGrantType, String clientGrantTypes, GrantType equalTo) {
-        Set<String> grantTypeSet = StringUtil.convertStrToList(clientGrantTypes);
+        List<String> grantTypeSet = StringUtil.split(clientGrantTypes, IhaServerConstants.SPACE);
         if (StrUtil.isEmpty(requestGrantType) || ArrayUtil.isEmpty(grantTypeSet) || !grantTypeSet.contains(requestGrantType)) {
             throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
         }
@@ -175,9 +211,57 @@ public class OAuthUtil {
         if (clientDetails == null) {
             throw new InvalidClientException(ErrorResponse.INVALID_CLIENT);
         }
-        if (!Optional.ofNullable(clientDetails.getAvailable()).orElse(false)) {
+        if (!clientDetails.isAvailable()) {
             throw new InvalidClientException(ErrorResponse.DISABLED_CLIENT);
         }
+    }
+
+    /**
+     * Verification authorization code
+     *
+     * @param grantType grant Type
+     * @param code      authorization code
+     * @return AuthCode
+     */
+    public AuthorizationCode validateAndGetAuthorizationCode(String grantType, String code) {
+        if (!GrantType.AUTHORIZATION_CODE.getType().equals(grantType)) {
+            throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
+        }
+        AuthorizationCode authCode = getCodeInfo(code);
+        if (null == authCode || ObjectUtil.hasNull(authCode.getUserDetails(), authCode.getScope())) {
+            throw new InvalidCodeException(ErrorResponse.INVALID_CODE);
+        }
+        return authCode;
+    }
+
+    /**
+     * Delete authorization code
+     *
+     * @param code authorization code
+     */
+    public static void invalidateCode(String code) {
+        IhaSecurity.getContext().getCache().removeKey(IhaServerConstants.OAUTH_CODE_CACHE_KEY + code);
+    }
+
+    /**
+     * Generate authorization code
+     *
+     * @param param         Parameters requested by the client
+     * @param userDetails   User Info
+     * @param codeExpiresIn code expiration time
+     * @return String
+     */
+    public static String createAuthorizationCode(IhaServerRequestParam param, UserDetails userDetails, Long codeExpiresIn) {
+        String code = RandomUtil.randomString(12);
+        AuthorizationCode authorizationCode = AuthorizationCode.builder()
+                .userDetails(userDetails)
+                .scope(param.getScope())
+                .nonce(param.getNonce())
+                .codeChallenge(param.getCodeChallenge())
+                .codeChallengeMethod(param.getCodeChallengeMethod())
+                .build();
+        IhaSecurity.getContext().getCache().set(IhaServerConstants.OAUTH_CODE_CACHE_KEY + code, authorizationCode, codeExpiresIn * 1000);
+        return code;
     }
 
     /**
@@ -314,17 +398,8 @@ public class OAuthUtil {
         return authorizeUrl;
     }
 
-    public static String generateClientId() {
-        return RandomUtil.randomString(32);
-    }
-
-    public static String generateClientSecret() {
-        return RandomUtil.randomString(40);
-    }
-
     public static boolean isOidcProtocol(String scopes) {
-        Set<String> scopeList = StringUtil.convertStrToList(scopes);
-        return scopeList.contains("openid");
+        return StringUtil.contains(scopes, "openid");
     }
 
     /**
@@ -335,7 +410,7 @@ public class OAuthUtil {
      * @return code challenge
      */
     public static String generateCodeChallenge(String codeChallengeMethod, String codeVerifier) {
-        if (PkceCodeChallengeMethod.S256.name().equalsIgnoreCase(codeChallengeMethod)) {
+        if (CodeChallengeMethod.S256.name().equalsIgnoreCase(codeChallengeMethod)) {
             // https://tools.ietf.org/html/rfc7636#section-4.2
             // code_challenge = BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))
             return Base64.encodeUrlSafe(SecureUtil.sha256().digest(codeVerifier));

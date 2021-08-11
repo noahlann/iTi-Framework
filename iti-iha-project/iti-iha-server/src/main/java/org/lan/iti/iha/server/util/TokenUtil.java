@@ -18,25 +18,23 @@
 
 package org.lan.iti.iha.server.util;
 
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.SecureUtil;
 import lombok.experimental.UtilityClass;
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.core.util.RequestUtil;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
-import org.lan.iti.iha.server.IhaServer;
+import org.lan.iti.iha.oauth2.token.BearerToken;
+import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.clientdetails.ClientDetails;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.IhaServerConstants;
 import org.lan.iti.iha.server.exception.InvalidTokenException;
 import org.lan.iti.iha.server.model.AccessToken;
-import org.lan.iti.iha.server.model.ClientDetails;
-import org.lan.iti.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.iha.server.model.UserDetails;
 import org.lan.iti.iha.server.model.enums.ErrorResponse;
-import org.lan.iti.iha.server.model.enums.TokenAuthenticationMethod;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author NorthLan
@@ -53,38 +51,14 @@ public class TokenUtil {
      * @return String
      */
     public static String getAccessToken(HttpServletRequest request) {
-        List<TokenAuthenticationMethod> tokenAuthMethods = IhaServer.getIhaServerConfig().getTokenAuthenticationMethods();
-        if (ObjectUtil.isEmpty(tokenAuthMethods)) {
-            tokenAuthMethods = Collections.singletonList(TokenAuthenticationMethod.ALL);
-        }
-        if (tokenAuthMethods.contains(TokenAuthenticationMethod.ALL)) {
-            String accessToken = getAccessTokenFromUrl(request);
+        String accessToken = getAccessTokenFromUrl(request);
+        if (StringUtil.isEmpty(accessToken)) {
+            accessToken = getAccessTokenFromHeader(request);
             if (StringUtil.isEmpty(accessToken)) {
-                accessToken = getAccessTokenFromHeader(request);
-                if (StringUtil.isEmpty(accessToken)) {
-                    accessToken = getAccessTokenFromCookie(request);
-                }
-            }
-            return accessToken;
-        } else {
-            if (tokenAuthMethods.contains(TokenAuthenticationMethod.TOKEN_URL)) {
-                String accessToken = getAccessTokenFromUrl(request);
-                if (accessToken != null) {
-                    return accessToken;
-                }
-            }
-            if (tokenAuthMethods.contains(TokenAuthenticationMethod.TOKEN_HEADER)) {
-                String accessToken = getAccessTokenFromHeader(request);
-                if (accessToken != null) {
-                    return accessToken;
-                }
-            }
-            if (tokenAuthMethods.contains(TokenAuthenticationMethod.TOKEN_COOKIE)) {
-                return getAccessTokenFromCookie(request);
+                accessToken = getAccessTokenFromCookie(request);
             }
         }
-
-        return null;
+        return accessToken;
     }
 
     private static String getAccessTokenFromUrl(HttpServletRequest request) {
@@ -96,7 +70,7 @@ public class TokenUtil {
     }
 
     private static String getAccessTokenFromHeader(HttpServletRequest request) {
-        String accessToken = RequestUtil.getHeader(IhaServerConstants.AUTHORIZATION_HEADER_NAME, request);
+        String accessToken = RequestUtil.getHeader(OAuth2ParameterNames.AUTHORIZATION_HEADER_NAME, request);
         return BearerToken.parse(accessToken);
     }
 
@@ -105,20 +79,20 @@ public class TokenUtil {
     }
 
     public static String createIdToken(ClientDetails clientDetails, UserDetails userDetails, String nonce, String issuer) {
-        long idTokenExpiresIn = OAuthUtil.getIdTokenExpiresIn(clientDetails.getIdTokenTimeToLive());
+        long idTokenExpiresIn = OAuth2Util.getIdTokenExpiresIn(clientDetails.getIdTokenTimeToLive());
         return JwtUtil.createJwtToken(clientDetails.getClientId(), userDetails, idTokenExpiresIn, nonce, issuer);
     }
 
     public static String createIdToken(ClientDetails clientDetails, UserDetails userDetails, IhaServerRequestParam param, String issuer) {
-        long idTokenExpiresIn = OAuthUtil.getIdTokenExpiresIn(clientDetails.getIdTokenTimeToLive());
-        return JwtUtil.createJwtToken(clientDetails.getClientId(), userDetails, idTokenExpiresIn, param.getNonce(), StringUtil.convertStrToList(param.getScope()), param.getResponseType(), issuer);
+        long idTokenExpiresIn = OAuth2Util.getIdTokenExpiresIn(clientDetails.getIdTokenTimeToLive());
+        return JwtUtil.createJwtToken(clientDetails.getClientId(), userDetails, idTokenExpiresIn, param.getNonce(), StringUtil.split(param.getScope(), IhaServerConstants.SPACE), param.getResponseType(), issuer);
     }
 
     public static AccessToken createAccessToken(UserDetails userDetails, ClientDetails clientDetails, String grantType, String scope, String nonce, String issuer) {
         String clientId = clientDetails.getClientId();
 
-        long accessTokenExpiresIn = OAuthUtil.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
-        long refreshTokenExpiresIn = OAuthUtil.getRefreshTokenExpiresIn(clientDetails.getRefreshTokenTimeToLive());
+        long accessTokenExpiresIn = OAuth2Util.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
+        long refreshTokenExpiresIn = OAuth2Util.getRefreshTokenExpiresIn(clientDetails.getRefreshTokenTimeToLive());
 
         String accessTokenStr = JwtUtil.createJwtToken(clientId, userDetails, accessTokenExpiresIn, nonce, issuer);
         String refreshTokenStr = SecureUtil.sha256(clientId.concat(scope).concat(System.currentTimeMillis() + ""));
@@ -137,30 +111,30 @@ public class TokenUtil {
         accessToken.setRefreshTokenExpiresIn(refreshTokenExpiresIn);
         accessToken.setAccessTokenExpiresIn(accessTokenExpiresIn);
 
-        accessToken.setAccessTokenExpiration(OAuthUtil.getAccessTokenExpiresAt(clientDetails.getAccessTokenTimeToLive()));
-        accessToken.setRefreshTokenExpiration(OAuthUtil.getRefreshTokenExpiresAt(clientDetails.getRefreshTokenTimeToLive()));
+        accessToken.setAccessTokenExpiration(OAuth2Util.getAccessTokenExpiresAt(clientDetails.getAccessTokenTimeToLive()));
+        accessToken.setRefreshTokenExpiration(OAuth2Util.getRefreshTokenExpiresAt(clientDetails.getRefreshTokenTimeToLive()));
 
         String token = IhaServerConstants.OAUTH_ACCESS_TOKEN_CACHE_KEY + accessTokenStr;
         String refreshToken = IhaServerConstants.OAUTH_REFRESH_TOKEN_CACHE_KEY + refreshTokenStr;
-        IhaServer.getContext().getCache().set(token, accessToken, accessTokenExpiresIn * 1000);
-        IhaServer.getContext().getCache().set(refreshToken, accessToken, refreshTokenExpiresIn * 1000);
+        IhaSecurity.getContext().getCache().set(token, accessToken, accessTokenExpiresIn * 1000);
+        IhaSecurity.getContext().getCache().set(refreshToken, accessToken, refreshTokenExpiresIn * 1000);
         return accessToken;
     }
 
     public static AccessToken refreshAccessToken(UserDetails userDetails, ClientDetails clientDetails, AccessToken accessToken, String nonce, String issuer) {
         String rawToken = accessToken.getAccessToken();
-        long accessTokenExpiresIn = OAuthUtil.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
+        long accessTokenExpiresIn = OAuth2Util.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
         String accessTokenStr = JwtUtil.createJwtToken(clientDetails.getClientId(), userDetails, accessTokenExpiresIn, nonce, issuer);
         accessToken.setAccessToken(accessTokenStr);
         accessToken.setAccessTokenExpiresIn(accessTokenExpiresIn);
 
-        accessToken.setAccessTokenExpiration(OAuthUtil.getAccessTokenExpiresAt(clientDetails.getAccessTokenTimeToLive()));
+        accessToken.setAccessTokenExpiration(OAuth2Util.getAccessTokenExpiresAt(clientDetails.getAccessTokenTimeToLive()));
 
         String tokenCacheKey = IhaServerConstants.OAUTH_ACCESS_TOKEN_CACHE_KEY + accessTokenStr;
-        IhaServer.getContext().getCache().set(tokenCacheKey, accessTokenStr, accessTokenExpiresIn * 1000);
+        IhaSecurity.getContext().getCache().set(tokenCacheKey, accessToken, accessTokenExpiresIn * 1000);
 
         String rawTokenCacheKey = IhaServerConstants.OAUTH_ACCESS_TOKEN_CACHE_KEY + rawToken;
-        IhaServer.getContext().getCache().removeKey(rawTokenCacheKey);
+        IhaSecurity.getContext().getCache().removeKey(rawTokenCacheKey);
         return accessToken;
     }
 
@@ -175,8 +149,8 @@ public class TokenUtil {
         if (null != accessToken) {
             String token = IhaServerConstants.OAUTH_ACCESS_TOKEN_CACHE_KEY + accessTokenStr;
             String rtoken = IhaServerConstants.OAUTH_REFRESH_TOKEN_CACHE_KEY + accessToken.getRefreshToken();
-            IhaServer.getContext().getCache().removeKey(token);
-            IhaServer.getContext().getCache().removeKey(rtoken);
+            IhaSecurity.getContext().getCache().removeKey(token);
+            IhaSecurity.getContext().getCache().removeKey(rtoken);
         }
     }
 
@@ -217,7 +191,7 @@ public class TokenUtil {
         }
         accessToken = BearerToken.parse(accessToken);
         String token = IhaServerConstants.OAUTH_ACCESS_TOKEN_CACHE_KEY + accessToken;
-        return (AccessToken) IhaServer.getContext().getCache().get(token);
+        return (AccessToken) IhaSecurity.getContext().getCache().get(token);
     }
 
     public static AccessToken getByRefreshToken(String refreshToken) {
@@ -225,6 +199,6 @@ public class TokenUtil {
             return null;
         }
         String token = IhaServerConstants.OAUTH_REFRESH_TOKEN_CACHE_KEY + refreshToken;
-        return (AccessToken) IhaServer.getContext().getCache().get(token);
+        return (AccessToken) IhaSecurity.getContext().getCache().get(token);
     }
 }

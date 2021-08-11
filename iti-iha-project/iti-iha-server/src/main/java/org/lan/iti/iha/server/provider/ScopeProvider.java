@@ -19,8 +19,8 @@
 package org.lan.iti.iha.server.provider;
 
 import cn.hutool.core.util.ObjectUtil;
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.server.model.Scope;
-import org.lan.iti.iha.server.util.StringUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;

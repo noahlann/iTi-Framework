@@ -18,21 +18,24 @@
 
 package org.lan.iti.iha.server.endpoint;
 
-import org.lan.iti.iha.server.IhaServer;
-import org.lan.iti.iha.server.model.ClientDetails;
-import org.lan.iti.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.iha.server.model.IhaServerResponse;
+import org.lan.iti.common.core.util.StringUtil;
+import org.lan.iti.iha.core.result.IhaResponse;
+import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.clientdetails.ClientDetails;
+import org.lan.iti.iha.server.IhaServerConstants;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 import org.lan.iti.iha.server.model.Scope;
-import org.lan.iti.iha.server.provider.RequestParamProvider;
 import org.lan.iti.iha.server.provider.ScopeProvider;
 import org.lan.iti.iha.server.util.EndpointUtil;
-import org.lan.iti.iha.server.util.OAuthUtil;
-import org.lan.iti.iha.server.util.StringUtil;
+import org.lan.iti.iha.server.util.OAuth2Util;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Confirm authorization endpoint
@@ -61,10 +64,10 @@ public class ApprovalEndpoint extends AbstractEndpoint {
      * @param request HttpServletRequest
      * @return IhaServerResponse
      */
-    public IhaServerResponse<String, Map<String, Object>> getAuthClientInfo(HttpServletRequest request) {
-        IhaServerRequestParam param = RequestParamProvider.parseRequest(request);
-        ClientDetails clientDetail = IhaServer.getContext().getClientDetailsService().getByClientId(param.getClientId());
-        OAuthUtil.validClientDetail(clientDetail);
+    public IhaResponse getAuthClientInfo(HttpServletRequest request) {
+        IhaServerRequestParam param = new IhaServerRequestParam(request);
+        ClientDetails clientDetail = IhaSecurity.getContext().getClientDetailsService().getByClientId(param.getClientId());
+        OAuth2Util.validClientDetail(clientDetail);
 
         List<Map<String, Object>> scopeInfo = getScopeInfo(param);
 
@@ -73,7 +76,7 @@ public class ApprovalEndpoint extends AbstractEndpoint {
         result.put("scopes", scopeInfo);
         result.put("params", param);
 
-        return new IhaServerResponse<String, Map<String, Object>>().data(result);
+        return IhaResponse.ok(result);
     }
 
     /**
@@ -83,10 +86,10 @@ public class ApprovalEndpoint extends AbstractEndpoint {
      * @return Confirm the html of the authorization page
      */
     private String createConfirmPageHtml(HttpServletRequest request) {
-        IhaServerRequestParam param = RequestParamProvider.parseRequest(request);
+        IhaServerRequestParam param = new IhaServerRequestParam(request);
         String clientId = param.getClientId();
-        ClientDetails clientDetail = IhaServer.getContext().getClientDetailsService().getByClientId(clientId);
-        OAuthUtil.validClientDetail(clientDetail);
+        ClientDetails clientDetail = IhaSecurity.getContext().getClientDetailsService().getByClientId(clientId);
+        OAuth2Util.validClientDetail(clientDetail);
 
         StringBuilder builder = new StringBuilder();
         String html = "<!DOCTYPE html>\n"
@@ -159,21 +162,21 @@ public class ApprovalEndpoint extends AbstractEndpoint {
      * @return List
      */
     private List<Map<String, Object>> getScopeInfo(IhaServerRequestParam param) {
-        ClientDetails clientDetail = IhaServer.getContext().getClientDetailsService().getByClientId(param.getClientId());
+        ClientDetails clientDetail = IhaSecurity.getContext().getClientDetailsService().getByClientId(param.getClientId());
 
-        Set<String> userAuthorizedScopes = OAuthUtil.validateScope(param.getScope(), clientDetail.getScopes());
+        List<String> userAuthorizedScopes = OAuth2Util.validateScope(param.getScope(), clientDetail.getScopes());
 
-        Set<String> supportedScopes = StringUtil.convertStrToList(clientDetail.getScopes());
+        List<String> supportedScopes = StringUtil.split(clientDetail.getScopes(), IhaServerConstants.SPACE);
 
         List<Scope> scopeList = ScopeProvider.getScopeByCodes(supportedScopes);
 
         List<Map<String, Object>> scopeInfo = new LinkedList<>();
-        Map<String, Object> scopeItem = null;
-        for (Scope idsScope : scopeList) {
+        Map<String, Object> scopeItem;
+        for (Scope scope : scopeList) {
             scopeItem = new HashMap<>(5);
-            scopeItem.put("code", idsScope.getCode());
-            scopeItem.put("description", idsScope.getDescription());
-            scopeItem.put("selected", userAuthorizedScopes.contains(idsScope.getCode()));
+            scopeItem.put("code", scope.getCode());
+            scopeItem.put("description", scope.getDescription());
+            scopeItem.put("selected", userAuthorizedScopes.contains(scope.getCode()));
             scopeInfo.add(scopeItem);
         }
         return scopeInfo;

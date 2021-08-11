@@ -26,23 +26,24 @@ import java.time.Duration;
  * @url https://noahlan.com
  */
 public interface IhaServerConstants {
+
     String SLASH = "/";
     String COMMA = ",";
     String SPACE = " ";
 
-    String TOKEN_URL = "/oauth2/token";
-    String ERROR_URL = "/oauth2/error";
-    String AUTHORIZE_URL = "/oauth2/authorize";
-    String AUTHORIZE_AUTO_APPROVE_URL = "/oauth2/authorize/auto";
-    String LOGIN_URL = "/oauth2/login";
-    String USERINFO_URL = "/oauth2/userinfo";
-    String REGISTRATION_URL = "/oauth2/registration";
-    String END_SESSION_URL = "/oauth2/logout";
-    String CHECK_SESSION_URL = "/oauth2/check_session";
-    String LOGOUT_REDIRECT_URL = "/";
-    String JWKS_URL = "/.well-known/jwks.json";
-    String DISCOVERY_URL = "/.well-known/openid-configuration";
-    String CONFIRM_URL = "/oauth2/confirm";
+    String DEFAULT_TOKEN_URL = "/oauth2/token";
+    String DEFAULT_ERROR_URL = "/oauth2/error";
+    String DEFAULT_AUTHORIZE_URL = "/oauth2/authorize";
+    String DEFAULT_AUTHORIZE_AUTO_APPROVE_URL = "/oauth2/authorize/auto";
+    String DEFAULT_LOGIN_URL = "/oauth2/login";
+    String DEFAULT_USERINFO_URL = "/oauth2/userinfo";
+    String DEFAULT_REGISTRATION_URL = "/oauth2/registration";
+    String DEFAULT_END_SESSION_URL = "/oauth2/logout";
+    String DEFAULT_CHECK_SESSION_URL = "/oauth2/check_session";
+    String DEFAULT_LOGOUT_REDIRECT_URL = "/";
+    String DEFAULT_JWKS_URL = "/.well-known/jwks.json";
+    String DEFAULT_DISCOVERY_URL = "/.well-known/openid-configuration";
+    String DEFAULT_CONFIRM_URL = "/oauth2/confirm";
 
     /**
      * The default validity period of the authorization code is 10 minutes (600 seconds)
@@ -60,16 +61,6 @@ public interface IhaServerConstants {
      * The default validity period of id token is 365 days
      */
     long ID_TOKEN_ACTIVITY_TIME = Duration.ofDays(365).getSeconds();
-
-    /**
-     * token header name
-     */
-    String AUTHORIZATION_HEADER_NAME = "Authorization";
-
-    /**
-     * Token Type
-     */
-    String TOKEN_TYPE_BEARER = "Bearer";
 
     /**
      * Cache key of oauth authorized user
@@ -100,4 +91,14 @@ public interface IhaServerConstants {
      * uid
      */
     String UID = "uid";
+
+    /**
+     * appId
+     */
+    String APP_ID = "appId";
+
+    /**
+     * domain of app
+     */
+    String APP_DOMAIN = "domain";
 }

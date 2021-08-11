@@ -20,14 +20,8 @@ package org.lan.iti.iha.server.context;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.lan.iti.iha.core.cache.IhaCache;
-import org.lan.iti.iha.core.cache.IhaLocalCache;
 import org.lan.iti.iha.server.config.IhaServerConfig;
-import org.lan.iti.iha.server.model.UserDetails;
-import org.lan.iti.iha.server.pipeline.Pipeline;
-import org.lan.iti.iha.server.service.ClientDetailsService;
 import org.lan.iti.iha.server.service.IdentityService;
-import org.lan.iti.iha.server.service.UserDetailService;
 import org.lan.iti.iha.server.service.UserStoreService;
 import org.lan.iti.iha.server.service.impl.UserStoreServiceImpl;
 
@@ -43,19 +37,7 @@ import java.io.Serializable;
 public class IhaServerContext implements Serializable {
     private static final long serialVersionUID = 4677418613923152037L;
 
-    private IhaCache cache = new IhaLocalCache();
-
-    private ClientDetailsService clientDetailsService;
-    private UserDetailService userDetailService;
     private IdentityService identityService;
     private UserStoreService userStoreService = new UserStoreServiceImpl();
     private IhaServerConfig config;
-    private Pipeline<Object> filterPipeline;
-    private Pipeline<UserDetails> signInPipeline;
-    private Pipeline<UserDetails> logoutPipeline;
-
-
-    public IhaCache getCache() {
-        return cache == null ? new IhaLocalCache() : cache;
-    }
 }

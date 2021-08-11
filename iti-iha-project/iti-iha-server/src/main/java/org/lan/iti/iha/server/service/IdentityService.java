@@ -38,7 +38,7 @@ public interface IdentityService extends IExtension<Object> {
     }
 
     /**
-     * Get the jwt token encryption key string, The default is the scoped global jwt config configured in ids config.
+     * Get the jwt token encryption key string, The default is the scoped global jwt config configured in iha server config.
      *
      * @param identity User/organization/enterprise identification
      * @return Encryption key string in json format
@@ -48,7 +48,7 @@ public interface IdentityService extends IExtension<Object> {
     }
 
     /**
-     * Get the configuration of jwt token encryption, The default is the scoped global jwt config configured in ids config.
+     * Get the configuration of jwt token encryption, The default is the scoped global jwt config configured in iha server config.
      * <p>
      * 调用者需要根据
      *

@@ -16,33 +16,32 @@
  *
  */
 
-package org.lan.iti.iha.server.provider;
+package org.lan.iti.iha.server.provider.authorization;
 
-import org.lan.iti.common.extension.IExtension;
-import org.lan.iti.common.extension.annotation.Extension;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
 import org.lan.iti.iha.server.security.IhaServerRequestParam;
+import org.lan.iti.iha.server.model.enums.ResponseType;
+import org.lan.iti.iha.server.provider.AuthorizationProvider;
+import org.lan.iti.iha.server.util.TokenUtil;
 
 /**
- * Authorize the endpoint to create a callback url, and pass different callback parameters according to the request parameters
+ * When the value of {@code response_type} is {@code id_token}, an {@code id_token} is returned from the authorization endpoint.
+ * This mode does not require the use of token endpoints.
  *
  * @author NorthLan
  * @date 2021/8/2
  * @url https://blog.noahlan.com
  */
-@Extension
-public interface AuthorizationProvider extends IExtension<String> {
+public class IdTokenAuthorizationProvider implements AuthorizationProvider {
+    @Override
+    public boolean matches(String params) {
+        return ResponseType.ID_TOKEN.getType().equalsIgnoreCase(params);
+    }
 
-    /**
-     * 生成Response（redirect）
-     *
-     * @param param         请求参数
-     * @param responseType  回复类型
-     * @param clientDetails 客户端信息
-     * @param userDetails          用户信息
-     * @param issuer        issuer
-     * @return redirectUrl
-     */
-    String generateRedirect(IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer);
+    @Override
+    public String generateRedirect(IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
+        String params = "?id_token=" + TokenUtil.createIdToken(clientDetails, userDetails, param, issuer);
+        return param.getRedirectUri() + params;
+    }
 }

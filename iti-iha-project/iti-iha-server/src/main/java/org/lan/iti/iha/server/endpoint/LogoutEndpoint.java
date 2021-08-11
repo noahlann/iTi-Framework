@@ -18,14 +18,10 @@
 
 package org.lan.iti.iha.server.endpoint;
 
+import org.lan.iti.iha.core.result.IhaResponse;
 import org.lan.iti.iha.server.IhaServer;
-import org.lan.iti.iha.server.exception.IhaServerException;
-import org.lan.iti.iha.server.model.IhaServerResponse;
-import org.lan.iti.iha.server.model.UserDetails;
-import org.lan.iti.iha.server.pipeline.Pipeline;
 import org.lan.iti.iha.server.util.EndpointUtil;
 
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -35,17 +31,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class LogoutEndpoint extends AbstractEndpoint {
 
-    public IhaServerResponse<String, String> logout(HttpServletRequest request, ServletResponse response) {
-        Pipeline<UserDetails> logoutPipeline = IhaServer.getContext().getLogoutPipeline();
-        logoutPipeline = this.getUserInfoIdsPipeline(logoutPipeline);
-        if (!logoutPipeline.preHandle(request, response)) {
-            throw new IhaServerException("LogoutPipeline<User>.preHandle returns false, the process is blocked.");
-        }
+    public IhaResponse logout(HttpServletRequest request) {
         IhaServer.removeUser(request);
         request.getSession().invalidate();
-
-        logoutPipeline.afterHandle(request, response);
-        return new IhaServerResponse<String, String>()
-                .data(EndpointUtil.getLogoutRedirectUrl(request));
+        return IhaResponse.ok(EndpointUtil.getLogoutRedirectUrl(request));
     }
 }

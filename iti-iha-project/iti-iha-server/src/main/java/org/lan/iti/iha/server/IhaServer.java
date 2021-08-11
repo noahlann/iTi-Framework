@@ -19,23 +19,19 @@
 package org.lan.iti.iha.server;
 
 import lombok.experimental.UtilityClass;
+import org.lan.iti.common.extension.ExtensionLoader;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.config.IhaServerConfig;
 import org.lan.iti.iha.server.context.IhaServerContext;
 import org.lan.iti.iha.server.exception.IhaServerException;
-import org.lan.iti.iha.server.model.UserDetails;
-import org.lan.iti.iha.server.pipeline.FilterPipeline;
-import org.lan.iti.iha.server.pipeline.LogoutPipeline;
-import org.lan.iti.iha.server.pipeline.SignInPipeline;
-import org.lan.iti.iha.server.service.ClientDetailsService;
 import org.lan.iti.iha.server.service.IdentityService;
-import org.lan.iti.iha.server.service.UserDetailService;
-import org.lan.iti.iha.server.service.UserStoreService;
-import org.lan.iti.common.extension.ExtensionLoader;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 
 /**
+ * 授权服务器
+ *
  * @author NorthLan
  * @date 2021-07-06
  * @url https://noahlan.com
@@ -44,64 +40,32 @@ import java.io.Serializable;
 public class IhaServer implements Serializable {
     private static final long serialVersionUID = -8492693836745582215L;
 
-    private static final String UNREGISTERED_IDS_CONTEXT = "Unregistered ids context.Please use `IhaServer.registerContext(IdsContext)` to register ids context.";
+    private static final String UNREGISTERED_CONTEXT = "Unregistered iha context.Please use `IhaServer.registerContext(IhaServerContext)` to register iha context.";
     private static IhaServerContext context;
 
     public static void registerContext(IhaServerContext context) {
         if (null == context) {
-            throw new IhaServerException(UNREGISTERED_IDS_CONTEXT);
+            throw new IhaServerException(UNREGISTERED_CONTEXT);
         }
         IhaServer.context = context;
-
         loadService();
-
-        loadPipeline();
     }
 
     private static void loadService() {
-        if (null == context.getClientDetailsService()) {
-            context.setClientDetailsService(ExtensionLoader.getLoader(ClientDetailsService.class).getFirstExtension());
-        }
         if (null == context.getIdentityService()) {
-            context.setIdentityService(ExtensionLoader.getLoader(IdentityService.class).getFirstExtension());
-        }
-        if (null == context.getUserDetailService()) {
-            context.setUserDetailService(ExtensionLoader.getLoader(UserDetailService.class).getFirstExtension());
-        }
-        if (null == context.getUserStoreService()) {
-            context.setUserStoreService(ExtensionLoader.getLoader(UserStoreService.class).getFirstExtension());
-        }
-    }
-
-    private static void loadPipeline() {
-        if (null == context.getFilterPipeline()) {
-            context.setFilterPipeline(ExtensionLoader.getLoader(FilterPipeline.class).getFirstExtension());
-        }
-        if (null == context.getSignInPipeline()) {
-            context.setSignInPipeline(ExtensionLoader.getLoader(SignInPipeline.class).getFirstExtension());
-        }
-        if (null == context.getLogoutPipeline()) {
-            context.setLogoutPipeline(ExtensionLoader.getLoader(LogoutPipeline.class).getFirstExtension());
+            context.setIdentityService(ExtensionLoader.getLoader(IdentityService.class).getFirst());
         }
     }
 
     public static IhaServerContext getContext() {
         if (null == context) {
-            throw new IhaServerException(UNREGISTERED_IDS_CONTEXT);
+            throw new IhaServerException(UNREGISTERED_CONTEXT);
         }
         return context;
     }
 
-    public static boolean isAuthenticated(HttpServletRequest request) {
-        return null != getUser(request);
-    }
-
     public static void saveUser(UserDetails userDetails, HttpServletRequest request) {
         getContext().getUserStoreService().save(userDetails, request);
-    }
-
-    public static UserDetails getUser(HttpServletRequest request) {
-        return getContext().getUserStoreService().get(request);
     }
 
     public static void removeUser(HttpServletRequest request) {

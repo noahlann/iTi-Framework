@@ -18,8 +18,8 @@
 
 package org.lan.iti.iha.server.service.impl;
 
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.IhaServerConstants;
-import org.lan.iti.iha.server.model.UserDetails;
 import org.lan.iti.iha.server.service.UserStoreService;
 
 import javax.servlet.http.HttpServletRequest;

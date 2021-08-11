@@ -18,14 +18,13 @@
 
 package org.lan.iti.iha.server.endpoint;
 
-import com.xkcoding.json.util.StringUtil;
-import org.lan.iti.iha.oauth2.GrantType;
+import org.lan.iti.common.extension.ExtensionLoader;
+import org.lan.iti.iha.core.result.IhaResponse;
 import org.lan.iti.iha.server.exception.UnsupportedGrantTypeException;
-import org.lan.iti.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.iha.server.model.IhaServerResponse;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 import org.lan.iti.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.iha.server.provider.AuthorizationTokenProvider;
-import org.lan.iti.iha.server.provider.RequestParamProvider;
+import org.lan.iti.iha.oauth2.util.ClientCertificateUtil;
 import org.lan.iti.iha.server.util.TokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,31 +35,21 @@ import javax.servlet.http.HttpServletRequest;
  * @url https://noahlan.com
  */
 public class TokenEndpoint extends AbstractEndpoint {
-    private final AuthorizationTokenProvider authorizationTokenProvider = new AuthorizationTokenProvider(oAuth2Service);
 
-    public IhaServerResponse<String, Object> getToken(HttpServletRequest request) {
-        IhaServerRequestParam param = RequestParamProvider.parseRequest(request);
+    public IhaResponse getToken(HttpServletRequest request) {
+        IhaServerRequestParam param = new IhaServerRequestParam(request);
+        param.setClient(ClientCertificateUtil.getClientCertificate(request));
 
-        if (StringUtil.isEmpty(param.getGrantType())) {
+        AuthorizationTokenProvider provider = ExtensionLoader.getLoader(AuthorizationTokenProvider.class)
+                .getFirst(param.getGrantType());
+        if (provider == null) {
             throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
         }
-        if (GrantType.AUTHORIZATION_CODE.getType().equals(param.getGrantType())) {
-            return authorizationTokenProvider.generateAuthorizationCodeResponse(param, request);
-        }
-        if (GrantType.PASSWORD.getType().equals(param.getGrantType())) {
-            return authorizationTokenProvider.generatePasswordResponse(param, request);
-        }
-        if (GrantType.CLIENT_CREDENTIALS.getType().equals(param.getGrantType())) {
-            return authorizationTokenProvider.generateClientCredentialsResponse(param, request);
-        }
-        if (GrantType.REFRESH_TOKEN.getType().equals(param.getGrantType())) {
-            return authorizationTokenProvider.generateRefreshTokenResponse(param, request);
-        }
-        throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
+        return provider.generateResponse(param);
     }
 
-    public IhaServerResponse<String, Object> revokeToken(HttpServletRequest request) {
+    public IhaResponse revokeToken(HttpServletRequest request) {
         TokenUtil.invalidateToken(request);
-        return new IhaServerResponse<>();
+        return IhaResponse.ok();
     }
 }

@@ -19,26 +19,27 @@
 package org.lan.iti.iha.server.endpoint;
 
 import cn.hutool.core.util.ArrayUtil;
-import org.lan.iti.iha.server.IhaServer;
+import org.lan.iti.common.core.util.StringUtil;
+import org.lan.iti.common.extension.ExtensionLoader;
+import org.lan.iti.iha.core.result.IhaResponse;
+import org.lan.iti.iha.oauth2.util.ClientCertificateUtil;
+import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.clientdetails.ClientDetails;
+import org.lan.iti.iha.security.userdetails.UserDetails;
+import org.lan.iti.iha.server.IhaServerConstants;
 import org.lan.iti.iha.server.exception.InvalidScopeException;
-import org.lan.iti.iha.server.model.ClientDetails;
-import org.lan.iti.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.iha.server.model.IhaServerResponse;
-import org.lan.iti.iha.server.model.UserDetails;
 import org.lan.iti.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.iha.server.model.enums.ResponseType;
 import org.lan.iti.iha.server.provider.AuthorizationProvider;
-import org.lan.iti.iha.server.provider.RequestParamProvider;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 import org.lan.iti.iha.server.util.EndpointUtil;
-import org.lan.iti.iha.server.util.OAuthUtil;
-import org.lan.iti.iha.server.util.StringUtil;
+import org.lan.iti.iha.server.util.OAuth2Util;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * @author NorthLan
@@ -46,8 +47,6 @@ import java.util.stream.Collectors;
  * @url https://noahlan.com
  */
 public class AuthorizationEndpoint extends AbstractEndpoint {
-    private final AuthorizationProvider idsAuthorizationProvider = new AuthorizationProvider(oAuth2Service);
-
     /**
      * Authorize current HTTP request
      * <p>
@@ -59,24 +58,24 @@ public class AuthorizationEndpoint extends AbstractEndpoint {
      * @return Callback url or authorization url
      * @throws IOException IOException
      */
-    public IhaServerResponse<String, String> authorize(HttpServletRequest request) throws IOException {
-        IhaServerRequestParam param = RequestParamProvider.parseRequest(request);
+    public IhaResponse authorize(HttpServletRequest request) throws IOException {
+        // TODO SecurityContextHolder 要与 Cache 结合使用，可能需要添加一个过滤器用于处理此需求，在过滤器中读取缓存并保存至ThreadLocal中
+        IhaServerRequestParam param = new IhaServerRequestParam(request);
+        param.setClient(ClientCertificateUtil.getClientCertificate(request));
 
-        ClientDetails clientDetail = IhaServer.getContext().getClientDetailsService().getByClientId(param.getClientId());
+        ClientDetails clientDetail = IhaSecurity.getContext().getClientDetailsService().getByClientId(param.getClientId());
 
-        OAuthUtil.validClientDetail(clientDetail);
-        OAuthUtil.validateResponseType(param.getResponseType(), clientDetail.getResponseTypes());
-        OAuthUtil.validateRedirectUri(param.getRedirectUri(), clientDetail);
-        OAuthUtil.validateScope(param.getScope(), clientDetail.getScopes());
+        OAuth2Util.validClientDetail(clientDetail);
+        OAuth2Util.validateResponseType(param.getResponseType(), clientDetail.getResponseTypes());
+        OAuth2Util.validateRedirectUri(param.getRedirectUri(), clientDetail);
+        OAuth2Util.validateScope(param.getScope(), clientDetail.getScopes());
 
-        if (IhaServer.isAuthenticated(request)) {
-            UserDetails userDetails = IhaServer.getUser(request);
+        if (IhaSecurity.isAuthenticated()) {
+            UserDetails userDetails = IhaSecurity.getUser();
             String url = generateResponseUrl(param, param.getResponseType(), clientDetail, userDetails, EndpointUtil.getIssuer(request));
-            return new IhaServerResponse<String, String>().data(url);
+            return IhaResponse.ok(url);
         }
-
-        return new IhaServerResponse<String, String>()
-                .data(OAuthUtil.createAuthorizeUrl(EndpointUtil.getLoginPageUrl(request), param));
+        return IhaResponse.ok(OAuth2Util.createAuthorizeUrl(EndpointUtil.getLoginPageUrl(request), param));
     }
 
     /**
@@ -85,63 +84,48 @@ public class AuthorizationEndpoint extends AbstractEndpoint {
      * @param request current HTTP request
      * @return Return the callback url (with parameters such as code)
      */
-    public IhaServerResponse<String, String> agree(HttpServletRequest request) {
-        IhaServerRequestParam param = RequestParamProvider.parseRequest(request);
+    public IhaResponse agree(HttpServletRequest request) {
+        IhaServerRequestParam param = new IhaServerRequestParam(request);
 
         // The scope checked by the user may be inconsistent with the scope passed in the current HTTP request
         String[] requestScopes = request.getParameterValues("scopes");
-        Set<String> scopes = null;
+        Set<String> scopes;
         if (ArrayUtil.isEmpty(requestScopes)) {
             if (StringUtil.isEmpty(param.getScope())) {
                 throw new InvalidScopeException(ErrorResponse.INVALID_SCOPE);
             }
-            scopes = StringUtil.convertStrToList(param.getScope()).stream().distinct().collect(Collectors.toSet());
+            scopes = new TreeSet<>(StringUtil.split(param.getScope(), IhaServerConstants.SPACE));
         } else {
             scopes = new TreeSet<>(Arrays.asList(requestScopes));
         }
         // Ultimately participating in the authorized scope
         param.setScope(String.join(" ", scopes));
 
-        ClientDetails clientDetail = IhaServer.getContext().getClientDetailsService().getByClientId(param.getClientId());
-        OAuthUtil.validClientDetail(clientDetail);
+        param.setClient(ClientCertificateUtil.getClientCertificate(request));
+        ClientDetails clientDetail = IhaSecurity.getContext().getClientDetailsService().getByClientId(param.getClientId());
+        OAuth2Util.validClientDetail(clientDetail);
 
         String responseType = param.getResponseType();
-        UserDetails userDetails = IhaServer.getUser(request);
+        UserDetails userDetails = IhaSecurity.getUser();
         String url = generateResponseUrl(param, responseType, clientDetail, userDetails, EndpointUtil.getIssuer(request));
-        return new IhaServerResponse<String, String>().data(url);
+        return IhaResponse.ok(url);
     }
 
     /**
      * Generate callback url
      *
-     * @param param        Parameters in the current HTTP request
-     * @param responseType oauth authorized response type
-     * @param clientDetail Currently authorized client
+     * @param param         Parameters in the current HTTP request
+     * @param responseType  oauth authorized response type
+     * @param clientDetails Currently authorized client
      * @return Callback url
      */
-    private String generateResponseUrl(IhaServerRequestParam param, String responseType, ClientDetails clientDetail, UserDetails userDetails, String issuer) {
-        if (ResponseType.CODE.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateAuthorizationCodeResponse(userDetails, param, clientDetail);
+    private String generateResponseUrl(IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
+        ExtensionLoader<AuthorizationProvider, String> loader = ExtensionLoader.getLoader(AuthorizationProvider.class);
+        AuthorizationProvider provider = loader.getFirst(responseType);
+        if (provider == null) {
+            // none
+            provider = loader.getFirst(ResponseType.NONE.getType());
         }
-        if (ResponseType.TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateImplicitGrantResponse(userDetails, param, clientDetail, issuer);
-        }
-        if (ResponseType.ID_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateIdTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
-        }
-        if (ResponseType.ID_TOKEN_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateIdTokenTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
-        }
-        if (ResponseType.CODE_ID_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateCodeIdTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
-        }
-        if (ResponseType.CODE_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateCodeTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
-        }
-        if (ResponseType.CODE_ID_TOKEN_TOKEN.getType().equalsIgnoreCase(responseType)) {
-            return idsAuthorizationProvider.generateCodeIdTokenTokenAuthorizationResponse(userDetails, param, clientDetail, issuer);
-        }
-        // none
-        return idsAuthorizationProvider.generateNoneAuthorizationResponse(param);
+        return provider.generateRedirect(param, responseType, clientDetails, userDetails, issuer);
     }
 }

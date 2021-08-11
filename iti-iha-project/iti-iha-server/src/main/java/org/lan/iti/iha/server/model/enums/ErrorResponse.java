@@ -21,7 +21,7 @@ package org.lan.iti.iha.server.model.enums;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.lan.iti.iha.server.util.StringUtil;
+import org.lan.iti.common.core.util.StringUtil;
 
 /**
  * Authorization error code
@@ -44,7 +44,7 @@ public enum ErrorResponse {
     INVALID_CODE("invalid_code", "The authorization code is invalid or expired."),
     INVALID_USER_CERTIFICATE("invalid_user_certificate", "Invalid user credentials."),
     INVALID_USER_STATUS("invalid_user_status", "Invalid user status, the user may have logged out."),
-    INVALID_JWKS("invalid_jwks", "Invalid jwks json. Please check if `IdsConfig.JwtConfig.jwksJson` is configured correctly."),
+    INVALID_JWKS("invalid_jwks", "Invalid jwks json. Please check if `IhaServerConfig.JwtConfig.jwksJson` is configured correctly."),
     INVALID_CODE_CHALLENGE("invalid_code_challenge", "Illegal request, code challenge verification failed."),
     INVALID_TOKEN("invalid_token", "Invalid token (access token, refresh token, or id token)."),
     INVALID_SCOPE("invalid_scope", "The requested scope parameter is invalid, unknown, or the requested permission scope exceeds the permission scope granted by the data owner."),

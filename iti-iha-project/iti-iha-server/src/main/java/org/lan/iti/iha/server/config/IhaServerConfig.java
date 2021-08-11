@@ -21,11 +21,6 @@ package org.lan.iti.iha.server.config;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.lan.iti.iha.server.IhaServerConstants;
-import org.lan.iti.iha.server.model.enums.ClientAuthenticationMethod;
-import org.lan.iti.iha.server.model.enums.TokenAuthenticationMethod;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author NorthLan
@@ -37,68 +32,76 @@ import java.util.List;
 public class IhaServerConfig {
 
     /**
-     * Get the user name from request through {@code request.getParameter(`usernameField`)}, which defaults to "username"
+     * 开启动态Issuer
      */
-    private String usernameField = "username";
-    /**
-     * Get the password from request through {@code request.getParameter(`passwordField`)}, which defaults to "password"
-     */
-    private String passwordField = "password";
-
     private boolean enableDynamicIssuer;
+
     /**
      * Identity provider
      */
     private String issuer;
+
     /**
      * Login url, the default is {@code /oauth/login}
      */
-    private String loginUrl = IhaServerConstants.LOGIN_URL;
+    private String loginUrl = IhaServerConstants.DEFAULT_LOGIN_URL;
+
     /**
      * error url, the default is {@code /oauth/error}
      */
-    private String errorUrl = IhaServerConstants.ERROR_URL;
+    private String errorUrl = IhaServerConstants.DEFAULT_ERROR_URL;
+
     /**
      * Authorized url, the default is {@code /oauth/authorize}
      */
-    private String authorizeUrl = IhaServerConstants.AUTHORIZE_URL;
+    private String authorizeUrl = IhaServerConstants.DEFAULT_AUTHORIZE_URL;
+
     /**
      * Automatically authorized url (do not display the authorization page), Must support get request method,
      * the default is {@code /oauth/authorize/auto}
      */
-    private String authorizeAutoApproveUrl = IhaServerConstants.AUTHORIZE_AUTO_APPROVE_URL;
+    private String authorizeAutoApproveUrl = IhaServerConstants.DEFAULT_AUTHORIZE_AUTO_APPROVE_URL;
+
     /**
      * token url, the default is {@code /oauth/token}
      */
-    private String tokenUrl = IhaServerConstants.TOKEN_URL;
+    private String tokenUrl = IhaServerConstants.DEFAULT_TOKEN_URL;
+
     /**
      * userinfo url, the default is {@code /oauth/userinfo}
      */
-    private String userinfoUrl = IhaServerConstants.USERINFO_URL;
+    private String userinfoUrl = IhaServerConstants.DEFAULT_USERINFO_URL;
+
     /**
      * Register the the client detail, the default is {@code /oauth/registration}
      */
-    private String registrationUrl = IhaServerConstants.REGISTRATION_URL;
+    private String registrationUrl = IhaServerConstants.DEFAULT_REGISTRATION_URL;
+
     /**
      * logout url, the default is {@code /oauth/logout}
      */
-    private String endSessionUrl = IhaServerConstants.END_SESSION_URL;
+    private String endSessionUrl = IhaServerConstants.DEFAULT_END_SESSION_URL;
+
     /**
      * check session url, the default is {@code /oauth/check_session}
      */
-    private String checkSessionUrl = IhaServerConstants.CHECK_SESSION_URL;
+    private String checkSessionUrl = IhaServerConstants.DEFAULT_CHECK_SESSION_URL;
+
     /**
-     * After logout, redirect to {@code logoutRedirectUrl}. Default is `/`
+     * After logout, redirect to {@code logoutRedirectUrl}. Default is `/logout`
      */
-    private String logoutRedirectUrl = IhaServerConstants.LOGOUT_REDIRECT_URL;
+    private String logoutRedirectUrl = IhaServerConstants.DEFAULT_LOGOUT_REDIRECT_URL;
+
     /**
      * public key url, the default is {@code /.well-known/jwks.json}
      */
-    private String jwksUrl = IhaServerConstants.JWKS_URL;
+    private String jwksUrl = IhaServerConstants.DEFAULT_JWKS_URL;
+
     /**
      * Get open id provider metadata, the default is {@code /.well-known/openid-configuration}
      */
-    private String discoveryUrl = IhaServerConstants.DISCOVERY_URL;
+    private String discoveryUrl = IhaServerConstants.DEFAULT_DISCOVERY_URL;
+
     /**
      * Login page url, the default is {@link org.lan.iti.iha.server.config.IhaServerConfig#loginUrl}
      */
@@ -112,23 +115,13 @@ public class IhaServerConfig {
     /**
      * The user confirms the authorized url, the default is {@code issuer + /oauth/confirm}
      */
-    private String confirmPageUrl = IhaServerConstants.CONFIRM_URL;
+    private String confirmPageUrl = IhaServerConstants.DEFAULT_CONFIRM_URL;
 
     /**
      * When the authorization confirmation page is not provided by an authorized service (the authorization confirmation page is hosted by other services),
      * this configuration needs to be turned on
      */
     private boolean externalConfirmPageUrl;
-
-    /**
-     * When requesting api, the way to pass token
-     */
-    private List<TokenAuthenticationMethod> tokenAuthenticationMethods = Collections.singletonList(TokenAuthenticationMethod.ALL);
-
-    /**
-     * When requesting the token endpoint, the way to pass the client secret
-     */
-    private List<ClientAuthenticationMethod> clientAuthenticationMethods = Collections.singletonList(ClientAuthenticationMethod.ALL);
 
     /**
      * Generate/verify the global configuration of jwt token.

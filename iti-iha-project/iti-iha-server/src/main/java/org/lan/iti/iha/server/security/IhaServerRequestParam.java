@@ -16,18 +16,19 @@
  *
  */
 
-package org.lan.iti.iha.server.model;
+package org.lan.iti.iha.server.security;
 
 import cn.hutool.core.util.StrUtil;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.lan.iti.iha.core.model.Mapped;
+import org.lan.iti.iha.oauth2.ClientCertificate;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
 import org.lan.iti.iha.oauth2.pkce.PkceParams;
 import org.lan.iti.iha.oidc.OidcParameterNames;
+import org.lan.iti.iha.security.mgt.RequestParameter;
 import org.lan.iti.iha.server.IhaServerConstants;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -36,88 +37,108 @@ import java.util.Map;
  * @url https://noahlan.com
  */
 @EqualsAndHashCode(callSuper = true)
-@Data
-@NoArgsConstructor
-public class IhaServerRequestParam extends Mapped {
+public class IhaServerRequestParam extends RequestParameter {
     private static final long serialVersionUID = -2276207187946980706L;
 
-    private String usernameField;
-    private String passwordField;
+    public IhaServerRequestParam() {
+    }
 
-    public IhaServerRequestParam(Map<String, ?> map) {
-        super(map);
+    public IhaServerRequestParam(HttpServletRequest request) {
+        super(request);
+    }
+
+    public IhaServerRequestParam(Map<? extends String, ?> m) {
+        super(m);
+    }
+
+    public IhaServerRequestParam(HttpServletRequest request, HttpServletResponse response) {
+        super(request, response);
+    }
+
+    public IhaServerRequestParam setClient(ClientCertificate certificate) {
+        this.put(OAuth2ParameterNames.CLIENT_ID, certificate.getId());
+        this.put(OAuth2ParameterNames.CLIENT_SECRET, certificate.getSecret());
+        return this;
     }
 
     public void setScope(String scopes) {
-        map(OAuth2ParameterNames.SCOPE, scopes);
-    }
-
-    public String getClientId() {
-        return map(OAuth2ParameterNames.CLIENT_ID);
-    }
-
-    public String getClientSecret() {
-        return map(OAuth2ParameterNames.CLIENT_SECRET);
-    }
-
-    public String getGrantType() {
-        return map(OAuth2ParameterNames.GRANT_TYPE);
-    }
-
-    public String getCode() {
-        return map(OAuth2ParameterNames.CODE);
-    }
-
-    public String getRedirectUri() {
-        return map(OAuth2ParameterNames.REDIRECT_URI);
-    }
-
-    public String getScope() {
-        return map(OAuth2ParameterNames.SCOPE);
-    }
-
-    public String getState() {
-        return map(OAuth2ParameterNames.STATE);
-    }
-
-    public String getAccessToken() {
-        return map(OAuth2ParameterNames.ACCESS_TOKEN);
-    }
-
-    public String getRefreshToken() {
-        return map(OAuth2ParameterNames.REFRESH_TOKEN);
-    }
-
-    public String getResponseType() {
-        return map(OAuth2ParameterNames.RESPONSE_TYPE);
-    }
-
-    public String getUid() {
-        return map(IhaServerConstants.UID);
-    }
-
-    public String getAutoApprove() {
-        return map(OAuth2ParameterNames.AUTOAPPROVE);
+        put(OAuth2ParameterNames.SCOPE, scopes);
     }
 
     public String getUsername() {
-        return map(StrUtil.isEmpty(usernameField) ? OAuth2ParameterNames.USERNAME : usernameField);
+        return getByKey(OAuth2ParameterNames.USERNAME);
     }
 
     public String getPassword() {
-        return map(StrUtil.isEmpty(passwordField) ? OAuth2ParameterNames.PASSWORD : passwordField);
+        return getByKey(OAuth2ParameterNames.PASSWORD);
+    }
+
+    public String getAppId() {
+        return getByKey(IhaServerConstants.APP_ID);
+    }
+
+    public String getAppDomain() {
+        return getByKey(IhaServerConstants.APP_DOMAIN);
+    }
+
+    public String getClientId() {
+        return getByKey(OAuth2ParameterNames.CLIENT_ID);
+    }
+
+    public String getClientSecret() {
+        return getByKey(OAuth2ParameterNames.CLIENT_SECRET);
+    }
+
+    public String getGrantType() {
+        return getByKey(OAuth2ParameterNames.GRANT_TYPE);
+    }
+
+    public String getCode() {
+        return getByKey(OAuth2ParameterNames.CODE);
+    }
+
+    public String getRedirectUri() {
+        return getByKey(OAuth2ParameterNames.REDIRECT_URI);
+    }
+
+    public String getScope() {
+        return getByKey(OAuth2ParameterNames.SCOPE);
+    }
+
+    public String getState() {
+        return getByKey(OAuth2ParameterNames.STATE);
+    }
+
+    public String getAccessToken() {
+        return getByKey(OAuth2ParameterNames.ACCESS_TOKEN);
+    }
+
+    public String getRefreshToken() {
+        return getByKey(OAuth2ParameterNames.REFRESH_TOKEN);
+    }
+
+    public String getResponseType() {
+        return getByKey(OAuth2ParameterNames.RESPONSE_TYPE);
+    }
+
+    public String getUid() {
+        return getByKey(IhaServerConstants.UID);
+    }
+
+    public String getAutoApprove() {
+        return getByKey(OAuth2ParameterNames.AUTOAPPROVE);
     }
 
     public String getCodeVerifier() {
-        return map(PkceParams.CODE_VERIFIER);
+        return getByKey(PkceParams.CODE_VERIFIER);
     }
 
     public String getCodeChallengeMethod() {
-        return map(PkceParams.CODE_CHALLENGE_METHOD);
+        return getByKey(PkceParams.CODE_CHALLENGE_METHOD);
     }
 
     public String getCodeChallenge() {
-        return map(PkceParams.CODE_CHALLENGE);
+        return getByKey(PkceParams.CODE_CHALLENGE);
     }
 
 
@@ -127,14 +148,14 @@ public class IhaServerRequestParam extends Mapped {
      * optional, The nonce parameter value needs to include per-session state and be unguessable to attackers
      */
     public String getNonce() {
-        return map(OidcParameterNames.NONCE);
+        return getByKey(OidcParameterNames.NONCE);
     }
 
     /**
      * Optional. The newly defined parameter of oidc (oauth 2.0 form post response mode) is used to specify how the authorization endpoint returns data.
      */
     public String getResponseMode() {
-        return map(OidcParameterNames.RESPONSE_MODE);
+        return getByKey(OidcParameterNames.RESPONSE_MODE);
     }
 
     /**
@@ -151,7 +172,7 @@ public class IhaServerRequestParam extends Mapped {
      * <strong>wap</strong> - The Authorization Server SHOULD display the authentication and consent UI consistent with a "feature phone" type display.
      */
     public String getDisplay() {
-        return map(OidcParameterNames.DISPLAY);
+        return getByKey(OidcParameterNames.DISPLAY);
     }
 
     /**
@@ -176,7 +197,7 @@ public class IhaServerRequestParam extends Mapped {
      * it MUST return an error, typically account_selection_required.
      */
     public String getPrompt() {
-        return map(OidcParameterNames.PROMPT);
+        return getByKey(OidcParameterNames.PROMPT);
     }
 
     /**
@@ -185,7 +206,7 @@ public class IhaServerRequestParam extends Mapped {
      * if the setting is 20 minutes, if the time is exceeded, you need to guide eu to re-authenticate.
      */
     public String getAuthTime() {
-        return map(OidcParameterNames.AUTH_TIME);
+        return getByKey(OidcParameterNames.AUTH_TIME);
     }
 
     /**
@@ -193,7 +214,7 @@ public class IhaServerRequestParam extends Mapped {
      * if there is an error, it returns a corresponding error prompt.
      */
     public String getIdTokenHint() {
-        return map(OidcParameterNames.ID_TOKEN_HINT);
+        return getByKey(OidcParameterNames.ID_TOKEN_HINT);
     }
 
     /**
@@ -202,7 +223,7 @@ public class IhaServerRequestParam extends Mapped {
      * with the values appearing in order of preference
      */
     public String getAcr() {
-        return map(OidcParameterNames.ACR);
+        return getByKey(OidcParameterNames.ACR);
     }
 
     public boolean isEnablePkce() {

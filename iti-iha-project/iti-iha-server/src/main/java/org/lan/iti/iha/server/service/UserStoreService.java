@@ -18,9 +18,9 @@
 
 package org.lan.iti.iha.server.service;
 
-import org.lan.iti.iha.server.model.UserDetails;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 

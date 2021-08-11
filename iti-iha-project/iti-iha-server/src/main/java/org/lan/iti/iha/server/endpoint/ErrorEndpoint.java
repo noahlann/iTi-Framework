@@ -18,9 +18,9 @@
 
 package org.lan.iti.iha.server.endpoint;
 
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.core.util.RequestUtil;
 import org.lan.iti.iha.server.model.enums.ErrorResponse;
-import org.lan.iti.iha.server.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

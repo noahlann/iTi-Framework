@@ -18,11 +18,12 @@
 
 package org.lan.iti.iha.server.service;
 
-import org.lan.iti.iha.server.exception.IhaServerException;
-import org.lan.iti.iha.server.model.IhaServerRequestParam;
-import org.lan.iti.iha.server.model.UserDetails;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
+import org.lan.iti.iha.security.userdetails.UserDetails;
+import org.lan.iti.iha.security.userdetails.UserDetailsService;
+import org.lan.iti.iha.server.exception.IhaServerException;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 
 /**
  * @author NorthLan
@@ -30,7 +31,7 @@ import org.lan.iti.common.extension.annotation.Extension;
  * @url https://noahlan.com
  */
 @Extension
-public interface UserDetailService extends IExtension<Object> {
+public interface IhaUserDetailService extends UserDetailsService, IExtension<Object> {
     @Override
     default boolean matches(Object params) {
         return true;

@@ -35,19 +35,19 @@ import org.jose4j.keys.resolvers.HttpsJwksVerificationKeyResolver;
 import org.jose4j.keys.resolvers.JwksVerificationKeyResolver;
 import org.jose4j.keys.resolvers.VerificationKeyResolver;
 import org.jose4j.lang.JoseException;
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.oidc.OidcParameterNames;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.IhaServer;
 import org.lan.iti.iha.server.config.IhaServerConfig;
 import org.lan.iti.iha.server.config.JwtConfig;
 import org.lan.iti.iha.server.exception.IhaTokenException;
 import org.lan.iti.iha.server.exception.InvalidJwksException;
 import org.lan.iti.iha.server.exception.InvalidTokenException;
-import org.lan.iti.iha.server.model.UserDetails;
 import org.lan.iti.iha.server.model.enums.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * simple JSON Web Key generator：https://mkjwk.org/?spm=a2c4g.11186623.2.33.4b2040ecxvsKD7
@@ -66,7 +66,7 @@ public class JwtUtil {
      * https://bitbucket.org/b_c/jose4j/wiki/JWT%20Examples
      *
      * @param clientId      Client Identifier
-     * @param userDetails   User Profile
+     * @param userDetails          User Profile
      * @param tokenExpireIn Id Token validity (seconds)
      * @param nonce         Random string
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
@@ -80,7 +80,7 @@ public class JwtUtil {
      * https://bitbucket.org/b_c/jose4j/wiki/JWT%20Examples
      *
      * @param clientId      Client Identifier
-     * @param userDetails   User Profile
+     * @param userDetails          User Profile
      * @param tokenExpireIn Id Token validity (seconds)
      * @param nonce         Random string
      * @param scopes        Scopes
@@ -88,7 +88,7 @@ public class JwtUtil {
      * @param issuer        The issuer name. This parameter cannot contain the colon (:) character.
      * @return jwt token
      */
-    public static String createJwtToken(String clientId, UserDetails userDetails, Long tokenExpireIn, String nonce, Set<String> scopes, String responseType, String issuer) {
+    public static String createJwtToken(String clientId, UserDetails userDetails, Long tokenExpireIn, String nonce, List<String> scopes, String responseType, String issuer) {
         JwtClaims claims = new JwtClaims();
 
         // required
@@ -124,7 +124,7 @@ public class JwtUtil {
         if (null == jwtConfig) {
             throw new InvalidJwksException("Unable to create Jwt Token: jwt config cannot be empty.");
         }
-        PublicJsonWebKey publicJsonWebKey = IdsVerificationKeyResolver.createPublicJsonWebKey(jwtConfig.getJwksKeyId(), jwtConfig.getJwksJson(), jwtConfig.getTokenSigningAlg());
+        PublicJsonWebKey publicJsonWebKey = IhaVerificationKeyResolver.createPublicJsonWebKey(jwtConfig.getJwksKeyId(), jwtConfig.getJwksJson(), jwtConfig.getTokenSigningAlg());
         if (null == publicJsonWebKey) {
             throw new InvalidJwksException("Unable to create Jwt Token: Unable to create public json web key.");
         }
@@ -155,7 +155,7 @@ public class JwtUtil {
         return idToken;
     }
 
-    private static void setUserInfoClaim(UserDetails userDetails, Set<String> scopes, String responseType, JwtClaims claims) {
+    private static void setUserInfoClaim(UserDetails userDetails, List<String> scopes, String responseType, JwtClaims claims) {
         if (null != userDetails) {
             // If you include other claim reference: https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
             claims.setStringClaim("username", userDetails.getUsername());
@@ -222,7 +222,7 @@ public class JwtUtil {
             throw new InvalidJwksException("Unable to parse Jwt Token: jwt config cannot be empty.");
         }
 
-        PublicJsonWebKey publicJsonWebKey = IdsVerificationKeyResolver.createPublicJsonWebKey(jwtConfig.getJwksKeyId(), jwtConfig.getJwksJson(), jwtConfig.getTokenSigningAlg());
+        PublicJsonWebKey publicJsonWebKey = IhaVerificationKeyResolver.createPublicJsonWebKey(jwtConfig.getJwksKeyId(), jwtConfig.getJwksJson(), jwtConfig.getTokenSigningAlg());
         if (null == publicJsonWebKey) {
             throw new InvalidJwksException("Unable to parse Jwt Token: Unable to create public json web key.");
         }
@@ -278,13 +278,13 @@ public class JwtUtil {
             } else if (jwtVerificationType == JwtVerificationType.JWKS) {
                 // There's also a key resolver that selects from among a given list of JWKs using the Key ID
                 // and other factors provided in the header of the JWS/JWT.
-                JsonWebKeySet jsonWebKeySet = IdsVerificationKeyResolver.createJsonWebKeySet(jwtConfig.getJwksJson());
+                JsonWebKeySet jsonWebKeySet = IhaVerificationKeyResolver.createJsonWebKeySet(jwtConfig.getJwksJson());
                 JwksVerificationKeyResolver jwksResolver = new JwksVerificationKeyResolver(jsonWebKeySet.getJsonWebKeys());
                 jwtConsumerBuilder.setVerificationKeyResolver(jwksResolver);
             }
         }
 
-        PublicJsonWebKey publicJsonWebKey = IdsVerificationKeyResolver.createPublicJsonWebKey(jwtConfig.getJwksKeyId(), jwtConfig.getJwksJson(), jwtConfig.getTokenSigningAlg());
+        PublicJsonWebKey publicJsonWebKey = IhaVerificationKeyResolver.createPublicJsonWebKey(jwtConfig.getJwksKeyId(), jwtConfig.getJwksJson(), jwtConfig.getTokenSigningAlg());
         if (null == publicJsonWebKey) {
             throw new InvalidJwksException("Unable to verify Jwt Token: Unable to create public json web key.");
         }
@@ -333,7 +333,7 @@ public class JwtUtil {
         }
     }
 
-    public static class IdsVerificationKeyResolver {
+    public static class IhaVerificationKeyResolver {
 
         public static JsonWebKeySet createJsonWebKeySet(String jwksJson) {
             InvalidJwksException invalidJwksException = new InvalidJwksException(ErrorResponse.INVALID_JWKS);

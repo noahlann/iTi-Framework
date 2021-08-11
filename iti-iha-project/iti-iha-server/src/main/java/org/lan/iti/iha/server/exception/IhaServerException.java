@@ -33,21 +33,21 @@ public class IhaServerException extends RuntimeException {
     private static final long serialVersionUID = -2756293597924366129L;
 
     private String error;
-    private String errorDescription;
+    private String message;
 
     public IhaServerException(String message) {
         super(message);
-        this.errorDescription = message;
+        this.message = message;
     }
 
-    public IhaServerException(String error, String errorDescription) {
-        super(error + ": " + errorDescription);
+    public IhaServerException(String error, String message) {
+        super(error + ": " + message);
         this.error = error;
-        this.errorDescription = errorDescription;
+        this.message = message;
     }
 
     public IhaServerException(ErrorResponse errorResponse) {
         this.error = errorResponse.getError();
-        this.errorDescription = errorResponse.getErrorDescription();
+        this.message = errorResponse.getErrorDescription();
     }
 }

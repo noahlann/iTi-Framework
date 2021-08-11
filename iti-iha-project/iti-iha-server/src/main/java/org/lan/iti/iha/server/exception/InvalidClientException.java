@@ -25,7 +25,7 @@ import org.lan.iti.iha.server.model.enums.ErrorResponse;
  * @date 2021-07-06
  * @url https://noahlan.com
  */
-public class InvalidClientException extends IhaServerException{
+public class InvalidClientException extends IhaServerException {
     private static final long serialVersionUID = 5505917675834143534L;
 
     public InvalidClientException(ErrorResponse errorResponse) {

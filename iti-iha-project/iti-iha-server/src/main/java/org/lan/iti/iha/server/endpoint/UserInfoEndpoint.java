@@ -19,20 +19,21 @@
 package org.lan.iti.iha.server.endpoint;
 
 import com.xkcoding.json.JsonUtil;
-import org.lan.iti.iha.server.IhaServer;
+import org.lan.iti.common.core.util.StringUtil;
+import org.lan.iti.iha.core.result.IhaResponse;
+import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.userdetails.UserDetails;
+import org.lan.iti.iha.server.IhaServerConstants;
 import org.lan.iti.iha.server.exception.IhaServerException;
 import org.lan.iti.iha.server.exception.InvalidTokenException;
 import org.lan.iti.iha.server.model.AccessToken;
-import org.lan.iti.iha.server.model.IhaServerResponse;
-import org.lan.iti.iha.server.model.UserDetails;
 import org.lan.iti.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.iha.server.model.enums.ScopeClaimsMapping;
-import org.lan.iti.iha.server.util.StringUtil;
 import org.lan.iti.iha.server.util.TokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author NorthLan
@@ -44,24 +45,24 @@ public class UserInfoEndpoint extends AbstractEndpoint {
      * Get the currently logged-in user information through the access token
      *
      * @param request current HTTP request
-     * @return IdsResponse
+     * @return IhaResponse
      * @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfo" target="_blank">5.3.  UserInfo Endpoint</a>
      * @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse" target="_blank">5.3.2.  Successful UserInfo Response</a>
      * @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims" target="_blank">5.4.  Requesting Claims using Scope Values</a>
      */
-    public IhaServerResponse<String, Object> getCurrentUserInfo(HttpServletRequest request) {
+    public IhaResponse getCurrentUserInfo(HttpServletRequest request) {
         String accessTokenStr = TokenUtil.getAccessToken(request);
         AccessToken accessToken = TokenUtil.getByAccessToken(accessTokenStr);
 
         if (null == accessToken) {
             throw new InvalidTokenException(ErrorResponse.INVALID_TOKEN);
         }
-        UserDetails userDetails = IhaServer.getContext().getUserDetailService().getById(accessToken.getUserId());
+        UserDetails userDetails = IhaSecurity.getContext().getUserDetailsService().loadById(accessToken.getUserId());
         if (null == userDetails) {
             throw new IhaServerException(ErrorResponse.ACCESS_DENIED);
         }
         String scope = accessToken.getScope();
-        Set<String> scopes = StringUtil.convertStrToList(scope);
+        List<String> scopes = StringUtil.split(scope, IhaServerConstants.SPACE);
         Map<String, Object> userInfoMap = JsonUtil.parseKv(JsonUtil.toJsonString(userDetails));
         // This scope value requests access to the End-User's default profile Claims,
         // which are: name, family_name, given_name, middle_name, nickname, preferred_username, profile, picture, website, gender, birthdate, zoneinfo, locale, and updated_at.
@@ -84,9 +85,7 @@ public class UserInfoEndpoint extends AbstractEndpoint {
         if (!scopes.contains("roles")) {
             removeClaims(userInfoMap, ScopeClaimsMapping.ROLES);
         }
-        IhaServerResponse<String, Object> idsResponse = new IhaServerResponse<>();
-        idsResponse.putAll(userInfoMap);
-        return idsResponse;
+        return IhaResponse.empty().putMap(userInfoMap);
     }
 
     private void removeClaims(Map<String, Object> userInfoMap, ScopeClaimsMapping claimsMapping) {

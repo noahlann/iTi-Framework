@@ -49,7 +49,15 @@
         <!-- Compile -->
         <dependency>
             <groupId>org.lan</groupId>
+            <artifactId>iti-iha-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lan</groupId>
             <artifactId>iti-iha-oidc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-iha-simple</artifactId>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>

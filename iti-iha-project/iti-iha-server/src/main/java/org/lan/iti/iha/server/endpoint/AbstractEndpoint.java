@@ -18,14 +18,6 @@
 
 package org.lan.iti.iha.server.endpoint;
 
-import org.lan.iti.iha.server.model.UserDetails;
-import org.lan.iti.iha.server.pipeline.Pipeline;
-import org.lan.iti.iha.server.service.OAuth2Service;
-import org.lan.iti.iha.server.service.impl.OAuth2ServiceImpl;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 /**
  * Abstract classes common to various endpoints
  *
@@ -34,26 +26,4 @@ import javax.servlet.ServletResponse;
  * @url https://noahlan.com
  */
 public abstract class AbstractEndpoint {
-    protected final OAuth2Service oAuth2Service;
-
-    public AbstractEndpoint() {
-        this.oAuth2Service = new OAuth2ServiceImpl();
-    }
-
-    protected Pipeline<UserDetails> getUserInfoIdsPipeline(Pipeline<UserDetails> idsSigninPipeline) {
-        if (null == idsSigninPipeline) {
-            idsSigninPipeline = new Pipeline<UserDetails>() {
-                @Override
-                public boolean preHandle(ServletRequest servletRequest, ServletResponse servletResponse) {
-                    return Pipeline.super.preHandle(servletRequest, servletResponse);
-                }
-
-                @Override
-                public UserDetails postHandle(ServletRequest servletRequest, ServletResponse servletResponse) {
-                    return Pipeline.super.postHandle(servletRequest, servletResponse);
-                }
-            };
-        }
-        return idsSigninPipeline;
-    }
 }
