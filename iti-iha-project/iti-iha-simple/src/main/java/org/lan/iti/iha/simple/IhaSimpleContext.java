@@ -18,35 +18,22 @@
 
 package org.lan.iti.iha.simple;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import lombok.experimental.SuperBuilder;
-import org.lan.iti.iha.core.model.AbstractCredentials;
-
-import java.util.Map;
 
 /**
+ * Simple Context
+ *
  * @author NorthLan
- * @date 2021-07-07
- * @url https://noahlan.com
+ * @date 2021/8/6
+ * @url https://blog.noahlan.com
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class SimpleCredentials extends AbstractCredentials {
-    private static final long serialVersionUID = -413528654736698197L;
+@Builder
+public class IhaSimpleContext {
 
-    private String principal;
-    private String code;
-    private String password;
-    private String type;
-
-    private Map<String, String> extra;
-    private boolean rememberMe;
+    @Builder.Default
+    private SimpleConfig config = new SimpleConfig();
 }

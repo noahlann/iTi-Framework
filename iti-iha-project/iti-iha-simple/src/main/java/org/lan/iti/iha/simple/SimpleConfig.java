@@ -37,12 +37,12 @@ public class SimpleConfig extends AuthenticateConfig {
     /**
      * Get the user principal(username/mobile/email) from request through {@code request.getParameter(`usernameField`)}, which defaults to "username"
      */
-    private String principalField = "username";
+    private String principalField = "principal";
 
     /**
-     * Get the password from request through {@code request.getParameter(`passwordField`)}, which defaults to "password"
+     * Get the password from request through {@code request.getParameter(`credentialsField`)}, which defaults to "password"
      */
-    private String passwordField = "password";
+    private String credentialsField = "credentials";
 
     /**
      * Get the validation code from request through {@code request.getParameter(`codeField`)}, which defaults to "code"

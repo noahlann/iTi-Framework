@@ -16,15 +16,20 @@
  *
  */
 
-package org.lan.iti.iha.simple;
+package org.lan.iti.iha.simple.security;
+
+import org.lan.iti.iha.security.processor.AuthenticationProcessor;
+import org.lan.iti.iha.security.processor.ProcessorType;
 
 /**
  * @author NorthLan
- * @date 2021-07-07
- * @url https://noahlan.com
+ * @date 2021/8/5
+ * @url https://blog.noahlan.com
  */
-public interface AuthenticationTypes {
-    String USERNAME = "username";
-    String MOBILE = "mobile";
-    String EMAIL = "email";
+public abstract class AbstractSimpleAuthenticationProcessor implements AuthenticationProcessor {
+
+    @Override
+    public boolean matches(String params) {
+        return ProcessorType.SIMPLE.equals(params);
+    }
 }

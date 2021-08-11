@@ -25,7 +25,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.MD5;
 import lombok.experimental.UtilityClass;
 import org.lan.iti.iha.core.exception.IhaException;
-import org.lan.iti.iha.core.result.IhaErrorCode;
+import org.lan.iti.iha.core.result.IhaResponseCode;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
@@ -59,45 +59,50 @@ public class RememberMeUtils {
     /**
      * Encrypted acquisition instance.
      *
-     * @param simpleConfig config
-     * @param principal    principal
+     * @param maxAge    maxAge
+     * @param salt      md5 salt
+     * @param principal principal
      * @return RememberMeDetails
      */
-    public static RememberMeDetails encode(SimpleConfig simpleConfig, String principal) {
-        long expiryTime = System.currentTimeMillis() + simpleConfig.getRememberMeCookieMaxAge();
+    public static RememberMeDetails encode(long maxAge, String salt, String principal, String type) {
+        long expiryTime = System.currentTimeMillis() + maxAge;
         // principal:type:tokenExpiryTime
-        String md5Data = principal + DEFAULT_DELIMITER + expiryTime;
-        String md5Key = digestHex16(simpleConfig.getCredentialEncryptSalt(), md5Data);
-        // principal:tokenExpiryTime:key
+        String md5Data = principal + DEFAULT_DELIMITER + type + DEFAULT_DELIMITER + expiryTime;
+        String md5Key = digestHex16(salt, md5Data);
+        // principal:type:tokenExpiryTime:key
         String base64Data = md5Data + DEFAULT_DELIMITER + md5Key;
         return RememberMeDetails.builder()
                 .principal(principal)
                 .expiryTime(expiryTime)
+                .type(type)
                 .encoded(Base64.encode(base64Data))
                 .build();
     }
 
     /**
      * Decryption acquisition instance.
+     * <p>
+     * principal:type:tokenExpiryTime:key
      *
-     * @param simpleConfig config
-     * @param cookieValue  cookie value
+     * @param salt        MD5 salt
+     * @param cookieValue cookie value
      * @return RememberMeDetails
      */
-    public static RememberMeDetails decode(SimpleConfig simpleConfig, String cookieValue) throws IhaException {
+    public static RememberMeDetails decode(String salt, String cookieValue) throws IhaException {
         String base64DecodeValue;
         try {
             base64DecodeValue = Base64.decodeStr(cookieValue);
         } catch (RuntimeException e) {
-            throw new IhaException(IhaErrorCode.INVALID_REMEMBER_ME_COOKIE);
+            throw new IhaException(IhaResponseCode.INVALID_REMEMBER_ME_COOKIE);
         }
         String[] base64DecodeValueSplitArray = StrUtil.splitToArray(base64DecodeValue, DEFAULT_DELIMITER);
         // Check and validate keys
-        if (base64DecodeValueSplitArray.length > 2) {
+        if (base64DecodeValueSplitArray.length > 3) {
             String principal = base64DecodeValueSplitArray[0];
+            String type = base64DecodeValueSplitArray[1];
             long expiryTime;
             try {
-                expiryTime = Long.parseLong(base64DecodeValueSplitArray[1]);
+                expiryTime = Long.parseLong(base64DecodeValueSplitArray[2]);
             } catch (RuntimeException e) {
                 return null;
             }
@@ -106,13 +111,14 @@ public class RememberMeUtils {
                 return null;
             }
             // principal:tokenExpiryTime
-            String md5Data = principal + DEFAULT_DELIMITER + expiryTime;
-            String md5Key = digestHex16(simpleConfig.getCredentialEncryptSalt(), md5Data);
+            String md5Data = principal + DEFAULT_DELIMITER + type + DEFAULT_DELIMITER + expiryTime;
+            String md5Key = digestHex16(salt, md5Data);
             // Check pass returns
-            if (ObjectUtil.equal(md5Key, base64DecodeValueSplitArray[2])) {
+            if (ObjectUtil.equal(md5Key, base64DecodeValueSplitArray[3])) {
                 return RememberMeDetails.builder()
                         .principal(principal)
                         .expiryTime(expiryTime)
+                        .type(type)
                         .encoded(cookieValue)
                         .build();
             }
