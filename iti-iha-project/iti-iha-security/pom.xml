@@ -21,32 +21,35 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>iti-framework</artifactId>
         <groupId>org.lan</groupId>
+        <artifactId>iti-iha-parent</artifactId>
         <version>${revision}</version>
+        <relativePath>../iti-iha-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>iTi :: IHA :: Project</name>
-    <artifactId>iti-iha-project</artifactId>
-    <packaging>pom</packaging>
+    <name>iTi :: IHA :: Security</name>
+    <artifactId>iti-iha-security</artifactId>
+    <packaging>jar</packaging>
+
+    <description>IHA-安全框架</description>
+
+    <developers>
+        <developer>
+            <id>NorthLan</id>
+            <name>NorthLan</name>
+        </developer>
+    </developers>
 
     <properties>
-        <main.basedir>${basedir}/..</main.basedir>
+        <main.basedir>${basedir}/../..</main.basedir>
     </properties>
 
-    <modules>
-        <module>iti-iha-dependencies</module>
-        <module>iti-iha-parent</module>
-        <module>iti-iha-core</module>
-        <module>iti-iha-mfa</module>
-        <module>iti-iha-oauth2</module>
-        <module>iti-iha-oidc</module>
-        <module>iti-iha-server</module>
-        <module>iti-iha-simple</module>
-        <module>iti-iha-social</module>
-        <module>iti-iha-sso</module>
-        <module>iti-iha-security</module>
-    </modules>
-
+    <dependencies>
+        <!-- Compile -->
+        <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-iha-core</artifactId>
+        </dependency>
+    </dependencies>
 </project>

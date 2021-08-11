@@ -129,6 +129,11 @@
                 <artifactId>iti-iha-sso</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>org.lan</groupId>
+                <artifactId>iti-iha-security</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
