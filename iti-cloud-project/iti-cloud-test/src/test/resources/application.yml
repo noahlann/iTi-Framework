@@ -1,0 +1,17 @@
+server:
+  port: 19999
+
+iti:
+  swagger:
+    enabled: false
+
+
+logging:
+  level:
+    root: info
+    org.lan.iti.common.extension.adapter: debug
+    org.lan.iti.cloud.extension: debug
+
+axon:
+  axonserver:
+    servers: 192.168.1.100:11001
