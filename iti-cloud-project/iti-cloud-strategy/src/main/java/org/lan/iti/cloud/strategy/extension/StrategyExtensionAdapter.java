@@ -18,6 +18,7 @@
 
 package org.lan.iti.cloud.strategy.extension;
 
+import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.cloud.strategy.IStrategy;
 import org.lan.iti.cloud.strategy.annotation.Strategy;
 import org.lan.iti.common.extension.adapter.AbstractExtensionAdapter;
@@ -33,6 +34,7 @@ import java.util.function.Function;
  * @date 2021-07-12
  * @url https://noahlan.com
  */
+@Slf4j
 public class StrategyExtensionAdapter extends AbstractExtensionAdapter {
     private ApplicationContext applicationContext;
 
@@ -58,6 +60,9 @@ public class StrategyExtensionAdapter extends AbstractExtensionAdapter {
 
     @Override
     public void init() {
+        if (log.isDebugEnabled()) {
+            log.debug("load Strategy by spring.");
+        }
         Map<String, Object> beanMap = applicationContext.getBeansWithAnnotation(Strategy.class);
         for (Map.Entry<String, Object> entry : beanMap.entrySet()) {
             String beanName = entry.getKey();

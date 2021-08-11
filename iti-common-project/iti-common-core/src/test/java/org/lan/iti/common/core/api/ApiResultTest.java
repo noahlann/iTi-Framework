@@ -38,4 +38,12 @@ public class ApiResultTest {
 
         Assertions.assertEquals("{\"code\":200,\"data\":\"23332333\",\"page\":1,\"message\":\"成功\",\"totalElements\":2}", JsonUtil.toJsonString(test));
     }
+
+    @Test
+    public void test2() {
+        ApiResult<String> test = ApiResult.ok("niubi");
+        test.put("haha", "你好啊");
+        Assertions.assertEquals("{\"haha\":\"你好啊\",\"code\":200,\"data\":\"niubi\",\"message\":\"成功\"}",
+                JsonUtil.toJsonString(test));
+    }
 }

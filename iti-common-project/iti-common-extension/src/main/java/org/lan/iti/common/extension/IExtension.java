@@ -18,12 +18,14 @@
 
 package org.lan.iti.common.extension;
 
+import org.lan.iti.common.core.support.Ordered;
+
 /**
  * @author NorthLan
  * @date 2021-07-08
  * @url https://noahlan.com
  */
-public interface IExtension<T> {
+public interface IExtension<T> extends Ordered {
 
     /**
      * 是否匹配
@@ -32,4 +34,9 @@ public interface IExtension<T> {
      * @return true or false
      */
     boolean matches(T params);
+
+    @Override
+    default int getOrder() {
+        return Integer.MAX_VALUE;
+    }
 }

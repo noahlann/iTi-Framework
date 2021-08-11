@@ -38,9 +38,4 @@ public class SpringExtensionParameterBuilder extends AbstractParameterBuilder {
         map.put(SpringExtensionConstants.KEY_APPLICATION_CONTEXT, applicationContext);
         return this;
     }
-
-    public SpringExtensionParameterBuilder beans(Map<String, Object> beans) {
-        map.put(SpringExtensionConstants.KEY_BEANS, beans);
-        return this;
-    }
 }

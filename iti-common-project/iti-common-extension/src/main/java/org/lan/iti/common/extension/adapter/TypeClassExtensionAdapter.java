@@ -43,7 +43,9 @@ public class TypeClassExtensionAdapter extends AbstractExtensionAdapter {
 
     @Override
     public boolean matches(Object params) {
-        return type != null && classes != null;
+        return type != null &&
+                classes != null &&
+                !type.equals(ExtensionFactory.class);
     }
 
     @Override
@@ -60,12 +62,8 @@ public class TypeClassExtensionAdapter extends AbstractExtensionAdapter {
 
     @Override
     public void init() {
-        log.debug("{} init...", this.getClass().getSimpleName());
-        if (type == null || classes == null) {
-            return;
-        }
-        if (type.equals(ExtensionFactory.class)) {
-            return;
+        if (log.isDebugEnabled()) {
+            log.debug("load extension by manual(TypeClass).");
         }
         if (!type.isInterface()) {
             throw new IllegalArgumentException("Extension type (" + type + ") is not an interface!");
@@ -79,6 +77,7 @@ public class TypeClassExtensionAdapter extends AbstractExtensionAdapter {
 //        }
         // TODO check classes if subType of type
         // add all given classes
+
         for (Class<?> clazz : classes) {
             getExtensionClass.apply(type).cache(clazz.getSimpleName(), clazz);
         }

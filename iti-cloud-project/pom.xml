@@ -40,10 +40,12 @@
         <module>iti-cloud-dependencies</module>
         <module>iti-cloud-parent</module>
         <module>iti-cloud-security</module>
+        <module>iti-cloud-security2</module>
         <module>iti-cloud-strategy</module>
         <module>iti-cloud-sentinel</module>
         <module>iti-cloud-starters</module>
         <module>iti-cloud-ddd</module>
         <module>iti-cloud-axon</module>
+        <module>iti-cloud-test</module>
     </modules>
 </project>

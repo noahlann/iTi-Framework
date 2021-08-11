@@ -19,8 +19,8 @@
 package org.lan.iti.cloud.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.core.api.ApiResult;
 import org.lan.iti.cloud.constants.AopConstants;
+import org.lan.iti.common.core.api.ApiResult;
 import org.lan.iti.common.core.exception.BusinessException;
 import org.lan.iti.common.core.exception.ServiceException;
 import org.springframework.core.annotation.Order;
@@ -57,8 +57,8 @@ public class BizExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResult<String> handleBusinessException(BusinessException e) {
+    public ApiResult<Object> handleBusinessException(BusinessException e) {
         log.error("业务异常：", e);
-        return ApiResult.error(e.getCode(), e.getMessage());
+        return ApiResult.error(e.getCode(), e.getMessage(), e.getData());
     }
 }

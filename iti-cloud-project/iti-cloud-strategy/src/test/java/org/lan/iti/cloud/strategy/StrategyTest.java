@@ -39,7 +39,7 @@ public class StrategyTest {
                 .interfaceClass(IStrategy.class)
                 .checkInterfaceClass(true)
                 .build();
-        ExtensionLoader.getLoader(ExtensionAdapter.class).getExtension(parameter).init();
+        ExtensionLoader.getAdapterFactory().addParameter(parameter).init();
     }
 
     @Test

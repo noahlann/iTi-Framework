@@ -26,6 +26,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -242,6 +243,7 @@ public class ApiResult<T> extends HashMap<String, Object> {
     }
 
     @Override
+    @NotNull
     public ApiResult<T> put(String key, Object value) {
         if (key == null) {
             throw new IllegalArgumentException("key cannot be null");
@@ -380,7 +382,7 @@ public class ApiResult<T> extends HashMap<String, Object> {
     @SuppressWarnings("AlibabaEnumConstantsMustHaveComment")
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static enum DefaultEnum {
+    public enum DefaultEnum {
         SUCCESS(HttpStatus.HTTP_OK, "成功"),
         FAIL(HttpStatus.HTTP_INTERNAL_ERROR, "失败"),
         ;

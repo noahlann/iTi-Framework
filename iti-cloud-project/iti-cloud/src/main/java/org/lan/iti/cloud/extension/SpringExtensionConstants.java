@@ -27,5 +27,5 @@ public interface SpringExtensionConstants {
     String PREFIX = "spring#";
 
     String KEY_APPLICATION_CONTEXT = PREFIX + "ApplicationContext";
-    String KEY_BEANS = PREFIX + "beans";
+    String KEY_ANNOTATION_CLASS = PREFIX + "annotationClass";
 }

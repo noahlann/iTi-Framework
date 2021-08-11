@@ -39,32 +39,31 @@ public class ExtensionTest {
                 .classLoader(ClassLoaderUtil.getClassLoader(ExtensionTest.class))
                 .packageNames("org.lan.iti.common.extension")
                 .build();
-        ExtensionLoader.getLoader(ExtensionAdapter.class)
-                .getExtension(param).init();
+        ExtensionLoader.getAdapterFactory().addParameter(param).init();
 
         System.out.println("init cost: " + (System.nanoTime() - nano));
         nano = System.nanoTime();
 
         var loader = ExtensionLoader.getLoader(ITestExtensionA.class);
-        var extension = loader.getExtension("TestExtensionA_A");
+        var extension = loader.getFirst("TestExtensionA_A");
         System.out.println("result: " + extension.test());
         System.out.println("1 cost: " + (System.nanoTime() - nano));
 
         nano = System.nanoTime();
         loader = ExtensionLoader.getLoader(ITestExtensionA.class);
-        extension = loader.getExtension("TestExtensionA_A");
+        extension = loader.getFirst("TestExtensionA_A");
         System.out.println("result: " + extension.test());
         System.out.println("2 cost: " + (System.nanoTime() - nano));
 
         nano = System.nanoTime();
         loader = ExtensionLoader.getLoader(ITestExtensionA.class);
-        extension = loader.getExtension("ab", true);
+        extension = loader.getFirst("ab", true);
         System.out.println("result: " + extension.test());
         System.out.println("3 cost: " + (System.nanoTime() - nano));
 
         nano = System.nanoTime();
         loader = ExtensionLoader.getLoader(ITestExtensionA.class);
-        extension = loader.getExtension("ab", true);
+        extension = loader.getFirst("ab", true);
         System.out.println("result: " + extension.test());
         System.out.println("4 cost: " + (System.nanoTime() - nano));
     }
@@ -73,25 +72,25 @@ public class ExtensionTest {
     public void testSPI() {
         long nano = System.nanoTime();
         var loader = ExtensionLoader.getLoader(ITestExtensionA.class);
-        var extension = loader.getExtension("TestExtensionA_A");
+        var extension = loader.getFirst("TestExtensionA_A");
         System.out.println("result: " + extension.test());
         System.out.println("1 cost: " + (System.nanoTime() - nano));
 
         nano = System.nanoTime();
         loader = ExtensionLoader.getLoader(ITestExtensionA.class);
-        extension = loader.getExtension("TestExtensionA_B");
+        extension = loader.getFirst("TestExtensionA_B");
         System.out.println("result: " + extension.test());
         System.out.println("2 cost: " + (System.nanoTime() - nano));
 
         nano = System.nanoTime();
         loader = ExtensionLoader.getLoader(ITestExtensionA.class);
-        extension = loader.getExtension("testExtensionA_B", true);
+        extension = loader.getFirst("testExtensionA_B", true);
         System.out.println("result: " + extension.test());
         System.out.println("3 cost: " + (System.nanoTime() - nano));
 
         nano = System.nanoTime();
         loader = ExtensionLoader.getLoader(ITestExtensionA.class);
-        extension = loader.getExtension("ab", true);
+        extension = loader.getFirst("ab", true);
         System.out.println("result: " + extension.test());
         System.out.println("4 cost: " + (System.nanoTime() - nano));
     }

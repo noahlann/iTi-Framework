@@ -16,22 +16,15 @@
  *
  */
 
-package org.lan.iti.cloud.autoconfigure.extension;
-
-import org.lan.iti.cloud.extension.SpringExtensionApplicationListener;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+package org.lan.iti.common.core.support;
 
 /**
+ * 排序器
+ *
  * @author NorthLan
- * @date 2021-07-12
- * @url https://noahlan.com
+ * @date 2021/8/3
+ * @url https://blog.noahlan.com
  */
-@Configuration
-public class SpringExtensionAutoConfiguration {
-
-    @Bean
-    public SpringExtensionApplicationListener springExtensionApplicationListener() {
-        return new SpringExtensionApplicationListener();
-    }
+public interface Ordered {
+    int getOrder();
 }

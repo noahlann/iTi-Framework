@@ -20,7 +20,7 @@ package org.lan.iti.common.extension.adapter;
 
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.core.util.StringUtils;
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.common.extension.ExtensionFactory;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.adapter.parameter.ExtensionAdapterParameter;
@@ -80,7 +80,9 @@ public class ExtensionReflectionAdapter extends AbstractExtensionAdapter {
 
     @Override
     public void init() {
-        log.debug("{} init...", this.getClass().getSimpleName());
+        if (log.isDebugEnabled()) {
+            log.debug("load extension by reflections.");
+        }
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .forPackages(packageNames)
                 .addClassLoader(classLoader)
@@ -116,7 +118,7 @@ public class ExtensionReflectionAdapter extends AbstractExtensionAdapter {
         for (Class<?> interfaceClass : interfaces) {
             for (Class<?> instanceClass : classes) {
                 if (Arrays.stream(instanceClass.getInterfaces()).anyMatch(it -> it.getName().equals(interfaceClass.getName()))) {
-                    getExtensionClass.apply(interfaceClass).cache(StringUtils.lowerFirst(instanceClass.getSimpleName()), instanceClass);
+                    getExtensionClass.apply(interfaceClass).cache(StringUtil.lowerFirst(instanceClass.getSimpleName()), instanceClass);
                 }
             }
         }

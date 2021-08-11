@@ -22,7 +22,7 @@ import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.cloud.validate.util.Validator;
 import org.lan.iti.common.core.util.DateUtils;
-import org.lan.iti.common.core.util.StringUtils;
+import org.lan.iti.common.core.util.StringUtil;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -155,19 +155,19 @@ public class BeanUtils {
             return value;
         }
         if (Integer.class.getName().equals(type)) {
-            return Integer.parseInt(StringUtils.valueOf(value));
+            return Integer.parseInt(StringUtil.valueOf(value));
         } else if (Long.class.getName().equals(type)) {
-            return Long.parseLong(StringUtils.valueOf(value));
+            return Long.parseLong(StringUtil.valueOf(value));
         } else if (Double.class.getName().equals(type)) {
-            return Double.parseDouble(StringUtils.valueOf(value));
+            return Double.parseDouble(StringUtil.valueOf(value));
         } else if (BigDecimal.class.getName().equals(type)) {
-            return new BigDecimal(StringUtils.valueOf(value));
+            return new BigDecimal(StringUtil.valueOf(value));
         } else if (Float.class.getName().equals(type)) {
-            return Float.parseFloat(StringUtils.valueOf(value));
+            return Float.parseFloat(StringUtil.valueOf(value));
         } else if (Boolean.class.getName().equals(type)) {
-            return Validator.isTrue(StringUtils.valueOf(value));
+            return Validator.isTrue(StringUtil.valueOf(value));
         } else if (type.contains(Date.class.getSimpleName())) {
-            return DateUtils.fuzzyConvert(StringUtils.valueOf(value));
+            return DateUtils.fuzzyConvert(StringUtil.valueOf(value));
         }
         return value;
     }

@@ -21,7 +21,7 @@ package org.lan.iti.common.extension;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.ConcurrentReferenceHashMap;
-import org.lan.iti.common.core.util.StringUtils;
+import org.lan.iti.common.core.util.StringUtil;
 import org.reflections.ReflectionUtils;
 
 import java.io.BufferedReader;
@@ -65,7 +65,10 @@ public class FactoriesLoader {
         Map<String, Class<?>> result = new HashMap<>(factoryImplementationNames.keySet().size());
 
         for (Map.Entry<String, String> entry : factoryImplementationNames.entrySet()) {
-            result.putIfAbsent(entry.getKey(), ReflectionUtils.forName(entry.getValue(), classLoaderToUse));
+            Class<?> clazz = ReflectionUtils.forName(entry.getValue(), classLoaderToUse);
+            if (clazz != null) {
+                result.putIfAbsent(entry.getKey(), clazz);
+            }
         }
         return result;
     }
@@ -108,7 +111,7 @@ public class FactoriesLoader {
                             continue;
                         }
                         line = line.trim();
-                        if (StringUtils.isNotEmpty(factoryTypeName) && line.length() > 0) {
+                        if (StringUtil.isNotEmpty(factoryTypeName) && line.length() > 0) {
                             String name;
                             String clazz;
                             final int ei = line.indexOf('=');
@@ -140,9 +143,9 @@ public class FactoriesLoader {
         // foo.bar.xxx = 7
         final int lci = className.lastIndexOf('.');
         if (lci > 0) {
-            return StringUtils.lowerFirst(className.substring(lci + 1));
+            return StringUtil.lowerFirst(className.substring(lci + 1));
         } else {
-            return StringUtils.lowerFirst(className);
+            return StringUtil.lowerFirst(className);
         }
     }
 

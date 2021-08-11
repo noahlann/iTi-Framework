@@ -49,6 +49,9 @@ public class BusinessException extends AbstractException {
     @Getter
     protected String custom;
 
+    @Getter
+    protected Object data;
+
     public BusinessException(@NotNull IExceptionSpec errorReason) {
         super();
         this.errorReason = errorReason;
@@ -56,6 +59,11 @@ public class BusinessException extends AbstractException {
 
     public BusinessException withCustom(@NotNull String custom) {
         this.custom = custom;
+        return this;
+    }
+
+    public BusinessException withData(Object data) {
+        this.data = data;
         return this;
     }
 

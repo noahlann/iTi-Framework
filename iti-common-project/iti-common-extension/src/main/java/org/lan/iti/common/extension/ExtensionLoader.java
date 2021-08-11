@@ -23,7 +23,7 @@ import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.core.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.ClassLoaderUtil;
-import org.lan.iti.common.core.util.StringUtils;
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.common.extension.adapter.ExtensionAdapter;
 import org.lan.iti.common.extension.adapter.ExtensionAdapterFactory;
 import org.lan.iti.common.extension.support.NamedClassCache;
@@ -31,14 +31,11 @@ import org.lan.iti.common.extension.util.Holder;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Load extensions
@@ -81,7 +78,7 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
     /**
      * 局部缓存 {P, Holder<Object>}
      */
-    private final ConcurrentMap<Object, Holder<Object>> cachedParamsInstances = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Object, Holder<List<T>>> cachedParamsInstances = new ConcurrentHashMap<>();
 
 //    /**
 //     * 局部缓存 String(name) : Holder<Instance>
@@ -107,10 +104,6 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
     private final Class<?> type;
     private final ExtensionAdapterFactory extensionAdapterFactory;
 
-//    private final ExtensionFactory objectFactory;
-
-//    private String cachedDefaultName;
-
     /**
      * Record all unacceptable exceptions when using SPI
      */
@@ -118,12 +111,12 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
 
     public ExtensionLoader(Class<?> type) {
         this.type = type;
-        this.extensionAdapterFactory = type == ExtensionAdapter.class ? new ExtensionAdapterFactory() : null;
+        this.extensionAdapterFactory = isExtensionAdapter() ? new ExtensionAdapterFactory() : null;
 //        this.objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
     }
 
     public static ExtensionAdapterFactory getAdapterFactory() {
-        return (ExtensionAdapterFactory) getLoader(ExtensionAdapter.class).getExtension("adapterFactory");
+        return (ExtensionAdapterFactory) getLoader(ExtensionAdapter.class).getFirst("adapterFactory");
     }
 
     /**
@@ -144,80 +137,90 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
         return (ExtensionLoader<T, P>) EXTENSION_LOADERS.computeIfAbsent(type, ExtensionLoader::new);
     }
 
-    public T getExtension(P params) {
-        return getExtension(params, false, true);
+
+    public T getFirst(P params) {
+        return getFirst(params, false, true);
     }
 
-    public T getExtension(P params, boolean byName) {
-        return getExtension(params, byName, true);
+    public T getFirst(P params, boolean byName) {
+        return getFirst(params, byName, true);
+    }
+
+    public T getFirst(P params, boolean byName, boolean wrap) {
+        List<T> result = getList(params, byName, wrap);
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            return result.get(0);
+        }
+    }
+
+    public T getFirst() {
+        List<T> list = getList();
+        if (CollUtil.isNotEmpty(list)) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    public List<T> getList() {
+        NamedClassCache<Object> instanceCache = createAllInstance();
+        // TODO wrap sort inject
+        return instanceCache.getAll().stream().map(it -> (T) it).collect(Collectors.toList());
+    }
+
+    public List<T> getList(P params) {
+        return getList(params, false, true);
+    }
+
+    public List<T> getList(P params, boolean byName) {
+        return getList(params, byName, true);
     }
 
     /**
-     * Find the extension with the given param.
+     * Find the extensions with the given param.
      *
      * @param params params
      * @return The instance
      */
-    public T getExtension(P params, boolean byName, boolean wrap) {
+    public List<T> getList(P params, boolean byName, boolean wrap) {
         Assert.notNull(params, "Parameter cannot be null");
 
         Object objParams = byName ? PREFIX_NAMED_HOLDER + params : params;
 
-        final Holder<Object> holder = getOrCreateHolder(objParams);
-        Object instance = holder.get();
-        if (instance == null) {
+        final Holder<List<T>> holder = getOrCreateHolder(objParams);
+        List<T> instanceList = holder.get();
+        if (instanceList == null) {
             synchronized (holder) {
-                instance = holder.get();
-                if (instance == null) {
-                    instance = createExtension(objParams, byName, wrap);
-                    holder.set(instance);
+                instanceList = holder.get();
+                if (instanceList == null) {
+                    List<T> list = createExtension(objParams, byName, wrap);
+                    if (!list.isEmpty()) {
+                        instanceList = list;
+                        holder.set(instanceList);
+                    }
                 }
             }
         }
-        return (T) instance;
+        return instanceList;
     }
 
-    public List<T> getExtensions() {
-        return getExtensions(true);
-    }
-
-    public List<T> getExtensions(boolean wrap) {
-        List<T> result = new ArrayList<>();
-        NamedClassCache<Object> namedClassCache = createAllInstance();
-        for (Object o : namedClassCache.getAll()) {
-            result.add((T) result);
-        }
-        return result;
-    }
-
-    public T getFirstExtension() {
-        return getFirstExtension(true);
-    }
-
-    public T getFirstExtension(boolean wrap) {
-        List<T> result = getExtensions(wrap);
-        if (CollUtil.isEmpty(result)) {
-            return null;
-        }
-        return result.get(0);
-    }
-
-    private Holder<Object> getOrCreateHolder(Object params) {
+    private Holder<List<T>> getOrCreateHolder(Object params) {
         return cachedParamsInstances.computeIfAbsent(params, p -> new Holder<>());
     }
 
     @SuppressWarnings("unchecked")
-    private T createExtension(Object params, boolean byName, boolean wrap) {
+    private List<T> createExtension(Object params, boolean byName, boolean wrap) {
         // TODO exceptions
 //        if (clazz == null || unacceptableExceptions.contains(name)) {
 //            throw findException(name);
 //        }
         try {
-            Object instance = null;
+            List<T> result = new ArrayList<>();
             NamedClassCache<Object> instanceCache = getExtensionInstances(this.type);
             if (byName) {
-                String name = params.toString().replace(PREFIX_NAMED_HOLDER, StringUtils.EMPTY);
-                instance = instanceCache.getByName(name);
+                String name = params.toString().replace(PREFIX_NAMED_HOLDER, StringUtil.EMPTY);
+                Object instance = instanceCache.getByName(name);
                 if (instance == null) {
                     // load spi
                     NamedClassCache<Class<?>> classes = getExtensionClasses(this.type, true, false);
@@ -234,31 +237,37 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
                     instance = createInstance(clazz, instanceCache);
                     // cache it
                     instanceCache.cache(name, instance);
+                    // add
                 }
+                result.add((T) instance);
             } else {
                 createAllInstance(instanceCache);
             }
-            if (instance == null) {
-                if (this.extensionAdapterFactory != null) {
+            if (result.isEmpty()) {
+                if (this.extensionAdapterFactory != null && isExtensionAdapter()) {
                     this.extensionAdapterFactory.setAdapters(instanceCache.getAll());
-                    instance = this.extensionAdapterFactory;
+                    result.add((T) this.extensionAdapterFactory);
                 } else {
-                    // TODO matches
                     for (Object o : instanceCache.getAll()) {
-                        if (((T) o).matches((P) params)) {
-                            instance = o;
-                            break;
+                        T t = (T) o;
+                        if (t.matches((P) params)) {
+                            result.add(t);
                         }
                     }
                 }
             }
             // TODO inject
             // TODO wrap
-            return (T) instance;
+            result.sort(Comparator.comparingInt(IExtension::getOrder));
+            return result;
         } catch (Throwable e) {
             throw new IllegalStateException("Extension instance class: " +
                     this.type + ") couldn't be instantiated: " + e.getMessage(), e);
         }
+    }
+
+    private boolean isExtensionAdapter() {
+        return type == ExtensionAdapter.class;
     }
 
     private NamedClassCache<Object> createAllInstance() {
@@ -292,19 +301,14 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
         }
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
         for (Constructor<?> constructor : constructors) {
-            if (constructor.getParameterCount() == 0) {
+            if (isExtensionAdapter()) {
+                Function<Class<?>, NamedClassCache<Class<?>>> getExtensionClassesFunction =
+                        it -> getExtensionClasses(it, false, false);
+                Function<Class<?>, NamedClassCache<Object>> getExtensionInstancesFunction =
+                        this::getExtensionInstances;
+                return constructor.newInstance(getExtensionClassesFunction, getExtensionInstancesFunction);
+            } else {
                 return constructor.newInstance();
-            } else if (constructor.getParameterCount() == 2) {
-                Parameter getExtensionClasses = constructor.getParameters()[0];
-                Parameter getExtensionInstances = constructor.getParameters()[1];
-                if (Function.class.equals(getExtensionClasses.getType())
-                        && Function.class.equals(getExtensionInstances.getType())) {
-                    Function<Class<?>, NamedClassCache<Class<?>>> getExtensionClassesFunction =
-                            it -> getExtensionClasses(it, false, false);
-                    Function<Class<?>, NamedClassCache<Object>> getExtensionInstancesFunction =
-                            this::getExtensionInstances;
-                    return constructor.newInstance(getExtensionClassesFunction, getExtensionInstancesFunction);
-                }
             }
         }
         return null;
@@ -321,6 +325,9 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
         } else if (cache.isEmpty() && loadSpi) {
             // there is no classes of type
             // spi load
+            if (log.isDebugEnabled()) {
+                log.debug("spi loading... {}", clazz.getName());
+            }
             loadExtensionClasses(cache);
         }
         return cache;
@@ -330,12 +337,12 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
      * synchronized in getExtensionClasses
      */
     private void loadExtensionClasses(NamedClassCache<Class<?>> cache) {
-        Map<String, Class<?>> classMap = FactoriesLoader.loadFactoryClasses(this.type.getName(), findClassLoader());
+        Map<String, Class<?>> classMap = FactoriesLoader.loadFactoryClasses(this.type.getName(), findClassLoader(false));
         cache.cache(classMap);
     }
 
-    private static ClassLoader findClassLoader() {
-        return ClassLoaderUtil.getClassLoader(ExtensionLoader.class);
+    private static ClassLoader findClassLoader(boolean useExtensionClassLoaderFirst) {
+        return ClassLoaderUtil.getClassLoader(ExtensionLoader.class, useExtensionClassLoaderFirst);
     }
 
 //    /**
@@ -472,7 +479,7 @@ public class ExtensionLoader<T extends IExtension<P>, P> {
                 buf.append(") ");
                 buf.append(entry.getKey());
                 buf.append(":\r\n");
-                buf.append(StringUtils.toString(entry.getValue()));
+                buf.append(StringUtil.toString(entry.getValue()));
             }
         }
 

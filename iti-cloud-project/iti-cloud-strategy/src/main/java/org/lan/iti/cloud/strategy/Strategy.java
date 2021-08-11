@@ -32,6 +32,6 @@ import org.lan.iti.common.extension.ExtensionLoader;
 public class Strategy {
 
     public <T extends IStrategy<P>, P> T find(Class<T> clazz, P identify) {
-        return ExtensionLoader.getLoader(clazz).getExtension(identify);
+        return ExtensionLoader.getLoader(clazz).getFirst(identify);
     }
 }

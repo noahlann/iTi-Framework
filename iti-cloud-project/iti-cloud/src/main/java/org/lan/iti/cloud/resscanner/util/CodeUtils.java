@@ -22,7 +22,7 @@ import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.Formatter;
-import org.lan.iti.common.core.util.StringUtils;
+import org.lan.iti.common.core.util.StringUtil;
 
 /**
  * 编码工具类
@@ -124,7 +124,7 @@ public class CodeUtils {
             if (lastLength == 0) {
                 return sb.append("**").toString();
             }
-            int repeatCount = StringUtils.repeatCount(lastUrl, '*');
+            int repeatCount = StringUtil.repeatCount(lastUrl, '*');
             if (lastLength == repeatCount) {
                 if (repeatCount > 2) {
                     // warning

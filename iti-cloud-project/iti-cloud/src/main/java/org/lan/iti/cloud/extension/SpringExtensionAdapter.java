@@ -18,6 +18,7 @@
 
 package org.lan.iti.cloud.extension;
 
+import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.adapter.AbstractExtensionAdapter;
 import org.lan.iti.common.extension.adapter.parameter.ExtensionAdapterParameter;
@@ -33,6 +34,7 @@ import java.util.function.Function;
  * @date 2021-07-11
  * @url https://noahlan.com
  */
+@Slf4j
 public class SpringExtensionAdapter extends AbstractExtensionAdapter {
     private ApplicationContext applicationContext;
     // TODO merge
@@ -50,7 +52,7 @@ public class SpringExtensionAdapter extends AbstractExtensionAdapter {
     @Override
     protected void loadParameter(ExtensionAdapterParameter parameter) {
         this.applicationContext = parameter.getByKey(SpringExtensionConstants.KEY_APPLICATION_CONTEXT);
-        this.beans = parameter.getByKey(SpringExtensionConstants.KEY_BEANS, new HashMap<>());
+//        this.beans = parameter.getByKey(SpringExtensionConstants.KEY_BEANS, new HashMap<>());
     }
 
     @Override
@@ -61,6 +63,9 @@ public class SpringExtensionAdapter extends AbstractExtensionAdapter {
 
     @Override
     public void init() {
+        if (log.isDebugEnabled()) {
+            log.debug("init extension by spring...");
+        }
         // TODO 优化启动过程
         Map<String, IExtension> beans = applicationContext.getBeansOfType(IExtension.class);
         for (Map.Entry<String, IExtension> entry : beans.entrySet()) {
