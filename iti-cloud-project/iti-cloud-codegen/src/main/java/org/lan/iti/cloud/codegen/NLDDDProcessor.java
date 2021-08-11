@@ -18,12 +18,10 @@
 
 package org.lan.iti.cloud.codegen;
 
-import com.google.auto.service.AutoService;
 import org.lan.iti.cloud.codegen.converter.GenJpaEnumConverterPlugin;
 import org.lan.iti.codegen.AbstractCodeGenProcessor;
 import org.lan.iti.codegen.ProcessorPlugin;
 
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 
@@ -34,7 +32,7 @@ import javax.lang.model.SourceVersion;
  */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@AutoService(Processor.class)
+//@AutoService(Processor.class)
 public class NLDDDProcessor extends AbstractCodeGenProcessor {
     public final ProcessorPlugin[] PLUGINS = new ProcessorPlugin[]{
 //            new GenCreatorPlugin(),
