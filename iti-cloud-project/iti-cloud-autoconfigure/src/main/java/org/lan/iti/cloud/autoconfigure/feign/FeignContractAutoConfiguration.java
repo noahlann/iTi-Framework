@@ -22,15 +22,12 @@ import feign.Contract;
 import feign.Feign;
 import lombok.AllArgsConstructor;
 import org.lan.iti.cloud.feign.ITIFeignContract;
-import org.lan.iti.cloud.feign.endpoint.FeignClientEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.cloud.openfeign.AnnotatedParameterProcessor;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -44,6 +41,7 @@ import java.util.List;
  */
 @Configuration
 @ConditionalOnClass(Feign.class)
+@ConditionalOnWebApplication
 @AutoConfigureAfter(EnableFeignClients.class)
 @AllArgsConstructor
 public class FeignContractAutoConfiguration {
