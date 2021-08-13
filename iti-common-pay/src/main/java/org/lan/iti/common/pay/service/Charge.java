@@ -257,8 +257,8 @@ public class Charge {
                 if (PayUtils.isKeyValueBlankOfMapString(param, PayConstants.TO_BANK)) {
                     return TO_BANK_EMPTY;
                 }
-                if (StrUtil.equals(param.get(PayConstants.TO_BANK), PayConstants.TO_BANK_Y) ||
-                        StrUtil.equals(param.get(PayConstants.TO_BANK), PayConstants.TO_BANK_N)) {
+                if (!StrUtil.equals(param.get(PayConstants.TO_BANK), PayConstants.TO_BANK_Y) &&
+                        !StrUtil.equals(param.get(PayConstants.TO_BANK), PayConstants.TO_BANK_N)) {
                     return TO_BANK_PATTERN;
                 }
                 break;
