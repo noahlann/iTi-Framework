@@ -39,9 +39,7 @@ public class NamedClassCache<T> {
     }
 
     public void cache(Map<String, T> map) {
-        for (Map.Entry<String, T> entry : map.entrySet()) {
-            namedMap.put(entry.getKey(), entry.getValue());
-        }
+        namedMap.putAll(map);
     }
 
     public void cache(String name, T obj) {
@@ -52,6 +50,10 @@ public class NamedClassCache<T> {
 
     public T getByName(String name) {
         return namedMap.get(name);
+    }
+
+    public boolean containsByName(String name) {
+        return namedMap.containsKey(name);
     }
 
     public ConcurrentMap<String, T> getMap() {

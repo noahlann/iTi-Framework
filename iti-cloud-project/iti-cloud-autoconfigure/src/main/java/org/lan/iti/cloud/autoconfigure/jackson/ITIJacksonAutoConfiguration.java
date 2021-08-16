@@ -19,7 +19,6 @@
 package org.lan.iti.cloud.autoconfigure.jackson;
 
 import cn.hutool.core.date.DatePattern;
-import cn.hutool.core.util.ReflectUtil;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -28,6 +27,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterMixin;
 import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterProvider;
 import org.lan.iti.cloud.jackson.module.ITILongModule;
+import org.lan.iti.common.core.util.ReflectUtil;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;

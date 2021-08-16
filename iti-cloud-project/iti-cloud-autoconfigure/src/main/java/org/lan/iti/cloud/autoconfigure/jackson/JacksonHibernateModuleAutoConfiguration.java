@@ -18,11 +18,11 @@
 
 package org.lan.iti.cloud.autoconfigure.jackson;
 
-import cn.hutool.core.util.ReflectUtil;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.hibernate.Hibernate;
+import org.lan.iti.common.core.util.ReflectUtil;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;

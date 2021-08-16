@@ -21,7 +21,7 @@ package org.lan.iti.common.extension.adapter;
 import cn.hutool.core.util.ArrayUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.StringUtil;
-import org.lan.iti.common.extension.ExtensionFactory;
+import org.lan.iti.common.extension.ExtensionInjector;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.adapter.parameter.ExtensionAdapterParameter;
 import org.lan.iti.common.extension.annotation.Extension;
@@ -92,7 +92,7 @@ public class ExtensionReflectionAdapter extends AbstractExtensionAdapter {
         Set<Class<?>> interfaces = new HashSet<>();
         Set<Class<?>> classes = new HashSet<>();
         for (Class<?> typeClass : typesClass) {
-            if (typeClass.equals(ExtensionFactory.class)) {
+            if (typeClass.equals(ExtensionInjector.class)) {
                 continue;
             }
             if (ExtensionAdapter.class.isAssignableFrom(typeClass)) {

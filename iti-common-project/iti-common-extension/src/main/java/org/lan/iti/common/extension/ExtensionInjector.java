@@ -20,20 +20,32 @@ package org.lan.iti.common.extension;
 
 import org.lan.iti.common.extension.annotation.Extension;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 /**
+ * Extension注入器
+ *
  * @author NorthLan
  * @date 2021-07-07
  * @url https://noahlan.com
  */
 @Extension
-public interface ExtensionFactory {
+public interface ExtensionInjector extends IExtension<Object> {
+
+    @Override
+    default boolean matches(Object params) {
+        return true;
+    }
 
     /**
-     * Get extension.
+     * 直接进行注入,子类选择使用参数
      *
-     * @param type object type.
-     * @param name object name.
-     * @return object instance.
+     * @param instance 实例
+     * @param fields   fields列表（包括父类）
+     * @param setters  setter方法
+     * @param <T>      实例类型
+     * @return 注入后的实例
      */
-    <T> T getExtension(Class<T> type, String name);
+    <T> T inject(T instance, Field[] fields, Method[] setters);
 }

@@ -21,7 +21,6 @@ package org.lan.iti.common.extension;
 import lombok.var;
 import org.junit.jupiter.api.Test;
 import org.lan.iti.common.core.util.ClassLoaderUtil;
-import org.lan.iti.common.extension.adapter.ExtensionAdapter;
 import org.lan.iti.common.extension.adapter.parameter.ExtensionAdapterParameter;
 
 /**
@@ -93,5 +92,12 @@ public class ExtensionTest {
         extension = loader.getFirst("ab", true);
         System.out.println("result: " + extension.test());
         System.out.println("4 cost: " + (System.nanoTime() - nano));
+    }
+
+    @Test
+    public void testInject() {
+        var loader = ExtensionLoader.getLoader(ITestExtensionInjectA.class);
+        var extension = loader.getFirst();
+        extension.test();
     }
 }

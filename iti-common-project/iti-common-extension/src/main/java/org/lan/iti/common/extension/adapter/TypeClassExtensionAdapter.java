@@ -19,7 +19,7 @@
 package org.lan.iti.common.extension.adapter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.extension.ExtensionFactory;
+import org.lan.iti.common.extension.ExtensionInjector;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.adapter.parameter.ExtensionAdapterParameter;
 import org.lan.iti.common.extension.support.NamedClassCache;
@@ -45,7 +45,7 @@ public class TypeClassExtensionAdapter extends AbstractExtensionAdapter {
     public boolean matches(Object params) {
         return type != null &&
                 classes != null &&
-                !type.equals(ExtensionFactory.class);
+                !type.equals(ExtensionInjector.class);
     }
 
     @Override
