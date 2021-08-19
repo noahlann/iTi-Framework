@@ -25,16 +25,16 @@ import org.jose4j.jwk.JsonWebKeySet;
 import org.jose4j.jwt.ReservedClaimNames;
 import org.lan.iti.iha.oauth2.GrantType;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
+import org.lan.iti.iha.oauth2.enums.ClientAuthenticationMethod;
 import org.lan.iti.iha.oauth2.pkce.CodeChallengeMethod;
 import org.lan.iti.iha.oidc.OidcParameterNames;
-import org.lan.iti.iha.server.IhaServer;
+import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.jwt.TokenAlgorithms;
 import org.lan.iti.iha.server.model.OidcDiscovery;
-import org.lan.iti.iha.oauth2.enums.ClientAuthenticationMethod;
 import org.lan.iti.iha.server.model.enums.ResponseType;
-import org.lan.iti.iha.server.model.enums.TokenAlgorithms;
 import org.lan.iti.iha.server.provider.ScopeProvider;
 import org.lan.iti.iha.server.util.EndpointUtil;
-import org.lan.iti.iha.server.util.JwtUtil;
+import org.lan.iti.iha.security.jwt.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -98,8 +98,8 @@ public class OidcUtil {
     }
 
     public static String getJwksPublicKey(String identity) {
-        String jwksJson = IhaServer.getContext().getIdentityService().getJwksJson(identity);
-        JsonWebKeySet jsonWebKeySet = JwtUtil.IhaVerificationKeyResolver.createJsonWebKeySet(jwksJson);
+        String jwksJson = IhaSecurity.getContext().getJwtService().getJwksJson(identity);
+        JsonWebKeySet jsonWebKeySet = JwtUtil.JsonWebKeyResolver.createJsonWebKeySet(jwksJson);
         return jsonWebKeySet.toJson(JsonWebKey.OutputControlLevel.PUBLIC_ONLY);
     }
 }

@@ -18,20 +18,19 @@
 
 package org.lan.iti.iha.server.provider.token;
 
-import org.lan.iti.iha.core.result.IhaResponse;
 import org.lan.iti.iha.oauth2.GrantType;
-import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
-import org.lan.iti.iha.oidc.OidcParameterNames;
 import org.lan.iti.iha.security.IhaSecurity;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
 import org.lan.iti.iha.security.userdetails.UserDetails;
-import org.lan.iti.iha.server.model.AccessToken;
 import org.lan.iti.iha.server.model.AuthorizationCode;
+import org.lan.iti.iha.server.model.AuthorizationToken;
+import org.lan.iti.iha.server.model.AuthorizationTokenHelper;
 import org.lan.iti.iha.server.security.IhaServerRequestParam;
-import org.lan.iti.iha.server.provider.AuthorizationTokenProvider;
+import org.lan.iti.iha.server.util.AuthorizationTokenUtil;
 import org.lan.iti.iha.server.util.EndpointUtil;
 import org.lan.iti.iha.server.util.OAuth2Util;
-import org.lan.iti.iha.server.util.TokenUtil;
+
+import java.util.Map;
 
 /**
  * RFC6749 4.1. authorization code grant
@@ -41,14 +40,14 @@ import org.lan.iti.iha.server.util.TokenUtil;
  * @url https://blog.noahlan.com
  * @see <a href="https://tools.ietf.org/html/rfc6749#section-4.1" target="_blank">4.1.  Authorization Code Grant</a>
  */
-public class AuthorizationCodeProvider implements AuthorizationTokenProvider {
+public class AuthorizationCodeProcessor extends AbstractAuthorizationTokenProcessor {
     @Override
     public boolean matches(String params) {
         return GrantType.AUTHORIZATION_CODE.getType().equals(params);
     }
 
     @Override
-    public IhaResponse generateResponse(IhaServerRequestParam param) {
+    protected Map<String, Object> processor(IhaServerRequestParam param) {
         AuthorizationCode codeInfo = OAuth2Util.validateAndGetAuthorizationCode(param.getGrantType(), param.getCode());
 
         String scope = codeInfo.getScope();
@@ -57,25 +56,23 @@ public class AuthorizationCodeProvider implements AuthorizationTokenProvider {
 
         ClientDetails clientDetails = IhaSecurity.getContext().getClientDetailsService().getByClientId(param.getClientId());
 
-        OAuth2Util.validClientDetail(clientDetails);
+        OAuth2Util.validClientDetails(clientDetails);
         OAuth2Util.validateGrantType(param.getGrantType(), clientDetails.getGrantTypes(), GrantType.AUTHORIZATION_CODE);
         OAuth2Util.validateSecret(param, clientDetails);
         OAuth2Util.validateRedirectUri(param.getRedirectUri(), clientDetails);
 
+        // just once
         OAuth2Util.invalidateCode(param.getCode());
 
-        long expiresIn = OAuth2Util.getAccessTokenExpiresIn(clientDetails.getAccessTokenTimeToLive());
+        AuthorizationToken authorizationToken = AuthorizationTokenUtil.createAccessToken(
+                userDetails,
+                clientDetails,
+                param.getGrantType(),
+                scope,
+                nonce,
+                EndpointUtil.getIssuer(param.getRequest()),
+                true);
 
-        AccessToken accessToken = TokenUtil.createAccessToken(userDetails, clientDetails, param.getGrantType(), scope, nonce, EndpointUtil.getIssuer(param.getRequest()));
-        IhaResponse response = IhaResponse.empty()
-                .put(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getAccessToken())
-                .put(OAuth2ParameterNames.REFRESH_TOKEN, accessToken.getRefreshToken())
-                .put(OAuth2ParameterNames.EXPIRES_IN, expiresIn)
-                .put(OAuth2ParameterNames.TOKEN_TYPE, OAuth2ParameterNames.TOKEN_TYPE_BEARER)
-                .put(OAuth2ParameterNames.SCOPE, scope);
-        if (OAuth2Util.isOidcProtocol(scope)) {
-            response.put(OidcParameterNames.ID_TOKEN, TokenUtil.createIdToken(clientDetails, userDetails, nonce, EndpointUtil.getIssuer(param.getRequest())));
-        }
-        return response;
+        return AuthorizationTokenHelper.toMap(authorizationToken);
     }
 }

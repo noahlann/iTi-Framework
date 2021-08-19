@@ -19,12 +19,13 @@
 package org.lan.iti.iha.server.util;
 
 import lombok.experimental.UtilityClass;
-import org.lan.iti.iha.core.util.RequestUtil;
+import org.lan.iti.iha.security.util.RequestUtil;
 import org.lan.iti.iha.server.IhaServer;
 import org.lan.iti.iha.server.config.IhaServerConfig;
-import org.lan.iti.iha.server.exception.IhaServerException;
+import org.lan.iti.iha.server.config.UrlProperties;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 /**
  * @author NorthLan
@@ -37,85 +38,88 @@ public class EndpointUtil {
     public static String getIssuer(HttpServletRequest request) {
         IhaServerConfig config = IhaServer.getIhaServerConfig();
         if (config.isEnableDynamicIssuer() && null == request) {
-            throw new IhaServerException("The second-level domain name verification has been enabled, the HTTP request cannot be empty");
+            throw new SecurityException("The second-level domain name verification has been enabled, the HTTP request cannot be empty");
         }
-        return config.isEnableDynamicIssuer() ? RequestUtil.getFullDomainName(request) : config.getIssuer();
+        return config.isEnableDynamicIssuer() ?
+                RequestUtil.getFullDomainName(request)
+                        .concat(Optional.ofNullable(config.getContextPath()).orElse("")) :
+                config.getIssuer();
     }
 
 
     public static String getLoginUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getLoginUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getLoginUrl();
     }
 
     public static String getErrorUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getErrorUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getErrorUrl();
     }
 
     public static String getAuthorizeUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getAuthorizeUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getAuthorizeUrl();
     }
 
     public static String getAuthorizeAutoApproveUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getAuthorizeAutoApproveUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getAuthorizeAutoApproveUrl();
     }
 
     public static String getTokenUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getTokenUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getTokenUrl();
     }
 
     public static String getUserinfoUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getUserinfoUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getUserinfoUrl();
     }
 
     public static String getRegistrationUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getRegistrationUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getRegistrationUrl();
     }
 
     public static String getEndSessionUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getEndSessionUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getEndSessionUrl();
     }
 
     public static String getCheckSessionUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getCheckSessionUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getCheckSessionUrl();
     }
 
     public static String getLogoutRedirectUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getLogoutRedirectUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getLogoutRedirectUrl();
     }
 
     public static String getJwksUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getJwksUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getJwksUrl();
     }
 
     public static String getDiscoveryUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        return getIssuer(request) + config.getDiscoveryUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        return getIssuer(request) + urlProperties.getDiscoveryUrl();
     }
 
     public static String getLoginPageUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        if (config.isExternalLoginPageUrl()) {
-            return config.getLoginPageUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        if (urlProperties.isExternalLoginPageUrl()) {
+            return urlProperties.getLoginPageUrl();
         }
-        return getIssuer(request) + config.getLoginPageUrl();
+        return getIssuer(request) + urlProperties.getLoginPageUrl();
     }
 
     public static String getConfirmPageUrl(HttpServletRequest request) {
-        IhaServerConfig config = IhaServer.getIhaServerConfig();
-        if (config.isExternalConfirmPageUrl()) {
-            return config.getConfirmPageUrl();
+        UrlProperties urlProperties = IhaServer.getUrlProperties();
+        if (urlProperties.isExternalConfirmPageUrl()) {
+            return urlProperties.getConfirmPageUrl();
         }
-        return getIssuer(request) + config.getConfirmPageUrl();
+        return getIssuer(request) + urlProperties.getConfirmPageUrl();
     }
 }

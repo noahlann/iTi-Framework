@@ -18,12 +18,12 @@
 
 package org.lan.iti.iha.server.provider.authorization;
 
-import org.lan.iti.common.core.util.StringUtil;
-import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
-import org.lan.iti.iha.server.security.IhaServerRequestParam;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.model.enums.ResponseType;
-import org.lan.iti.iha.server.provider.AuthorizationProvider;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
+
+import java.util.Map;
 
 /**
  * When the value of {@code response_type} is {@code none}, the {@code code},{@code id_token} and {@code token} is not returned from the authorization endpoint,
@@ -34,18 +34,14 @@ import org.lan.iti.iha.server.provider.AuthorizationProvider;
  * @url https://blog.noahlan.com
  * @see <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#none">None Response Type</a>
  */
-public class NoneAuthorizationProvider implements AuthorizationProvider {
+public class NoneAuthorizationProvider extends AbstractAuthorizationProvider {
     @Override
     public boolean matches(String params) {
         return ResponseType.NONE.getType().equalsIgnoreCase(params);
     }
 
     @Override
-    public String generateRedirect(IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
-        String params = "";
-        if (!StringUtil.isEmpty(param.getState())) {
-            params = "?state=" + param.getState();
-        }
-        return param.getRedirectUri() + params;
+    protected void process(Map<String, Object> result, IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
+        // do nothing...
     }
 }

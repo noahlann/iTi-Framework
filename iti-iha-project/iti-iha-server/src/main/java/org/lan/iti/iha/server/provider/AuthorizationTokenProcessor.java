@@ -16,24 +16,30 @@
  *
  */
 
-package org.lan.iti.iha.server.model.enums;
+package org.lan.iti.iha.server.provider;
+
+import org.lan.iti.common.extension.IExtension;
+import org.lan.iti.common.extension.annotation.Extension;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
+
+import java.util.Map;
 
 /**
- * The verification type when the user verifies the jwt token (access token, refresh token, id token)，
- * For specific usage, please refer to {@link org.lan.iti.iha.server.util.JwtUtil#validateJwtToken(String, String, String, String)}
+ * The token endpoint creates a token, and returns different token information for different grant types
  *
  * @author NorthLan
- * @date 2021-07-05
- * @url https://noahlan.com
+ * @date 2021/8/2
+ * @url https://blog.noahlan.com
  */
-public enum JwtVerificationType {
-    /**
-     * Using an HTTPS JWKS endpoint
-     */
-    HTTPS_JWKS_ENDPOINT,
+@Extension
+public interface AuthorizationTokenProcessor extends IExtension<String> {
 
     /**
-     * Using JWKs
+     * 处理获取Token的请求
+     * /token 端点
+     *
+     * @param param 请求参数，包含request与response
+     * @return token info map
      */
-    JWKS
+    Map<String, Object> process(IhaServerRequestParam param);
 }

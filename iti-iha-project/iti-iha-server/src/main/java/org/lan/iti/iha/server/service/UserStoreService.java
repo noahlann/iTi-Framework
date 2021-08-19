@@ -23,6 +23,7 @@ import org.lan.iti.common.extension.annotation.Extension;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * When the user logs in, store and operate the user's login information
@@ -43,23 +44,27 @@ public interface UserStoreService extends IExtension<Object> {
      * <p>
      * Developers can implement this method to save user information in other media, such as cache, database, etc.
      *
-     * @param userDetails    User information after login
-     * @param request current HTTP request
+     * @param userDetails User information after login
+     * @param request     current HTTP request
+     * @param response    current HTTP response
+     * @return caching id
      */
-    void save(UserDetails userDetails, HttpServletRequest request);
+    String save(UserDetails userDetails, HttpServletRequest request, HttpServletResponse response);
 
     /**
      * Get logged-in user information
      *
-     * @param request current HTTP request
+     * @param request  current HTTP request
+     * @param response current HTTP response
      * @return User
      */
-    UserDetails get(HttpServletRequest request);
+    UserDetails get(HttpServletRequest request, HttpServletResponse response);
 
     /**
      * Delete logged-in user information
      *
-     * @param request current HTTP request
+     * @param request  current HTTP request
+     * @param response current HTTP response
      */
-    void remove(HttpServletRequest request);
+    void remove(HttpServletRequest request, HttpServletResponse response);
 }

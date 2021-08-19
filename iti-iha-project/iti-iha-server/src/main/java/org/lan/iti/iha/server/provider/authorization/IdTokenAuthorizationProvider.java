@@ -18,12 +18,14 @@
 
 package org.lan.iti.iha.server.provider.authorization;
 
-import org.lan.iti.iha.security.userdetails.UserDetails;
+import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
-import org.lan.iti.iha.server.security.IhaServerRequestParam;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.model.enums.ResponseType;
-import org.lan.iti.iha.server.provider.AuthorizationProvider;
-import org.lan.iti.iha.server.util.TokenUtil;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
+import org.lan.iti.iha.server.util.AuthorizationTokenUtil;
+
+import java.util.Map;
 
 /**
  * When the value of {@code response_type} is {@code id_token}, an {@code id_token} is returned from the authorization endpoint.
@@ -33,15 +35,15 @@ import org.lan.iti.iha.server.util.TokenUtil;
  * @date 2021/8/2
  * @url https://blog.noahlan.com
  */
-public class IdTokenAuthorizationProvider implements AuthorizationProvider {
+public class IdTokenAuthorizationProvider extends AbstractAuthorizationProvider {
     @Override
     public boolean matches(String params) {
         return ResponseType.ID_TOKEN.getType().equalsIgnoreCase(params);
     }
 
     @Override
-    public String generateRedirect(IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
-        String params = "?id_token=" + TokenUtil.createIdToken(clientDetails, userDetails, param, issuer);
-        return param.getRedirectUri() + params;
+    protected void process(Map<String, Object> result, IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
+        String idToken = AuthorizationTokenUtil.createIdToken(clientDetails, userDetails, param.getNonce(), param.getScope(), issuer);
+        result.put(OAuth2ParameterNames.ID_TOKEN, idToken);
     }
 }

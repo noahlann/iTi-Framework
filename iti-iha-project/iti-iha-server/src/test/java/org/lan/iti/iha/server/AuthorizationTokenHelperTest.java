@@ -16,23 +16,26 @@
  *
  */
 
-package org.lan.iti.iha.server.exception;
+package org.lan.iti.iha.server;
 
-import org.lan.iti.iha.server.model.enums.ErrorResponse;
+import org.junit.jupiter.api.Test;
+import org.lan.iti.iha.server.model.AuthorizationToken;
+import org.lan.iti.iha.server.model.AuthorizationTokenHelper;
 
 /**
  * @author NorthLan
- * @date 2021-07-06
- * @url https://noahlan.com
+ * @date 2021/8/17
+ * @url https://blog.noahlan.com
  */
-public class InvalidGrantException extends IhaServerException {
-    private static final long serialVersionUID = 894666693781048839L;
+public class AuthorizationTokenHelperTest {
+    @Test
+    public void test() {
+        AuthorizationToken token = AuthorizationToken.builder()
+                .accessToken("accessToken")
+                .refreshToken("refreshToken")
+                .idToken("idToken")
+                .build();
 
-    public InvalidGrantException(ErrorResponse errorResponse) {
-        super(errorResponse);
-    }
-
-    public InvalidGrantException(String message) {
-        super(message);
+        System.out.println(AuthorizationTokenHelper.toMap(token));
     }
 }

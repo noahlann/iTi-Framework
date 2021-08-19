@@ -24,13 +24,14 @@ import org.lan.iti.iha.oauth2.util.ClientCertificateUtil;
 import org.lan.iti.iha.security.IhaSecurity;
 import org.lan.iti.iha.security.authentication.Authentication;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
-import org.lan.iti.iha.security.exception.AuthenticationException;
-import org.lan.iti.iha.security.processor.ProcessorType;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.IhaServer;
 import org.lan.iti.iha.server.security.IhaServerRequestParam;
 import org.lan.iti.iha.server.util.EndpointUtil;
 import org.lan.iti.iha.server.util.OAuth2Util;
+import org.lan.iti.iha.simple.IhaSimple;
+import org.lan.iti.iha.simple.security.SimpleRequestParameter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -103,35 +104,36 @@ public class LoginEndpoint extends AbstractEndpoint {
      * @return Confirm authorization page
      */
     public String login(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        IhaServerRequestParam parameter = new IhaServerRequestParam(request, response);
+        SimpleRequestParameter parameter = new SimpleRequestParameter(request, response);
         // TODO simple config
-        parameter.setProcessorType(ProcessorType.SIMPLE);
+        parameter.setConfig(IhaSimple.getConfig());
 
         Authentication authentication = IhaSecurity.getSecurityManager().authenticate(parameter);
         if (!authentication.isAuthenticated()) {
             throw new AuthenticationException("failed");
         }
 
-        // TODO save user
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         if (userDetails == null) {
             throw new AuthenticationException("failed");
         }
-        IhaServer.saveUser(userDetails, request);
+        IhaServer.getContext().getUserStoreService().save(userDetails, request, response);
+
+        IhaServerRequestParam serverRequestParam = new IhaServerRequestParam(parameter);
 
         // TODO 验证 client auth method
-        parameter.setClient(ClientCertificateUtil.getClientCertificate(request));
-        ClientDetails clientDetails = IhaSecurity.getContext().getClientDetailsService().getByClientId(parameter.getClientId());
-        OAuth2Util.validClientDetail(clientDetails);
+        serverRequestParam.setClient(ClientCertificateUtil.getClientCertificate(request));
+        ClientDetails clientDetails = IhaSecurity.getContext().getClientDetailsService().getByClientId(serverRequestParam.getClientId());
+        OAuth2Util.validClientDetails(clientDetails);
 
         String redirectUri;
         // When the client supports automatic authorization, it will judge whether the {@code autoapprove} function is enabled
         if (clientDetails.isAutoApprove() &&
-                StringUtil.isNotEmpty(parameter.getAutoApprove()) && "TRUE".equalsIgnoreCase(parameter.getAutoApprove())) {
+                StringUtil.isNotEmpty(serverRequestParam.getAutoApprove()) && "TRUE".equalsIgnoreCase(serverRequestParam.getAutoApprove())) {
             redirectUri = EndpointUtil.getAuthorizeAutoApproveUrl(request);
         } else {
             redirectUri = EndpointUtil.getConfirmPageUrl(request);
         }
-        return OAuth2Util.createAuthorizeUrl(redirectUri, parameter);
+        return OAuth2Util.createAuthorizeUrl(redirectUri, serverRequestParam);
     }
 }

@@ -16,22 +16,28 @@
  *
  */
 
-package org.lan.iti.iha.server.provider;
+package org.lan.iti.iha.server.provider.token;
 
-import org.lan.iti.common.extension.IExtension;
-import org.lan.iti.common.extension.annotation.Extension;
-import org.lan.iti.iha.core.result.IhaResponse;
+import org.lan.iti.iha.oauth2.util.ClientCertificateUtil;
+import org.lan.iti.iha.server.provider.AuthorizationTokenProcessor;
 import org.lan.iti.iha.server.security.IhaServerRequestParam;
 
+import java.util.Map;
+
 /**
- * The token endpoint creates a token, and returns different token information for different grant types
+ * Access Token Request Processor
  *
  * @author NorthLan
- * @date 2021/8/2
+ * @date 2021/8/17
  * @url https://blog.noahlan.com
  */
-@Extension
-public interface AuthorizationTokenProvider extends IExtension<String> {
+public abstract class AbstractAuthorizationTokenProcessor implements AuthorizationTokenProcessor {
+    @Override
+    public Map<String, Object> process(IhaServerRequestParam param) {
+        // TODO validate parameter
+        param.setClient(ClientCertificateUtil.getClientCertificate(param.getRequest()));
+        return this.processor(param);
+    }
 
-    IhaResponse generateResponse(IhaServerRequestParam param);
+    protected abstract Map<String, Object> processor(IhaServerRequestParam param);
 }

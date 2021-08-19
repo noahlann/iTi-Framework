@@ -19,14 +19,10 @@
 package org.lan.iti.iha.server;
 
 import lombok.experimental.UtilityClass;
-import org.lan.iti.common.extension.ExtensionLoader;
-import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.config.IhaServerConfig;
+import org.lan.iti.iha.server.config.UrlProperties;
 import org.lan.iti.iha.server.context.IhaServerContext;
-import org.lan.iti.iha.server.exception.IhaServerException;
-import org.lan.iti.iha.server.service.IdentityService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 
 /**
@@ -43,36 +39,25 @@ public class IhaServer implements Serializable {
     private static final String UNREGISTERED_CONTEXT = "Unregistered iha context.Please use `IhaServer.registerContext(IhaServerContext)` to register iha context.";
     private static IhaServerContext context;
 
-    public static void registerContext(IhaServerContext context) {
+    public static void init(IhaServerContext context) {
         if (null == context) {
-            throw new IhaServerException(UNREGISTERED_CONTEXT);
+            throw new SecurityException(UNREGISTERED_CONTEXT);
         }
         IhaServer.context = context;
-        loadService();
-    }
-
-    private static void loadService() {
-        if (null == context.getIdentityService()) {
-            context.setIdentityService(ExtensionLoader.getLoader(IdentityService.class).getFirst());
-        }
     }
 
     public static IhaServerContext getContext() {
         if (null == context) {
-            throw new IhaServerException(UNREGISTERED_CONTEXT);
+            throw new SecurityException(UNREGISTERED_CONTEXT);
         }
         return context;
     }
 
-    public static void saveUser(UserDetails userDetails, HttpServletRequest request) {
-        getContext().getUserStoreService().save(userDetails, request);
-    }
-
-    public static void removeUser(HttpServletRequest request) {
-        getContext().getUserStoreService().remove(request);
-    }
-
     public static IhaServerConfig getIhaServerConfig() {
         return getContext().getConfig();
+    }
+
+    public static UrlProperties getUrlProperties() {
+        return getIhaServerConfig().getUrlProperties();
     }
 }

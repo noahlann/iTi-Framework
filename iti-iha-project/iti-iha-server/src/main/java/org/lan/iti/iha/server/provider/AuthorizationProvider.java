@@ -20,9 +20,11 @@ package org.lan.iti.iha.server.provider;
 
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
-import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.security.IhaServerRequestParam;
+
+import java.util.Map;
 
 /**
  * Authorize the endpoint to create a callback url, and pass different callback parameters according to the request parameters
@@ -34,15 +36,9 @@ import org.lan.iti.iha.server.security.IhaServerRequestParam;
 @Extension
 public interface AuthorizationProvider extends IExtension<String> {
 
-    /**
-     * 生成Response（redirect）
-     *
-     * @param param         请求参数
-     * @param responseType  回复类型
-     * @param clientDetails 客户端信息
-     * @param userDetails          用户信息
-     * @param issuer        issuer
-     * @return redirectUrl
-     */
-    String generateRedirect(IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer);
+    Map<String, Object> process(IhaServerRequestParam param,
+                                String responseType,
+                                ClientDetails clientDetails,
+                                UserDetails userDetails,
+                                String issuer);
 }

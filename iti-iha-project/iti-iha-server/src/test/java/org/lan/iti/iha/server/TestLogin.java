@@ -30,15 +30,15 @@ import org.lan.iti.iha.security.clientdetails.ClientDetails;
 import org.lan.iti.iha.security.clientdetails.ClientDetailsService;
 import org.lan.iti.iha.security.context.IhaSecurityContext;
 import org.lan.iti.iha.security.context.SecurityContextHolder;
-import org.lan.iti.iha.security.mgt.RequestParameter;
-import org.lan.iti.iha.security.processor.ProcessorType;
+import org.lan.iti.iha.security.jwt.JwtService;
 import org.lan.iti.iha.security.userdetails.UserDetails;
+import org.lan.iti.iha.security.userdetails.UserDetailsService;
 import org.lan.iti.iha.server.config.IhaServerConfig;
+import org.lan.iti.iha.server.config.UrlProperties;
 import org.lan.iti.iha.server.context.IhaServerContext;
 import org.lan.iti.iha.server.model.enums.ResponseType;
 import org.lan.iti.iha.server.provider.ScopeProvider;
-import org.lan.iti.iha.server.service.IdentityService;
-import org.lan.iti.iha.server.service.IhaUserDetailService;
+import org.lan.iti.iha.simple.security.SimpleRequestParameter;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,14 +52,12 @@ import java.util.concurrent.TimeUnit;
  * @url https://blog.noahlan.com
  */
 public class TestLogin {
-    private IhaServerContext context;
     private ClientDetails clientDetails;
     private UserDetails userDetails;
 
     @SneakyThrows
     @BeforeEach
     public void setUp() {
-        context = new IhaServerContext();
 
         ClientDetailsService clientDetailsService = Mockito.mock(ClientDetailsService.class);
         clientDetails = ClientDetails.builder()
@@ -88,24 +86,24 @@ public class TestLogin {
                 .setUsername("admin")
                 .setCredentials("123456")
                 .setId("123");
-        IhaUserDetailService userDetailService = Mockito.mock(IhaUserDetailService.class);
+        UserDetailsService userDetailService = Mockito.mock(UserDetailsService.class);
         Mockito.when(userDetailService.loadByType(userDetails.getUsername(), "username", null))
                 .thenReturn(userDetails);
 
-        IdentityService identityService = Mockito.mock(IdentityService.class);
+        JwtService jwtService = Mockito.mock(JwtService.class);
 
-        context.setIdentityService(identityService);
-        context.setConfig(new IhaServerConfig()
-                .setEnableDynamicIssuer(true)
-                .setExternalConfirmPageUrl(true)
-                .setExternalLoginPageUrl(true));
 
-        IhaSecurityContext context = new IhaSecurityContext();
-        context.setUserDetailsService(userDetailService);
-        context.setClientDetailsService(clientDetailsService);
+        IhaSecurity.init(new IhaSecurityContext()
+                .setJwtService(jwtService)
+                .setClientDetailsService(clientDetailsService)
+                .setUserDetailsService(userDetailService));
 
-        context.getAuthenticationManager().addProcessor(ProcessorType.SIMPLE, null);
-        IhaSecurity.init(context);
+        IhaServer.init(new IhaServerContext()
+                .setConfig(new IhaServerConfig()
+                        .setEnableDynamicIssuer(true)
+                        .setUrlProperties(new UrlProperties()
+                                .setExternalConfirmPageUrl(true)
+                                .setExternalLoginPageUrl(true))));
     }
 
     @Test
@@ -120,15 +118,11 @@ public class TestLogin {
         //
         Mockito.when(request.getParameterMap()).thenReturn(map);
 
-        RequestParameter parameter = new RequestParameter(map);
-        parameter.setProcessorType(ProcessorType.SIMPLE);
+        SimpleRequestParameter parameter = new SimpleRequestParameter(request);
 
-        Authentication authentication = IhaSecurity.getContext().getSecurityManager().authenticate(new RequestParameter(request));
+        Authentication authentication = IhaSecurity.getContext().getSecurityManager().authenticate(parameter);
         System.out.println(authentication);
         System.out.println(authentication.isAuthenticated());
-
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         System.out.println(IhaSecurity.getContext().getSecurityManager().check(parameter));
     }

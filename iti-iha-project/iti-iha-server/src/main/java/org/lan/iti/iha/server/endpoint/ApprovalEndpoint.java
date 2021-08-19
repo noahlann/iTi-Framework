@@ -19,13 +19,12 @@
 package org.lan.iti.iha.server.endpoint;
 
 import org.lan.iti.common.core.util.StringUtil;
-import org.lan.iti.iha.core.result.IhaResponse;
+import org.lan.iti.iha.oauth2.OAuth2Constants;
 import org.lan.iti.iha.security.IhaSecurity;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
-import org.lan.iti.iha.server.IhaServerConstants;
-import org.lan.iti.iha.server.security.IhaServerRequestParam;
 import org.lan.iti.iha.server.model.Scope;
 import org.lan.iti.iha.server.provider.ScopeProvider;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 import org.lan.iti.iha.server.util.EndpointUtil;
 import org.lan.iti.iha.server.util.OAuth2Util;
 
@@ -64,10 +63,10 @@ public class ApprovalEndpoint extends AbstractEndpoint {
      * @param request HttpServletRequest
      * @return IhaServerResponse
      */
-    public IhaResponse getAuthClientInfo(HttpServletRequest request) {
+    public Map<String, Object> getAuthClientInfo(HttpServletRequest request) {
         IhaServerRequestParam param = new IhaServerRequestParam(request);
         ClientDetails clientDetail = IhaSecurity.getContext().getClientDetailsService().getByClientId(param.getClientId());
-        OAuth2Util.validClientDetail(clientDetail);
+        OAuth2Util.validClientDetails(clientDetail);
 
         List<Map<String, Object>> scopeInfo = getScopeInfo(param);
 
@@ -76,7 +75,7 @@ public class ApprovalEndpoint extends AbstractEndpoint {
         result.put("scopes", scopeInfo);
         result.put("params", param);
 
-        return IhaResponse.ok(result);
+        return result;
     }
 
     /**
@@ -89,7 +88,7 @@ public class ApprovalEndpoint extends AbstractEndpoint {
         IhaServerRequestParam param = new IhaServerRequestParam(request);
         String clientId = param.getClientId();
         ClientDetails clientDetail = IhaSecurity.getContext().getClientDetailsService().getByClientId(clientId);
-        OAuth2Util.validClientDetail(clientDetail);
+        OAuth2Util.validClientDetails(clientDetail);
 
         StringBuilder builder = new StringBuilder();
         String html = "<!DOCTYPE html>\n"
@@ -166,7 +165,7 @@ public class ApprovalEndpoint extends AbstractEndpoint {
 
         List<String> userAuthorizedScopes = OAuth2Util.validateScope(param.getScope(), clientDetail.getScopes());
 
-        List<String> supportedScopes = StringUtil.split(clientDetail.getScopes(), IhaServerConstants.SPACE);
+        List<String> supportedScopes = StringUtil.split(clientDetail.getScopes(), OAuth2Constants.SCOPE_SEPARATOR);
 
         List<Scope> scopeList = ScopeProvider.getScopeByCodes(supportedScopes);
 

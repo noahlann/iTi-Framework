@@ -26,22 +26,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.jose4j.base64url.Base64Url;
 import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.oauth2.GrantType;
+import org.lan.iti.iha.oauth2.OAuth2Constants;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
+import org.lan.iti.iha.oauth2.exception.*;
 import org.lan.iti.iha.oauth2.pkce.CodeChallengeMethod;
 import org.lan.iti.iha.oauth2.pkce.PkceParams;
 import org.lan.iti.iha.oidc.OidcParameterNames;
 import org.lan.iti.iha.security.IhaSecurity;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
+import org.lan.iti.iha.security.clientdetails.ClientDetailsService;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.IhaServerConstants;
-import org.lan.iti.iha.server.exception.*;
 import org.lan.iti.iha.server.model.AuthorizationCode;
-import org.lan.iti.iha.server.model.enums.ErrorResponse;
 import org.lan.iti.iha.server.security.IhaServerRequestParam;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author NorthLan
@@ -59,14 +61,13 @@ public class OAuth2Util {
      * @return After the verification is passed, return the scope list
      */
     public static List<String> validateScope(String requestScopes, String clientScopes) {
-
         if (StrUtil.isEmpty(requestScopes)) {
-            throw new InvalidScopeException(ErrorResponse.INVALID_SCOPE);
+            throw new InvalidScopeException();
         }
-        List<String> scopes = StringUtil.split(requestScopes, IhaServerConstants.SPACE);
+        List<String> scopes = StringUtil.split(requestScopes, OAuth2Constants.SCOPE_SEPARATOR);
 
         if (StrUtil.isNotEmpty(clientScopes)) {
-            List<String> appScopes = StringUtil.split(clientScopes, IhaServerConstants.SPACE);
+            List<String> appScopes = StringUtil.split(clientScopes, OAuth2Constants.SCOPE_SEPARATOR);
             for (String scope : scopes) {
                 if (!appScopes.contains(scope)) {
                     throw new InvalidScopeException("Invalid scope: " + scope + ". Only the following scopes are supported: " + clientScopes);
@@ -97,11 +98,11 @@ public class OAuth2Util {
      * Verify the callback url
      *
      * @param requestRedirectUri The callback url passed in the current HTTP request
-     * @param clientDetail       client detail
+     * @param clientDetails      client detail
      */
-    public static void validateRedirectUri(String requestRedirectUri, ClientDetails clientDetail) {
-        String clientGrantTypes = clientDetail.getGrantTypes();
-        List<String> clientGrantTypeSet = StringUtil.split(clientGrantTypes, IhaServerConstants.SPACE);
+    public static void validateRedirectUri(String requestRedirectUri, ClientDetails clientDetails) {
+        String clientGrantTypes = clientDetails.getGrantTypes();
+        List<String> clientGrantTypeSet = StringUtil.split(clientGrantTypes, OAuth2Constants.SCOPE_SEPARATOR);
         if (clientGrantTypeSet.isEmpty()) {
             throw new InvalidGrantException("A client must have at least one authorized grant type.");
         }
@@ -110,9 +111,9 @@ public class OAuth2Util {
                     "A redirect_uri can only be used by implicit or authorization_code grant types.");
         }
 
-        List<String> clientRedirectUris = StrUtil.split(clientDetail.getRedirectUris(), IhaServerConstants.SPACE);
+        List<String> clientRedirectUris = StrUtil.split(clientDetails.getRedirectUris(), OAuth2Constants.SCOPE_SEPARATOR);
         if (requestRedirectUri == null || !clientRedirectUris.contains(requestRedirectUri)) {
-            throw new InvalidRedirectUriException(ErrorResponse.INVALID_REDIRECT_URI);
+            throw new InvalidRedirectUriException();
         }
     }
 
@@ -130,15 +131,19 @@ public class OAuth2Util {
         if (param.getGrantType().equals(GrantType.AUTHORIZATION_CODE.getType())) {
             if (param.isEnablePkce()) {
                 OAuth2Util.validateAuthorizationCodeChallenge(param.getCodeVerifier(), param.getCode());
-            } else {
-                if (StrUtil.isEmpty(param.getClientSecret()) || !clientDetails.getClientSecret().equals(param.getClientSecret())) {
-                    throw new InvalidClientException(ErrorResponse.INVALID_CLIENT);
-                }
+                return;
             }
-        } else {
-            if (StrUtil.isEmpty(param.getClientSecret()) || !clientDetails.getClientSecret().equals(param.getClientSecret())) {
-                throw new InvalidClientException(ErrorResponse.INVALID_CLIENT);
-            }
+        }
+        matchesSecret(clientDetails.getClientSecret(), param.getClientSecret());
+    }
+
+    private static void matchesSecret(String rawSecret, String encodedSecret) {
+        ClientDetailsService clientDetailsService = IhaSecurity.getContext().getClientDetailsService();
+        if (clientDetailsService == null) {
+            throw new SecurityException(String.format("%s has not been injected", ClientDetailsService.class.getName()));
+        }
+        if (!clientDetailsService.matches(rawSecret, encodedSecret)) {
+            throw new InvalidClientException();
         }
     }
 
@@ -153,17 +158,17 @@ public class OAuth2Util {
         log.debug("The client opened the pkce enhanced protocol and began to verify the legitimacy of the code challenge...");
         AuthorizationCode authCode = getCodeInfo(code);
         if (ObjectUtil.isNull(authCode)) {
-            throw new InvalidCodeException(ErrorResponse.INVALID_CODE);
+            throw new InvalidCodeException();
         }
         if (ObjectUtil.hasNull(authCode.getCodeChallenge(), authCode.getCodeChallengeMethod())) {
             log.debug("The client opened the pkce enhanced protocol, and the legality verification of the code challenge failed...");
-            throw new InvalidCodeException(ErrorResponse.INVALID_CODE_CHALLENGE);
+            throw new InvalidCodeChallengeException();
         }
         String codeChallengeMethod = authCode.getCodeChallengeMethod();
         String cacheCodeChallenge = authCode.getCodeChallenge();
         String currentCodeChallenge = OAuth2Util.generateCodeChallenge(codeChallengeMethod, codeVerifier);
         if (!currentCodeChallenge.equals(cacheCodeChallenge)) {
-            throw new InvalidCodeException(ErrorResponse.INVALID_CODE_CHALLENGE);
+            throw new InvalidCodeChallengeException();
         }
     }
 
@@ -184,9 +189,9 @@ public class OAuth2Util {
      * @param clientResponseTypes Response type in client detail
      */
     public static void validateResponseType(String requestResponseType, String clientResponseTypes) {
-        List<String> clientResponseTypeSet = StringUtil.split(clientResponseTypes, IhaServerConstants.SPACE);
+        List<String> clientResponseTypeSet = StringUtil.split(clientResponseTypes, OAuth2Constants.SCOPE_SEPARATOR);
         if (!StrUtil.isEmpty(clientResponseTypes) && !clientResponseTypeSet.contains(requestResponseType)) {
-            throw new UnsupportedResponseTypeException(ErrorResponse.UNSUPPORTED_RESPONSE_TYPE);
+            throw new UnsupportedResponseTypeException();
         }
     }
 
@@ -198,21 +203,21 @@ public class OAuth2Util {
      * @param equalTo          {@code requestGrantType} Must match grant type value
      */
     public static void validateGrantType(String requestGrantType, String clientGrantTypes, GrantType equalTo) {
-        List<String> grantTypeSet = StringUtil.split(clientGrantTypes, IhaServerConstants.SPACE);
+        List<String> grantTypeSet = StringUtil.split(clientGrantTypes, OAuth2Constants.SCOPE_SEPARATOR);
         if (StrUtil.isEmpty(requestGrantType) || ArrayUtil.isEmpty(grantTypeSet) || !grantTypeSet.contains(requestGrantType)) {
-            throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
+            throw new UnsupportedGrantTypeException();
         }
         if (null != equalTo && !requestGrantType.equals(equalTo.getType())) {
-            throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
+            throw new UnsupportedGrantTypeException();
         }
     }
 
-    public static void validClientDetail(ClientDetails clientDetails) {
+    public static void validClientDetails(ClientDetails clientDetails) {
         if (clientDetails == null) {
-            throw new InvalidClientException(ErrorResponse.INVALID_CLIENT);
+            throw new InvalidClientException();
         }
         if (!clientDetails.isAvailable()) {
-            throw new InvalidClientException(ErrorResponse.DISABLED_CLIENT);
+            throw new DisabledClientException();
         }
     }
 
@@ -225,11 +230,11 @@ public class OAuth2Util {
      */
     public AuthorizationCode validateAndGetAuthorizationCode(String grantType, String code) {
         if (!GrantType.AUTHORIZATION_CODE.getType().equals(grantType)) {
-            throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
+            throw new UnsupportedGrantTypeException();
         }
         AuthorizationCode authCode = getCodeInfo(code);
         if (null == authCode || ObjectUtil.hasNull(authCode.getUserDetails(), authCode.getScope())) {
-            throw new InvalidCodeException(ErrorResponse.INVALID_CODE);
+            throw new InvalidCodeException();
         }
         return authCode;
     }
@@ -240,7 +245,7 @@ public class OAuth2Util {
      * @param code authorization code
      */
     public static void invalidateCode(String code) {
-        IhaSecurity.getContext().getCache().removeKey(IhaServerConstants.OAUTH_CODE_CACHE_KEY + code);
+        IhaSecurity.getContext().getCache().evict(IhaServerConstants.OAUTH_CODE_CACHE_KEY + code);
     }
 
     /**
@@ -260,48 +265,73 @@ public class OAuth2Util {
                 .codeChallenge(param.getCodeChallenge())
                 .codeChallengeMethod(param.getCodeChallengeMethod())
                 .build();
-        IhaSecurity.getContext().getCache().set(IhaServerConstants.OAUTH_CODE_CACHE_KEY + code, authorizationCode, codeExpiresIn * 1000);
+        IhaSecurity.getContext().getCache().put(IhaServerConstants.OAUTH_CODE_CACHE_KEY + code,
+                authorizationCode, codeExpiresIn, TimeUnit.SECONDS);
         return code;
     }
 
     /**
-     * Get the expiration time of access token, default is {@link IhaServerConstants#ACCESS_TOKEN_ACTIVITY_TIME}
+     * 获取过期时长 秒为单位
+     *
+     * @param ttl        过期时长
+     * @param defaultTtl 默认时长
+     * @return 时长
+     */
+    public static long getExpiresIn(Long ttl, Long defaultTtl) {
+        if (ttl == null || ttl <= 0) {
+            return defaultTtl;
+        }
+        return ttl;
+    }
+
+    /**
+     * Get the expiration time of access token, default is {@link IhaServerConstants#DEFAULT_ACCESS_TOKEN_TIME_TO_LIVE}
      *
      * @param ttl The expiration time of the access token in the client detail
      * @return long
      */
     public static long getAccessTokenExpiresIn(Long ttl) {
-        return Optional.ofNullable(ttl).orElse(IhaServerConstants.ACCESS_TOKEN_ACTIVITY_TIME);
+        return getExpiresIn(ttl, IhaServerConstants.DEFAULT_ACCESS_TOKEN_TIME_TO_LIVE);
     }
 
     /**
-     * Get the expiration time of refresh token, the default is {@link IhaServerConstants#REFRESH_TOKEN_ACTIVITY_TIME}
+     * Get the expiration time of refresh token, the default is {@link IhaServerConstants#DEFAULT_REFRESH_TOKEN_TIME_TO_LIVE}
      *
      * @param ttl The expiration time of the refresh token in the client detail
      * @return long
      */
     public static long getRefreshTokenExpiresIn(Long ttl) {
-        return Optional.ofNullable(ttl).orElse(IhaServerConstants.REFRESH_TOKEN_ACTIVITY_TIME);
+        return getExpiresIn(ttl, IhaServerConstants.DEFAULT_REFRESH_TOKEN_TIME_TO_LIVE);
     }
 
     /**
-     * Get the expiration time of the authorization code code, the default is {@link IhaServerConstants#AUTHORIZATION_CODE_ACTIVITY_TIME}
+     * Get the expiration time of the authorization code code, the default is {@link IhaServerConstants#DEFAULT_AUTHORIZATION_CODE_TIME_TO_LIVE}
      *
      * @param ttl The expiration time of the code in the client detail
      * @return long
      */
     public static long getCodeExpiresIn(Long ttl) {
-        return Optional.ofNullable(ttl).orElse(IhaServerConstants.AUTHORIZATION_CODE_ACTIVITY_TIME);
+        return getExpiresIn(ttl, IhaServerConstants.DEFAULT_AUTHORIZATION_CODE_TIME_TO_LIVE);
     }
 
     /**
-     * Get the expiration time of id token, the default is{@link IhaServerConstants#ID_TOKEN_ACTIVITY_TIME}
+     * Get the expiration time of id token, the default is{@link IhaServerConstants#DEFAULT_ID_TOKEN_TIME_TO_LIVE}
      *
      * @param ttl The expiration time of the id token in the client detail
      * @return long
      */
     public static long getIdTokenExpiresIn(Long ttl) {
-        return Optional.ofNullable(ttl).orElse(IhaServerConstants.ID_TOKEN_ACTIVITY_TIME);
+        return getExpiresIn(ttl, IhaServerConstants.DEFAULT_ID_TOKEN_TIME_TO_LIVE);
+    }
+
+    /**
+     * 获取具体的过期时间点
+     *
+     * @param ttl 过期时长
+     * @return 过期时间点
+     */
+    public static LocalDateTime getExpiresAt(long ttl) {
+        return DateUtil.ofEpochSecond(System.currentTimeMillis() + ttl * 1000, null);
     }
 
     /**
@@ -311,8 +341,7 @@ public class OAuth2Util {
      * @return long
      */
     public static LocalDateTime getAccessTokenExpiresAt(Long ttl) {
-        long expiresIn = getAccessTokenExpiresIn(ttl);
-        return DateUtil.ofEpochSecond(System.currentTimeMillis() + expiresIn * 1000, null);
+        return getExpiresAt(getAccessTokenExpiresIn(ttl));
     }
 
     /**
@@ -322,8 +351,7 @@ public class OAuth2Util {
      * @return long
      */
     public static LocalDateTime getRefreshTokenExpiresAt(Long ttl) {
-        long expiresIn = getRefreshTokenExpiresIn(ttl);
-        return DateUtil.ofEpochSecond(System.currentTimeMillis() + expiresIn * 1000, null);
+        return getExpiresAt(getRefreshTokenExpiresIn(ttl));
     }
 
     /**
@@ -333,8 +361,7 @@ public class OAuth2Util {
      * @return long
      */
     public static LocalDateTime getCodeExpiresAt(Long ttl) {
-        long expiresIn = getCodeExpiresIn(ttl);
-        return DateUtil.ofEpochSecond(System.currentTimeMillis() + expiresIn * 1000, null);
+        return getExpiresAt(getCodeExpiresIn(ttl));
     }
 
     /**
@@ -344,8 +371,7 @@ public class OAuth2Util {
      * @return long
      */
     public static LocalDateTime getIdTokenExpiresAt(Long ttl) {
-        long expiresIn = getIdTokenExpiresIn(ttl);
-        return DateUtil.ofEpochSecond(System.currentTimeMillis() + expiresIn * 1000, null);
+        return getExpiresAt(getIdTokenExpiresIn(ttl));
     }
 
     /**

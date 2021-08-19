@@ -19,8 +19,8 @@
 package org.lan.iti.iha.server.endpoint;
 
 import org.lan.iti.common.core.util.StringUtil;
-import org.lan.iti.iha.core.util.RequestUtil;
-import org.lan.iti.iha.server.model.enums.ErrorResponse;
+import org.lan.iti.iha.security.util.RequestUtil;
+import org.lan.iti.iha.oauth2.enums.ErrorEnum;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,8 +52,8 @@ public class ErrorEndpoint extends AbstractEndpoint {
      * @throws IOException IOException
      */
     public void showErrorPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ErrorResponse errorResponse = ErrorResponse.getByError(RequestUtil.getParam("error", request));
-        String errorPageHtml = createErrorPageHtml(errorResponse.getError(), errorResponse.getErrorDescription());
+        ErrorEnum errorEnum = ErrorEnum.getByError(RequestUtil.getParam("error", request));
+        String errorPageHtml = createErrorPageHtml(errorEnum.getCode(), errorEnum.getMessage());
         response.setContentType("text/html;charset=UTF-8");
         response.setContentLength(errorPageHtml.getBytes(StandardCharsets.UTF_8).length);
         response.getWriter().write(errorPageHtml);

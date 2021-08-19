@@ -18,18 +18,17 @@
 
 package org.lan.iti.iha.server.endpoint;
 
-import com.xkcoding.json.JsonUtil;
 import org.lan.iti.common.core.util.StringUtil;
-import org.lan.iti.iha.core.result.IhaResponse;
+import org.lan.iti.iha.oauth2.OAuth2Constants;
+import org.lan.iti.iha.oauth2.enums.ErrorEnum;
+import org.lan.iti.iha.oauth2.exception.InvalidTokenException;
 import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.exception.authorization.UnauthorizedException;
 import org.lan.iti.iha.security.userdetails.UserDetails;
-import org.lan.iti.iha.server.IhaServerConstants;
-import org.lan.iti.iha.server.exception.IhaServerException;
-import org.lan.iti.iha.server.exception.InvalidTokenException;
-import org.lan.iti.iha.server.model.AccessToken;
-import org.lan.iti.iha.server.model.enums.ErrorResponse;
+import org.lan.iti.iha.security.userdetails.UserDetailsHelper;
+import org.lan.iti.iha.server.model.AuthorizationToken;
 import org.lan.iti.iha.server.model.enums.ScopeClaimsMapping;
-import org.lan.iti.iha.server.util.TokenUtil;
+import org.lan.iti.iha.server.util.AuthorizationTokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -50,20 +49,22 @@ public class UserInfoEndpoint extends AbstractEndpoint {
      * @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfoResponse" target="_blank">5.3.2.  Successful UserInfo Response</a>
      * @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims" target="_blank">5.4.  Requesting Claims using Scope Values</a>
      */
-    public IhaResponse getCurrentUserInfo(HttpServletRequest request) {
-        String accessTokenStr = TokenUtil.getAccessToken(request);
-        AccessToken accessToken = TokenUtil.getByAccessToken(accessTokenStr);
+    public Map<String, Object> getCurrentUserInfo(HttpServletRequest request) {
+        String accessTokenStr = AuthorizationTokenUtil.getAccessToken(request);
+        AuthorizationToken authorizationToken = AuthorizationTokenUtil.getByAccessToken(accessTokenStr);
 
-        if (null == accessToken) {
-            throw new InvalidTokenException(ErrorResponse.INVALID_TOKEN);
+        if (null == authorizationToken) {
+            throw new InvalidTokenException();
         }
-        UserDetails userDetails = IhaSecurity.getContext().getUserDetailsService().loadById(accessToken.getUserId());
+        UserDetails userDetails = IhaSecurity.getContext().getUserDetailsService().loadById(authorizationToken.getUserId());
         if (null == userDetails) {
-            throw new IhaServerException(ErrorResponse.ACCESS_DENIED);
+            throw new UnauthorizedException(ErrorEnum.ACCESS_DENIED);
         }
-        String scope = accessToken.getScope();
-        List<String> scopes = StringUtil.split(scope, IhaServerConstants.SPACE);
-        Map<String, Object> userInfoMap = JsonUtil.parseKv(JsonUtil.toJsonString(userDetails));
+        String scope = authorizationToken.getScope();
+        List<String> scopes = StringUtil.split(scope, OAuth2Constants.SCOPE_SEPARATOR);
+
+        Map<String, Object> userInfoMap = UserDetailsHelper.toMap(userDetails);
+
         // This scope value requests access to the End-User's default profile Claims,
         // which are: name, family_name, given_name, middle_name, nickname, preferred_username, profile, picture, website, gender, birthdate, zoneinfo, locale, and updated_at.
         if (!scopes.contains("profile")) {
@@ -85,7 +86,7 @@ public class UserInfoEndpoint extends AbstractEndpoint {
         if (!scopes.contains("roles")) {
             removeClaims(userInfoMap, ScopeClaimsMapping.ROLES);
         }
-        return IhaResponse.empty().putMap(userInfoMap);
+        return userInfoMap;
     }
 
     private void removeClaims(Map<String, Object> userInfoMap, ScopeClaimsMapping claimsMapping) {

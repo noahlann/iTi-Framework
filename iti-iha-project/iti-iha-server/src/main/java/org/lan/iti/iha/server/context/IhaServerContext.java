@@ -21,9 +21,8 @@ package org.lan.iti.iha.server.context;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.lan.iti.iha.server.config.IhaServerConfig;
-import org.lan.iti.iha.server.service.IdentityService;
 import org.lan.iti.iha.server.service.UserStoreService;
-import org.lan.iti.iha.server.service.impl.UserStoreServiceImpl;
+import org.lan.iti.iha.server.service.impl.SessionUserStoreService;
 
 import java.io.Serializable;
 
@@ -37,7 +36,6 @@ import java.io.Serializable;
 public class IhaServerContext implements Serializable {
     private static final long serialVersionUID = 4677418613923152037L;
 
-    private IdentityService identityService;
-    private UserStoreService userStoreService = new UserStoreServiceImpl();
     private IhaServerConfig config;
+    private UserStoreService userStoreService = new SessionUserStoreService();
 }

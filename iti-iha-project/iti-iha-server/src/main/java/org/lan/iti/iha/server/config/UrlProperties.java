@@ -19,6 +19,7 @@
 package org.lan.iti.iha.server.config;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * UrlProperties
@@ -28,18 +29,54 @@ import lombok.Data;
  * @url https://blog.noahlan.com
  */
 @Data
+@Accessors(chain = true)
 public class UrlProperties {
-    private String tokenUrl = "/oauth2/token";
-    private String errorUrl = "/oauth2/error";
-    private String authorizeUrl = "/oauth2/authorize";
-    private String authorizeAutoApproveUrl = "/oauth2/authorize/auto";
-    private String loginUrl = "/oauth2/login";
-    private String userinfoUrl = "/oauth2/userinfo";
-    private String registrationUrl = "/oauth2/registration";
-    private String endSessionUrl = "/oauth2/logout";
-    private String checkSessionUrl = "/oauth2/check_session";
-    private String logoutRedirectUrl = "/";
-    private String jwksUrl = "/.well-known/jwks.json";
-    private String discoveryUrl = "/.well-known/openid-configuration";
-    private String confirmUrl = "/oauth2/confirm";
+    public static final String DEFAULT_TOKEN_URL = "/oauth2/token";
+    public static final String DEFAULT_ERROR_URL = "/oauth2/error";
+    public static final String DEFAULT_AUTHORIZE_URL = "/oauth2/authorize";
+    public static final String DEFAULT_AUTHORIZE_AUTO_APPROVE_URL = "/oauth2/authorize/auto";
+    public static final String DEFAULT_LOGIN_URL = "/oauth2/login";
+    public static final String DEFAULT_USERINFO_URL = "/oauth2/userinfo";
+    public static final String DEFAULT_REGISTRATION_URL = "/oauth2/registration";
+    public static final String DEFAULT_END_SESSION_URL = "/oauth2/logout";
+    public static final String DEFAULT_CHECK_SESSION_URL = "/oauth2/check_session";
+    public static final String DEFAULT_LOGOUT_REDIRECT_URL = "/";
+    public static final String DEFAULT_JWKS_URL = "/.well-known/jwks.json";
+    public static final String DEFAULT_DISCOVERY_URL = "/.well-known/openid-configuration";
+    public static final String DEFAULT_CONFIRM_URL = "/oauth2/confirm";
+
+    private String tokenUrl = DEFAULT_TOKEN_URL;
+    private String errorUrl = DEFAULT_ERROR_URL;
+    private String authorizeUrl = DEFAULT_AUTHORIZE_URL;
+    private String authorizeAutoApproveUrl = DEFAULT_AUTHORIZE_AUTO_APPROVE_URL;
+    private String loginUrl = DEFAULT_LOGIN_URL;
+    private String userinfoUrl = DEFAULT_USERINFO_URL;
+    private String registrationUrl = DEFAULT_REGISTRATION_URL;
+    private String endSessionUrl = DEFAULT_END_SESSION_URL;
+    private String checkSessionUrl = DEFAULT_CHECK_SESSION_URL;
+    private String logoutRedirectUrl = DEFAULT_LOGOUT_REDIRECT_URL;
+    private String jwksUrl = DEFAULT_JWKS_URL;
+    private String discoveryUrl = DEFAULT_DISCOVERY_URL;
+    private String confirmUrl = DEFAULT_CONFIRM_URL;
+
+    /**
+     * Login page url
+     */
+    private String loginPageUrl = loginUrl;
+
+    /**
+     * When the login page is not provided by an authorized service (the login page is hosted by other services), this configuration needs to be turned on
+     */
+    private boolean externalLoginPageUrl = false;
+
+    /**
+     * The user confirms the authorized url, the default is {@code issuer + /oauth/confirm}
+     */
+    private String confirmPageUrl = confirmUrl;
+
+    /**
+     * When the authorization confirmation page is not provided by an authorized service (the authorization confirmation page is hosted by other services),
+     * this configuration needs to be turned on
+     */
+    private boolean externalConfirmPageUrl = false;
 }

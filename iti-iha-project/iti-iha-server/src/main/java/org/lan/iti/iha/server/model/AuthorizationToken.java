@@ -18,10 +18,17 @@
 
 package org.lan.iti.iha.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import lombok.experimental.SuperBuilder;
+import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -33,20 +40,40 @@ import java.time.LocalDateTime;
  */
 @Data
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
+@Builder(toBuilder = true)
 @NoArgsConstructor
-public class AccessToken implements Serializable {
+@AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class AuthorizationToken implements Serializable {
     private static final long serialVersionUID = 4062691954040845906L;
 
     private String accessToken;
     private String refreshToken;
-    private String userId;
-    private String userName;
-    private String grantType;
-    private String scope;
-    private String clientId;
+    private String idToken;
+
+    private String tokenType;
+
+    @JsonProperty(OAuth2ParameterNames.EXPIRES_IN)
     private Long accessTokenExpiresIn;
     private Long refreshTokenExpiresIn;
+    private Long idTokenExpiresIn;
+
+    @JsonIgnore
     private LocalDateTime accessTokenExpiration;
+
+    @JsonIgnore
     private LocalDateTime refreshTokenExpiration;
+
+    @JsonIgnore
+    private LocalDateTime idTokenExpiration;
+
+    private String scope;
+
+    private String userId;
+    private String openId;
+    private String unionId;
+    private String grantType;
+    private String clientId;
+
 }

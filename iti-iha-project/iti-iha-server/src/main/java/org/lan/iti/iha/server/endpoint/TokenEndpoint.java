@@ -19,37 +19,36 @@
 package org.lan.iti.iha.server.endpoint;
 
 import org.lan.iti.common.extension.ExtensionLoader;
-import org.lan.iti.iha.core.result.IhaResponse;
-import org.lan.iti.iha.server.exception.UnsupportedGrantTypeException;
+import org.lan.iti.iha.oauth2.exception.UnsupportedGrantTypeException;
+import org.lan.iti.iha.server.provider.AuthorizationTokenProcessor;
 import org.lan.iti.iha.server.security.IhaServerRequestParam;
-import org.lan.iti.iha.server.model.enums.ErrorResponse;
-import org.lan.iti.iha.server.provider.AuthorizationTokenProvider;
-import org.lan.iti.iha.oauth2.util.ClientCertificateUtil;
-import org.lan.iti.iha.server.util.TokenUtil;
+import org.lan.iti.iha.server.util.AuthorizationTokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
+ * token端点处理
+ *
  * @author NorthLan
  * @date 2021-07-06
  * @url https://noahlan.com
  */
 public class TokenEndpoint extends AbstractEndpoint {
 
-    public IhaResponse getToken(HttpServletRequest request) {
-        IhaServerRequestParam param = new IhaServerRequestParam(request);
-        param.setClient(ClientCertificateUtil.getClientCertificate(request));
+    public Map<String, Object> getToken(HttpServletRequest request, HttpServletResponse response) {
+        IhaServerRequestParam param = new IhaServerRequestParam(request, response);
 
-        AuthorizationTokenProvider provider = ExtensionLoader.getLoader(AuthorizationTokenProvider.class)
+        AuthorizationTokenProcessor provider = ExtensionLoader.getLoader(AuthorizationTokenProcessor.class)
                 .getFirst(param.getGrantType());
         if (provider == null) {
-            throw new UnsupportedGrantTypeException(ErrorResponse.UNSUPPORTED_GRANT_TYPE);
+            throw new UnsupportedGrantTypeException();
         }
-        return provider.generateResponse(param);
+        return provider.process(param);
     }
 
-    public IhaResponse revokeToken(HttpServletRequest request) {
-        TokenUtil.invalidateToken(request);
-        return IhaResponse.ok();
+    public void revokeToken(HttpServletRequest request) {
+        AuthorizationTokenUtil.invalidateToken(request);
     }
 }

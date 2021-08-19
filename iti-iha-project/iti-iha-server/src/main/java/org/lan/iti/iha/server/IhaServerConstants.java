@@ -26,51 +26,27 @@ import java.time.Duration;
  * @url https://noahlan.com
  */
 public interface IhaServerConstants {
-
-    String SLASH = "/";
-    String COMMA = ",";
-    String SPACE = " ";
-
-    String DEFAULT_TOKEN_URL = "/oauth2/token";
-    String DEFAULT_ERROR_URL = "/oauth2/error";
-    String DEFAULT_AUTHORIZE_URL = "/oauth2/authorize";
-    String DEFAULT_AUTHORIZE_AUTO_APPROVE_URL = "/oauth2/authorize/auto";
-    String DEFAULT_LOGIN_URL = "/oauth2/login";
-    String DEFAULT_USERINFO_URL = "/oauth2/userinfo";
-    String DEFAULT_REGISTRATION_URL = "/oauth2/registration";
-    String DEFAULT_END_SESSION_URL = "/oauth2/logout";
-    String DEFAULT_CHECK_SESSION_URL = "/oauth2/check_session";
-    String DEFAULT_LOGOUT_REDIRECT_URL = "/";
-    String DEFAULT_JWKS_URL = "/.well-known/jwks.json";
-    String DEFAULT_DISCOVERY_URL = "/.well-known/openid-configuration";
-    String DEFAULT_CONFIRM_URL = "/oauth2/confirm";
-
     /**
      * The default validity period of the authorization code is 10 minutes (600 seconds)
      */
-    long AUTHORIZATION_CODE_ACTIVITY_TIME = Duration.ofMinutes(10L).getSeconds();
+    long DEFAULT_AUTHORIZATION_CODE_TIME_TO_LIVE = Duration.ofMinutes(10L).getSeconds();
     /**
      * The default validity period of access token is 7 days
      */
-    long ACCESS_TOKEN_ACTIVITY_TIME = Duration.ofDays(7).getSeconds();
+    long DEFAULT_ACCESS_TOKEN_TIME_TO_LIVE = Duration.ofDays(7).getSeconds();
     /**
      * The default validity period of refresh token is 30 days
      */
-    long REFRESH_TOKEN_ACTIVITY_TIME = Duration.ofDays(30).getSeconds();
+    long DEFAULT_REFRESH_TOKEN_TIME_TO_LIVE = Duration.ofDays(30).getSeconds();
     /**
      * The default validity period of id token is 365 days
      */
-    long ID_TOKEN_ACTIVITY_TIME = Duration.ofDays(365).getSeconds();
+    long DEFAULT_ID_TOKEN_TIME_TO_LIVE = Duration.ofDays(365).getSeconds();
 
     /**
      * Cache key of oauth authorized user
      */
     String IHA_SERVER_OAUTH_CACHE_KEY = "IHA_SERVER:OAUTH2:";
-
-    /**
-     * Cache key of oauth authorized user
-     */
-    String OAUTH_USER_CACHE_KEY = IHA_SERVER_OAUTH_CACHE_KEY + "USERINFO";
 
     /**
      * Cache the key of access token
@@ -81,6 +57,11 @@ public interface IhaServerConstants {
      * Cache the key of refresh token
      */
     String OAUTH_REFRESH_TOKEN_CACHE_KEY = IHA_SERVER_OAUTH_CACHE_KEY + "REFRESH_TOKEN:";
+
+    /**
+     * Cache the key of id token
+     */
+    String OAUTH_ID_TOKEN_CACHE_KEY = IHA_SERVER_OAUTH_CACHE_KEY + "ID_TOKEN:";
 
     /**
      * Cache the key of the oauth code

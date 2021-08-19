@@ -19,12 +19,13 @@
 package org.lan.iti.iha.server.provider.authorization;
 
 import org.lan.iti.common.extension.ExtensionLoader;
-import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
-import org.lan.iti.iha.server.security.IhaServerRequestParam;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.model.enums.ResponseType;
 import org.lan.iti.iha.server.provider.AuthorizationProvider;
-import org.lan.iti.iha.server.util.TokenUtil;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
+
+import java.util.Map;
 
 /**
  * When the value of {@code response_type} is {@code code id_token}, return {@code code} and {@code id_token} from the authorization endpoint
@@ -34,18 +35,20 @@ import org.lan.iti.iha.server.util.TokenUtil;
  * @url https://blog.noahlan.com
  * @see <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations">Definitions of Multiple-Valued Response Type Combinations</a>
  */
-public class CodeIdTokenAuthorizationProvider implements AuthorizationProvider {
+public class CodeIdTokenAuthorizationProvider extends AbstractAuthorizationProvider {
     @Override
     public boolean matches(String params) {
         return ResponseType.CODE_ID_TOKEN.getType().equalsIgnoreCase(params);
     }
 
     @Override
-    public String generateRedirect(IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
-        String params = "&id_token=" + TokenUtil.createIdToken(clientDetails, userDetails, param.getNonce(), issuer);
-
-        AuthorizationProvider codeProvider = ExtensionLoader.getLoader(AuthorizationProvider.class)
+    protected void process(Map<String, Object> result, IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
+        AbstractAuthorizationProvider codeProvider = (AbstractAuthorizationProvider) ExtensionLoader.getLoader(AuthorizationProvider.class)
                 .getFirst(ResponseType.CODE.getType());
-        return codeProvider.generateRedirect(param, responseType, clientDetails, userDetails, issuer) + params;
+        AbstractAuthorizationProvider idTokenProvider = (AbstractAuthorizationProvider) ExtensionLoader.getLoader(AuthorizationProvider.class)
+                .getFirst(ResponseType.ID_TOKEN.getType());
+
+        codeProvider.process(result, param, responseType, clientDetails, userDetails, issuer);
+        idTokenProvider.process(result, param, responseType, clientDetails, userDetails, issuer);
     }
 }

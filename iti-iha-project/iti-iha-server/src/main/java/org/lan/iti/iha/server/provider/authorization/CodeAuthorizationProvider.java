@@ -18,13 +18,14 @@
 
 package org.lan.iti.iha.server.provider.authorization;
 
-import org.lan.iti.common.core.util.StringUtil;
-import org.lan.iti.iha.security.userdetails.UserDetails;
+import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
-import org.lan.iti.iha.server.security.IhaServerRequestParam;
+import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.server.model.enums.ResponseType;
-import org.lan.iti.iha.server.provider.AuthorizationProvider;
+import org.lan.iti.iha.server.security.IhaServerRequestParam;
 import org.lan.iti.iha.server.util.OAuth2Util;
+
+import java.util.Map;
 
 /**
  * 4.1.  Authorization Code Grant
@@ -34,19 +35,15 @@ import org.lan.iti.iha.server.util.OAuth2Util;
  * @url https://blog.noahlan.com
  * @see <a href="https://tools.ietf.org/html/rfc6749#section-4.1">4.1.  Authorization Code Grant</a>
  */
-public class CodeAuthorizationProvider implements AuthorizationProvider {
+public class CodeAuthorizationProvider extends AbstractAuthorizationProvider {
     @Override
     public boolean matches(String params) {
         return ResponseType.CODE.getType().equalsIgnoreCase(params);
     }
 
     @Override
-    public String generateRedirect(IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
+    protected void process(Map<String, Object> result, IhaServerRequestParam param, String responseType, ClientDetails clientDetails, UserDetails userDetails, String issuer) {
         String authorizationCode = OAuth2Util.createAuthorizationCode(param, userDetails, OAuth2Util.getCodeExpiresIn(clientDetails.getCodeTimeToLive()));
-        String params = "?code=" + authorizationCode;
-        if (StringUtil.isNotEmpty(param.getState())) {
-            params = params + "&state=" + param.getState();
-        }
-        return param.getRedirectUri() + params;
+        result.put(OAuth2ParameterNames.CODE, authorizationCode);
     }
 }
