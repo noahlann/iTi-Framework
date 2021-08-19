@@ -67,7 +67,6 @@
         <disruptor.version>3.4.2</disruptor.version>
         <fastjson.version>1.2.75</fastjson.version>
         <pinyin4j.version>2.5.1</pinyin4j.version>
-        <simple-json.version>0.0.2</simple-json.version>
         <simple-http.version>1.0.3</simple-http.version>
 
         <snakeyaml.version>1.27</snakeyaml.version>
@@ -76,7 +75,7 @@
         <slf4j.version>1.7.30</slf4j.version>
         <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
         <aspectj.version>1.9.6</aspectj.version>
-        <jackson-datatype.version>2.12.3</jackson-datatype.version>
+        <jackson-datatype.version>2.13.0-rc1</jackson-datatype.version>
         <hibernate-type.version>2.12.0</hibernate-type.version>
         <reflections.version>0.9.11</reflections.version>
 
@@ -272,11 +271,6 @@
                 <groupId>com.belerweb</groupId>
                 <artifactId>pinyin4j</artifactId>
                 <version>${pinyin4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.xkcoding.json</groupId>
-                <artifactId>simple-json</artifactId>
-                <version>${simple-json.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.xkcoding.http</groupId>

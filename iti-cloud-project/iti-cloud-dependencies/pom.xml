@@ -91,6 +91,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- axon -->
             <dependency>
                 <groupId>org.axonframework</groupId>
                 <artifactId>axon-bom</artifactId>
@@ -190,11 +191,6 @@
             </dependency>
             <dependency>
                 <groupId>org.lan</groupId>
-                <artifactId>iti-cloud-ddd</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.lan</groupId>
                 <artifactId>iti-cloud-axon</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -238,11 +234,6 @@
             <dependency>
                 <groupId>org.lan</groupId>
                 <artifactId>iti-cloud-starter-data-redis</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.lan</groupId>
-                <artifactId>iti-cloud-starter-ddd</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

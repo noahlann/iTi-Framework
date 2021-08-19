@@ -38,7 +38,6 @@
         <module>iti-cloud-starter</module>
         <module>iti-cloud-starter-data-jpa</module>
         <module>iti-cloud-starter-data-redis</module>
-        <module>iti-cloud-starter-ddd</module>
         <module>iti-cloud-starter-extension</module>
         <module>iti-cloud-starter-axon</module>
         <module>iti-cloud-starter-loadbalancer</module>
