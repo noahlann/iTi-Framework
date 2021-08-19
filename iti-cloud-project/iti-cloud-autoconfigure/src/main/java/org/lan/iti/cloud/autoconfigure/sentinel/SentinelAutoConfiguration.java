@@ -20,8 +20,10 @@ package org.lan.iti.cloud.autoconfigure.sentinel;
 
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.RequestOriginParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.lan.iti.cloud.sentinel.handler.ITIUrlBlockHandler;
 import org.lan.iti.cloud.sentinel.parser.ITIHeaderRequestOriginParser;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -40,8 +42,9 @@ public class SentinelAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public BlockExceptionHandler blockExceptionHandler() {
-        return new ITIUrlBlockHandler();
+    @ConditionalOnBean(ObjectMapper.class)
+    public BlockExceptionHandler blockExceptionHandler(ObjectMapper objectMapper) {
+        return new ITIUrlBlockHandler(objectMapper);
     }
 
     @Bean
