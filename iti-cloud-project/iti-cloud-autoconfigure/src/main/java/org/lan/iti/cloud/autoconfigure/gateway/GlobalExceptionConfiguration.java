@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.lang.NonNull;
@@ -71,11 +72,11 @@ public class GlobalExceptionConfiguration implements ErrorWebExceptionHandler {
         return response.writeWith(Mono.fromSupplier(() -> {
             DataBufferFactory bufferFactory = response.bufferFactory();
 
-            Integer rawStatusCode = response.getRawStatusCode();
+            String rawStatusCode = String.valueOf(response.getRawStatusCode());
             if (rawStatusCode == null) {
-                rawStatusCode = 500;
+                rawStatusCode = String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
-            Integer errorCode = rawStatusCode;
+            String errorCode = rawStatusCode;
             String msg = ex.getMessage();
             if (ex instanceof ResponseStatusException) {
                 msg = ((ResponseStatusException) ex).getReason();

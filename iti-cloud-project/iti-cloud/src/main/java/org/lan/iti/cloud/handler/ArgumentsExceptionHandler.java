@@ -19,8 +19,8 @@
 package org.lan.iti.cloud.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.core.api.ApiResult;
 import org.lan.iti.cloud.constants.AopConstants;
+import org.lan.iti.common.core.api.ApiResult;
 import org.lan.iti.common.core.enums.ITIExceptionEnum;
 import org.lan.iti.common.core.validator.ArgumentInvalidResult;
 import org.slf4j.Logger;
@@ -100,7 +100,7 @@ public class ArgumentsExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResult<String> handleMissingParameterException(MissingServletRequestParameterException e) {
         log.error("缺少请求参数：", e);
-        return ApiResult.error(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        return ApiResult.error(String.valueOf(HttpStatus.BAD_REQUEST.value()), e.getMessage());
     }
 
     public ApiResult<List<ArgumentInvalidResult>> handleArgumentResult(BindingResult bindingResult, Logger log) {
@@ -113,7 +113,7 @@ public class ArgumentsExceptionHandler {
 
     private ApiResult<List<ArgumentInvalidResult>> handleArgumentResult(List<ArgumentInvalidResult> result, Logger log) {
         log.error("参数验证错误, {}", result.toString());
-        return ApiResult.error(HttpStatus.BAD_REQUEST.value(),
+        return ApiResult.error(String.valueOf(HttpStatus.BAD_REQUEST.value()),
                 ITIExceptionEnum.METHOD_ARGUMENT_NOT_VALID.getMessage(), result);
     }
 

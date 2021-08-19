@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     @DeleteMapping("/error")
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiResult<String> noHandlerFoundException() {
-        return ApiResult.error(HttpStatus.NOT_FOUND.value(),
+        return ApiResult.error(String.valueOf(HttpStatus.NOT_FOUND.value()),
                 HttpStatus.NOT_FOUND.getReasonPhrase());
     }
 

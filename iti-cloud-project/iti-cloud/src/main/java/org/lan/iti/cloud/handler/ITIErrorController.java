@@ -75,10 +75,10 @@ public class ITIErrorController extends AbstractErrorController {
     public ApiResult<?> error(HttpServletRequest request) {
         HttpStatus status = getStatus(request);
         if (status == HttpStatus.NO_CONTENT) {
-            return ApiResult.error(status.value(), status.getReasonPhrase());
+            return ApiResult.error(String.valueOf(status.value()), status.getReasonPhrase());
         }
         Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
-        return ApiResult.error(status.value(), status.getReasonPhrase(), body);
+        return ApiResult.error(String.valueOf(status.value()), status.getReasonPhrase(), body);
     }
 
 

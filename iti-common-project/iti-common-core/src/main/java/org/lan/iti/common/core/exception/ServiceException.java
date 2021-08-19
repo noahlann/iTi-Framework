@@ -16,23 +16,20 @@
 
 package org.lan.iti.common.core.exception;
 
-import lombok.Getter;
-
 /**
  * 服务异常统一规范
  *
  * @author NorthLan
  * @date 2020-05-14
  * @url https://noahlan.com
+ * @deprecated 将要删除
  */
+@Deprecated
 public class ServiceException extends AbstractException {
     private static final long serialVersionUID = -6476522626904036566L;
 
-    @Getter
-    private final Integer code;
 
-    public ServiceException(Integer code, String message) {
-        super(message);
-        this.code = code;
+    public ServiceException(String code, String message) {
+        super(code, message);
     }
 }

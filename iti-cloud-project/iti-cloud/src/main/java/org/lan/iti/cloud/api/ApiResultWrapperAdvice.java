@@ -96,7 +96,7 @@ public class ApiResultWrapperAdvice implements ResponseBodyAdvice<Object> {
         if (body instanceof ApiResult) {
             // 根据body指定code转换httpStatus
             result = (ApiResult) body;
-            HttpStatus status = HttpStatus.resolve(result.getCode());
+            HttpStatus status = HttpStatus.resolve(result.getCodeInt());
             if (status != null) {
                 // 设置为HTTP标准返回码
                 response.setStatusCode(status);

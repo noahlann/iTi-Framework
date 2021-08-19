@@ -19,6 +19,7 @@
 package org.lan.iti.common.core.exception;
 
 import lombok.Getter;
+import org.lan.iti.common.core.util.StringUtil;
 
 import javax.validation.constraints.NotNull;
 
@@ -37,11 +38,6 @@ public class BusinessException extends AbstractException {
     private static final long serialVersionUID = 3719499343672609356L;
 
     /**
-     * 中台定义的统一错误码.
-     */
-    protected IExceptionSpec errorReason;
-
-    /**
      * (业务前台)个性化消息.
      * <p>
      * <p>例如，业务前台要求它抛出的错误消息，中台不要再加工，要原封不动地输出</p>
@@ -52,9 +48,12 @@ public class BusinessException extends AbstractException {
     @Getter
     protected Object data;
 
-    public BusinessException(@NotNull IExceptionSpec errorReason) {
-        super();
-        this.errorReason = errorReason;
+    public BusinessException(String code, String message) {
+        super(code, message);
+    }
+
+    public BusinessException(IExceptionSpec spec) {
+        super(spec);
     }
 
     public BusinessException withCustom(@NotNull String custom) {
@@ -71,29 +70,12 @@ public class BusinessException extends AbstractException {
         return new BusinessException(errorReason);
     }
 
-    public Integer code() {
-        return errorReason.getCode();
-    }
-
-    public String message() {
-        return errorReason.getMessage();
-    }
-
-    public boolean hasCustom() {
-        return custom != null;
-    }
-
     @Override
     public String getMessage() {
-        if (hasCustom()) {
+        if (StringUtil.isNotEmpty(this.custom)) {
             return this.custom;
         }
-        return message();
-    }
-
-    @Override
-    public Integer getCode() {
-        return this.code();
+        return super.getMessage();
     }
 
     /**

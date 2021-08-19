@@ -36,7 +36,7 @@ public class ExceptionHandlerHelper {
         if (StrUtil.isEmpty(msgPrefix)) {
             msgPrefix = "数据库错误";
         }
-        return ApiResult.error(e.getErrorCode(),
+        return ApiResult.error(String.valueOf(e.getErrorCode()),
                 msgPrefix + StringPool.COLON + e.getSQLState(), e.getLocalizedMessage());
     }
 }

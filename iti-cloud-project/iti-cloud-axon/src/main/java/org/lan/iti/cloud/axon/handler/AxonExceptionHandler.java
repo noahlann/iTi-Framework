@@ -49,14 +49,16 @@ public class AxonExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<String> handleMessageException(MessageHandlerInvocationException e) {
-        log.error("消息发布异常：", e);
-        return ApiResult.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "消息发布错误", e.getLocalizedMessage());
+        log.error("Axon消息处理异常：", e);
+        return ApiResult.error(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                "消息处理异常（Axon）", e.getLocalizedMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<String> handleAxonException(AxonException e) {
         log.error("Axon异常：", e);
-        return ApiResult.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务器错误（Axon）", e.getLocalizedMessage());
+        return ApiResult.error(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                "服务器错误（Axon）", e.getLocalizedMessage());
     }
 }

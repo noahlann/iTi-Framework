@@ -18,7 +18,8 @@
 
 package org.lan.iti.common.core.api;
 
-import com.xkcoding.json.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Test;
  */
 public class ApiResultTest {
 
+    @SneakyThrows
     @Test
     public void test() {
         ApiResult<String> test = ApiResult.ok("23332333");
@@ -36,14 +38,16 @@ public class ApiResultTest {
         test.page(1);
         test.totalElements(2);
 
-        Assertions.assertEquals("{\"code\":200,\"data\":\"23332333\",\"page\":1,\"message\":\"成功\",\"totalElements\":2}", JsonUtil.toJsonString(test));
+        Assertions.assertEquals("{\"code\":200,\"data\":\"23332333\",\"page\":1,\"message\":\"成功\",\"totalElements\":2}",
+                new ObjectMapper().writeValueAsString(test));
     }
 
+    @SneakyThrows
     @Test
     public void test2() {
         ApiResult<String> test = ApiResult.ok("niubi");
         test.put("haha", "你好啊");
         Assertions.assertEquals("{\"haha\":\"你好啊\",\"code\":200,\"data\":\"niubi\",\"message\":\"成功\"}",
-                JsonUtil.toJsonString(test));
+                new ObjectMapper().writeValueAsString(test));
     }
 }

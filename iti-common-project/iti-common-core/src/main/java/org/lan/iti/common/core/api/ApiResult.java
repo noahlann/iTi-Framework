@@ -20,17 +20,16 @@ package org.lan.iti.common.core.api;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
+import org.lan.iti.common.core.support.IEnum;
+import org.lan.iti.common.core.support.Mapped;
+import org.lan.iti.common.core.util.StringUtil;
 
 /**
  * 统一的API返回结果类
@@ -43,7 +42,7 @@ import java.util.function.Function;
 @ApiModel(description = "API返回结果类")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ApiResult<T> extends HashMap<String, Object> {
+public class ApiResult<T> extends Mapped<ApiResult<T>> {
     private static final long serialVersionUID = -6067032280959288931L;
 
     /**
@@ -158,7 +157,7 @@ public class ApiResult<T> extends HashMap<String, Object> {
      *
      * @param data 数据域
      */
-    public static <T> ApiResult<T> ok(Integer code, String message, T data) {
+    public static <T> ApiResult<T> ok(String code, String message, T data) {
         ApiResult<T> result = new ApiResult<>();
         if (StrUtil.isEmpty(message)) {
             message = DefaultEnum.SUCCESS.getMessage();
@@ -170,15 +169,6 @@ public class ApiResult<T> extends HashMap<String, Object> {
                 .message(message)
                 .code(code)
                 .data(data);
-    }
-
-    /**
-     * 失败结果
-     *
-     * @param code 错误码
-     */
-    public static <T> ApiResult<T> error(Integer code) {
-        return error(code, null, null);
     }
 
     /**
@@ -199,7 +189,7 @@ public class ApiResult<T> extends HashMap<String, Object> {
      * @param message 错误消息
      * @return ApiResult实例
      */
-    public static <T> ApiResult<T> error(Integer code, String message) {
+    public static <T> ApiResult<T> error(String code, String message) {
         return error(code, message, null);
     }
 
@@ -211,7 +201,7 @@ public class ApiResult<T> extends HashMap<String, Object> {
      * @param data    结果集，数据
      * @return ApiResult实例
      */
-    public static <T> ApiResult<T> error(Integer code, String message, T data) {
+    public static <T> ApiResult<T> error(String code, String message, T data) {
         ApiResult<T> result = new ApiResult<>();
 
         if (StrUtil.isBlank(message)) {
@@ -227,47 +217,8 @@ public class ApiResult<T> extends HashMap<String, Object> {
                 .data(data);
     }
 
-    @Override
-    public Object remove(Object key) {
-        throw new UnsupportedOperationException("Not supported: remove(Object)");
-    }
-
-    @Override
-    public boolean remove(Object key, Object value) {
-        throw new UnsupportedOperationException("Not supported: remove(Object, Object)");
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported: clear");
-    }
-
-    @Override
-    @NotNull
-    public ApiResult<T> put(String key, Object value) {
-        if (key == null) {
-            throw new IllegalArgumentException("key cannot be null");
-        }
-        super.put(key, value);
-        return this;
-    }
-
-    @Override
-    @Deprecated
-    public void putAll(Map<? extends String, ?> m) {
-        throw new UnsupportedOperationException("Deprecated: method putAll(Map) in ApiResult is forbidden. Use putMap(Map) instead.");
-    }
-
-    public ApiResult<T> putMap(Map<? extends String, ?> m) {
-        if (m == null) {
-            throw new IllegalArgumentException("map cannot be null");
-        }
-        super.putAll(m);
-        return this;
-    }
-
     // region Methods
-    public ApiResult<T> code(Integer code) {
+    public ApiResult<T> code(String code) {
         if (code == null) {
             throw new IllegalArgumentException("code cannot be null");
         }
@@ -306,12 +257,21 @@ public class ApiResult<T> extends HashMap<String, Object> {
     }
     // endregion
 
-
     /**
      * 消息码
      */
-    public Integer getCode() {
+    public String getCode() {
         return getByKey(KEY_CODE, DefaultEnum.SUCCESS.code);
+    }
+
+    @JsonIgnore
+    public int getCodeInt() {
+        String code = this.getCode();
+        try {
+            return Integer.parseInt(code);
+        } catch (NumberFormatException e) {
+            return Integer.parseInt(DefaultEnum.SUCCESS.code);
+        }
     }
 
     /**
@@ -356,37 +316,20 @@ public class ApiResult<T> extends HashMap<String, Object> {
         return getByKey(KEY_TOTAL_PAGES);
     }
 
-    // utils
-    public <R> R getByKey(String key) {
-        return getByKey(key, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <R> R getByKey(String key, R defaultValue) {
-        return getByKey(key, defaultValue, obj -> (R) obj);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <R> R getByKey(String key, R defaultValue, Function<Object, R> cast) {
-        Object obj = this.get(key);
-        if (obj == null) {
-            return defaultValue;
-        }
-        if (cast == null) {
-            return (R) obj;
-        }
-        return cast.apply(obj);
+    // region 判断条件
+    public boolean isOk() {
+        return StringUtil.equals(getCode(), DefaultEnum.SUCCESS.getCode());
     }
     // endregion
 
     @SuppressWarnings("AlibabaEnumConstantsMustHaveComment")
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public enum DefaultEnum {
-        SUCCESS(HttpStatus.HTTP_OK, "成功"),
-        FAIL(HttpStatus.HTTP_INTERNAL_ERROR, "失败"),
+    public enum DefaultEnum implements IEnum<String> {
+        SUCCESS(String.valueOf(HttpStatus.HTTP_OK), "成功"),
+        FAIL(String.valueOf(HttpStatus.HTTP_INTERNAL_ERROR), "失败"),
         ;
-        private final Integer code;
+        private final String code;
         private final String message;
     }
 }

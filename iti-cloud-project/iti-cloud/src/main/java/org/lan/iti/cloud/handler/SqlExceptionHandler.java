@@ -19,8 +19,8 @@
 package org.lan.iti.cloud.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.core.api.ApiResult;
 import org.lan.iti.cloud.constants.AopConstants;
+import org.lan.iti.common.core.api.ApiResult;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -53,6 +53,7 @@ public class SqlExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResult<String> handleBadSqlException(PersistenceException e) {
         log.error("数据库异常（持久化）：", e);
-        return ApiResult.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "数据库（持久化）错误", e.getLocalizedMessage());
+        return ApiResult.error(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                "数据库（持久化）错误", e.getLocalizedMessage());
     }
 }

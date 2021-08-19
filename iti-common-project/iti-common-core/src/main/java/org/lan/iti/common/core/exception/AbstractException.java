@@ -18,6 +18,8 @@
 
 package org.lan.iti.common.core.exception;
 
+import lombok.Getter;
+
 /**
  * 框架异常抽象类
  *
@@ -28,11 +30,19 @@ package org.lan.iti.common.core.exception;
 public abstract class AbstractException extends RuntimeException implements IExceptionSpec {
     private static final long serialVersionUID = -1064327362741791267L;
 
+    @Getter
+    protected String code;
+
     protected AbstractException() {
     }
 
     protected AbstractException(String message) {
         super(message);
+    }
+
+    protected AbstractException(String code, String message) {
+        super(message);
+        this.code = code;
     }
 
     protected AbstractException(String message, Throwable cause) {
@@ -45,6 +55,11 @@ public abstract class AbstractException extends RuntimeException implements IExc
 
     protected AbstractException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    protected AbstractException(IExceptionSpec spec) {
+        super(spec.getMessage());
+        this.code = spec.getCode();
     }
 
     @Override
