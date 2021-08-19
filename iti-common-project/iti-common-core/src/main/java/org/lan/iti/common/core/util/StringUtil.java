@@ -129,7 +129,7 @@ public class StringUtil extends StrUtil {
      * @param encode Whether to encode the value of the map
      * @return String
      */
-    public static String parseMapToString(Map<String, String> params, boolean encode) {
+    public static String parseMapToString(Map<String, ?> params, boolean encode) {
         if (null == params || params.isEmpty()) {
             return "";
         }
@@ -138,7 +138,7 @@ public class StringUtil extends StrUtil {
             if (null == v) {
                 paramList.add(k + "=");
             } else {
-                paramList.add(k + "=" + (encode ? URLUtil.encode(v) : v));
+                paramList.add(k + "=" + (encode ? URLUtil.encode(String.valueOf(v)) : v));
             }
         });
         return String.join("&", paramList);
@@ -155,6 +155,7 @@ public class StringUtil extends StrUtil {
      * StringUtils.hasLength(" ") = true
      * StringUtils.hasLength("Hello") = true
      * </pre>
+     *
      * @param str the {@code CharSequence} to check (may be {@code null})
      * @return {@code true} if the {@code CharSequence} is not {@code null} and has length
      * @see #hasLength(String)
@@ -168,6 +169,7 @@ public class StringUtil extends StrUtil {
      * Check that the given {@code String} is neither {@code null} nor of length 0.
      * <p>Note: this method returns {@code true} for a {@code String} that
      * purely consists of whitespace.
+     *
      * @param str the {@code String} to check (may be {@code null})
      * @return {@code true} if the {@code String} is not {@code null} and has length
      * @see #hasLength(CharSequence)
@@ -189,6 +191,7 @@ public class StringUtil extends StrUtil {
      * StringUtils.hasText("12345") = true
      * StringUtils.hasText(" 12345 ") = true
      * </pre>
+     *
      * @param str the {@code CharSequence} to check (may be {@code null})
      * @return {@code true} if the {@code CharSequence} is not {@code null},
      * its length is greater than 0, and it does not contain whitespace only
@@ -205,6 +208,7 @@ public class StringUtil extends StrUtil {
      * <p>More specifically, this method returns {@code true} if the
      * {@code String} is not {@code null}, its length is greater than 0,
      * and it contains at least one non-whitespace character.
+     *
      * @param str the {@code String} to check (may be {@code null})
      * @return {@code true} if the {@code String} is not {@code null}, its
      * length is greater than 0, and it does not contain whitespace only
@@ -228,9 +232,10 @@ public class StringUtil extends StrUtil {
 
     /**
      * Delete any character in a given {@code String}.
-     * @param inString the original {@code String}
+     *
+     * @param inString      the original {@code String}
      * @param charsToDelete a set of characters to delete.
-     * E.g. "az\n" will delete 'a's, 'z's and new lines.
+     *                      E.g. "az\n" will delete 'a's, 'z's and new lines.
      * @return the resulting {@code String}
      */
     public static String deleteAny(String inString, @Nullable String charsToDelete) {
@@ -321,9 +326,10 @@ public class StringUtil extends StrUtil {
      * but it will still be considered as a single delimiter string, rather
      * than as bunch of potential delimiter characters, in contrast to
      * {@link #tokenizeToStringArray}.
-     * @param str the input {@code String} (potentially {@code null} or empty)
+     *
+     * @param str       the input {@code String} (potentially {@code null} or empty)
      * @param delimiter the delimiter between elements (this is a single delimiter,
-     * rather than a bunch individual delimiter characters)
+     *                  rather than a bunch individual delimiter characters)
      * @return an array of the tokens in the list
      * @see #tokenizeToStringArray
      */
@@ -338,11 +344,12 @@ public class StringUtil extends StrUtil {
      * but it will still be considered as a single delimiter string, rather
      * than as bunch of potential delimiter characters, in contrast to
      * {@link #tokenizeToStringArray}.
-     * @param str the input {@code String} (potentially {@code null} or empty)
-     * @param delimiter the delimiter between elements (this is a single delimiter,
-     * rather than a bunch individual delimiter characters)
+     *
+     * @param str           the input {@code String} (potentially {@code null} or empty)
+     * @param delimiter     the delimiter between elements (this is a single delimiter,
+     *                      rather than a bunch individual delimiter characters)
      * @param charsToDelete a set of characters to delete; useful for deleting unwanted
-     * line breaks: e.g. "\r\n\f" will delete all new lines and line feeds in a {@code String}
+     *                      line breaks: e.g. "\r\n\f" will delete all new lines and line feeds in a {@code String}
      * @return an array of the tokens in the list
      * @see #tokenizeToStringArray
      */
@@ -353,7 +360,7 @@ public class StringUtil extends StrUtil {
             return EMPTY_STRING_ARRAY;
         }
         if (delimiter == null) {
-            return new String[] {str};
+            return new String[]{str};
         }
 
         List<String> result = new ArrayList<>();
@@ -361,8 +368,7 @@ public class StringUtil extends StrUtil {
             for (int i = 0; i < str.length(); i++) {
                 result.add(deleteAny(str.substring(i, i + 1), charsToDelete));
             }
-        }
-        else {
+        } else {
             int pos = 0;
             int delPos;
             while ((delPos = str.indexOf(delimiter, pos)) != -1) {
