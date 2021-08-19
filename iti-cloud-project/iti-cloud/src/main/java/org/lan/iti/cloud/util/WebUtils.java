@@ -252,4 +252,48 @@ public class WebUtils extends org.springframework.web.util.WebUtils {
         });
         return result;
     }
+
+    /**
+     * Obtains the web application-specific fragment of the request URL.
+     * <p>
+     * Under normal spec conditions,
+     *
+     * <pre>
+     * requestURI = contextPath + servletPath + pathInfo
+     * </pre>
+     *
+     * But the requestURI is not decoded, whereas the servletPath and pathInfo are
+     * (SEC-1255). This method is typically used to return a URL for matching against
+     * secured paths, hence the decoded form is used in preference to the requestURI for
+     * building the returned value. But this method may also be called using dummy request
+     * objects which just have the requestURI and contextPatth set, for example, so it
+     * will fall back to using those.
+     * @return the decoded URL, excluding any server name, context path or servlet path
+     *
+     */
+    public static String buildRequestUrl(HttpServletRequest r) {
+        return buildRequestUrl(r.getServletPath(), r.getRequestURI(), r.getContextPath(), r.getPathInfo(),
+                r.getQueryString());
+    }
+
+    /**
+     * Obtains the web application-specific fragment of the URL.
+     */
+    private static String buildRequestUrl(String servletPath, String requestURI, String contextPath, String pathInfo,
+                                          String queryString) {
+        StringBuilder url = new StringBuilder();
+        if (servletPath != null) {
+            url.append(servletPath);
+            if (pathInfo != null) {
+                url.append(pathInfo);
+            }
+        }
+        else {
+            url.append(requestURI.substring(contextPath.length()));
+        }
+        if (queryString != null) {
+            url.append("?").append(queryString);
+        }
+        return url.toString();
+    }
 }
