@@ -18,27 +18,14 @@
 
 package org.lan.iti.common.core.exception;
 
+import org.lan.iti.common.core.support.IEnum;
+
 /**
- * 顶层异常规范
+ * 顶层异常规范，继承IEnum是为了更方便使用枚举值
  *
  * @author NorthLan
  * @date 2021-03-02
  * @url https://noahlan.com
  */
-public interface IExceptionSpec {
-
-    /**
-     * 获取错误编码
-     *
-     * @return 规范的错误编码
-     */
-    Integer getCode();
-
-    /**
-     * 获取错误消息
-     * TODO i18n
-     *
-     * @return 错误信息
-     */
-    String getMessage();
+public interface IExceptionSpec extends IEnum<String> {
 }

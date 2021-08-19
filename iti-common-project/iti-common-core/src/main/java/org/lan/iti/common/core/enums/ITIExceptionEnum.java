@@ -20,6 +20,7 @@ package org.lan.iti.common.core.enums;
 
 import lombok.Getter;
 import org.lan.iti.common.core.exception.IExceptionSpec;
+import org.lan.iti.common.core.support.IEnum;
 
 /**
  * 框架错误枚举
@@ -37,7 +38,7 @@ import org.lan.iti.common.core.exception.IExceptionSpec;
  * @url https://noahlan.com
  */
 @Getter
-public enum ITIExceptionEnum implements IExceptionSpec {
+public enum ITIExceptionEnum implements IEnum<Integer> {
     /**
      * 参数错误 600开始
      */

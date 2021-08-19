@@ -21,6 +21,7 @@ package org.lan.iti.cloud.axon.command;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.lan.iti.cloud.swagger.annotation.ApiEnum;
 import org.lan.iti.common.core.support.IEnum;
 
 /**
@@ -32,6 +33,7 @@ import org.lan.iti.common.core.support.IEnum;
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@ApiEnum(valueField = "code", descField = "message")
 public enum CommandType implements IEnum<String> {
     DEFAULT("d", "默认"),
     CREATE("c", "创建"),
@@ -40,5 +42,5 @@ public enum CommandType implements IEnum<String> {
     DELETE("d", "删除"),
     ;
     private final String code;
-    private final String desc;
+    private final String message;
 }

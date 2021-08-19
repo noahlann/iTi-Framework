@@ -41,9 +41,7 @@ public interface IEnum<C> {
     C getCode();
 
     /**
-     * 描述信息
-     *
-     * @return 描述信息
+     * 错误信息
      */
-    String getDesc();
+    String getMessage();
 }

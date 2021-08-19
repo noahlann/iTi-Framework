@@ -47,8 +47,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.xkcoding.json</groupId>
-            <artifactId>simple-json</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

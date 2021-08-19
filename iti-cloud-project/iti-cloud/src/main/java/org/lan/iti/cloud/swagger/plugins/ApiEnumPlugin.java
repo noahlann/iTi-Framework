@@ -232,7 +232,7 @@ public class ApiEnumPlugin implements ModelPropertyBuilderPlugin, OperationBuild
 
         if (IEnum.class.isAssignableFrom(item.getClass())) {
             IEnum<?> iEnum = (IEnum<?>) item;
-            desc = iEnum.getDesc();
+            desc = iEnum.getMessage();
             loaded = true;
         }
 

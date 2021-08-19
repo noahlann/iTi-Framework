@@ -37,6 +37,10 @@
     <dependencies>
         <!-- Compile -->
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.lan</groupId>
             <artifactId>iti-common-core</artifactId>
         </dependency>
@@ -79,18 +83,8 @@
 
         <!-- Optional -->
         <dependency>
-            <groupId>com.tngtech.archunit</groupId>
-            <artifactId>archunit</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hibernate5</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
