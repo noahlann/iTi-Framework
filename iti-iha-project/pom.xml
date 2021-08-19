@@ -38,7 +38,6 @@
     <modules>
         <module>iti-iha-dependencies</module>
         <module>iti-iha-parent</module>
-        <module>iti-iha-core</module>
         <module>iti-iha-mfa</module>
         <module>iti-iha-oauth2</module>
         <module>iti-iha-oidc</module>

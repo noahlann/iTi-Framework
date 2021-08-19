@@ -49,7 +49,11 @@
         <!-- Compile -->
         <dependency>
             <groupId>org.lan</groupId>
-            <artifactId>iti-iha-core</artifactId>
+            <artifactId>iti-iha-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-iha-oidc</artifactId>
         </dependency>
         <dependency>
             <groupId>me.zhyd.oauth</groupId>

@@ -37,7 +37,6 @@
 
         <kisso.version>3.7.6</kisso.version>
         <simple-http.version>1.0.3</simple-http.version>
-        <simple-json.version>0.0.2</simple-json.version>
         <jose4j.version>0.7.8</jose4j.version>
         <zxing.version>3.4.1</zxing.version>
         <googleauth.version>1.5.0</googleauth.version>
@@ -91,11 +90,6 @@
             <!-- iTi IHA Projects -->
             <dependency>
                 <groupId>org.lan</groupId>
-                <artifactId>iti-iha-core</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.lan</groupId>
                 <artifactId>iti-iha-mfa</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -107,6 +101,11 @@
             <dependency>
                 <groupId>org.lan</groupId>
                 <artifactId>iti-iha-oidc</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.lan</groupId>
+                <artifactId>iti-iha-security</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
@@ -129,12 +128,6 @@
                 <artifactId>iti-iha-sso</artifactId>
                 <version>${revision}</version>
             </dependency>
-            <dependency>
-                <groupId>org.lan</groupId>
-                <artifactId>iti-iha-security</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 

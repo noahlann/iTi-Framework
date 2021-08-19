@@ -48,8 +48,8 @@
     <dependencies>
         <!-- Compile -->
         <dependency>
-            <groupId>org.lan</groupId>
-            <artifactId>iti-iha-core</artifactId>
+            <groupId>org.bitbucket.b_c</groupId>
+            <artifactId>jose4j</artifactId>
         </dependency>
     </dependencies>
 </project>

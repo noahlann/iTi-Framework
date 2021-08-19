@@ -57,11 +57,11 @@
         </dependency>
         <dependency>
             <groupId>org.lan</groupId>
-            <artifactId>iti-iha-simple</artifactId>
+            <artifactId>iti-iha-social</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bitbucket.b_c</groupId>
-            <artifactId>jose4j</artifactId>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-iha-simple</artifactId>
         </dependency>
     </dependencies>
 </project>
