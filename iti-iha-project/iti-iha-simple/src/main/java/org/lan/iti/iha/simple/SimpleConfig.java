@@ -18,10 +18,11 @@
 
 package org.lan.iti.iha.simple;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.lan.iti.iha.core.config.AuthenticateConfig;
 
 import java.time.Duration;
 
@@ -31,11 +32,13 @@ import java.time.Duration;
  * @url https://noahlan.com
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-public class SimpleConfig extends AuthenticateConfig {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+public class SimpleConfig {
     /**
-     * Get the user principal(username/mobile/email) from request through {@code request.getParameter(`usernameField`)}, which defaults to "username"
+     * Get the user principal(username/mobile/email) from request through {@code request.getParameter(`principalField`)}, which defaults to "username"
      */
     private String principalField = "principal";
 

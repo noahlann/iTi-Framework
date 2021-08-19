@@ -24,13 +24,10 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.MD5;
 import lombok.experimental.UtilityClass;
-import org.lan.iti.iha.core.exception.IhaException;
-import org.lan.iti.iha.core.result.IhaResponseCode;
+import org.lan.iti.common.core.util.StringPool;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
-
-import static org.lan.iti.iha.core.IhaConstants.DEFAULT_DELIMITER;
 
 /**
  * @author NorthLan
@@ -39,6 +36,7 @@ import static org.lan.iti.iha.core.IhaConstants.DEFAULT_DELIMITER;
  */
 @UtilityClass
 public class RememberMeUtils {
+    private static final String DEFAULT_DELIMITER = StringPool.COLON;
 
     private static String digestHex16(String credentialEncryptSalt, String data) {
         MD5 md5 = new MD5(credentialEncryptSalt.getBytes(StandardCharsets.UTF_8));
@@ -88,12 +86,12 @@ public class RememberMeUtils {
      * @param cookieValue cookie value
      * @return RememberMeDetails
      */
-    public static RememberMeDetails decode(String salt, String cookieValue) throws IhaException {
+    public static RememberMeDetails decode(String salt, String cookieValue) throws SecurityException {
         String base64DecodeValue;
         try {
             base64DecodeValue = Base64.decodeStr(cookieValue);
         } catch (RuntimeException e) {
-            throw new IhaException(IhaResponseCode.INVALID_REMEMBER_ME_COOKIE);
+            throw new SecurityException("Illegal remember me cookie.");
         }
         String[] base64DecodeValueSplitArray = StrUtil.splitToArray(base64DecodeValue, DEFAULT_DELIMITER);
         // Check and validate keys

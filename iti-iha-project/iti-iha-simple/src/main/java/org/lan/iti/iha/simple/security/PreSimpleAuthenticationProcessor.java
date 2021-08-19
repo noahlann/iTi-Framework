@@ -20,7 +20,7 @@ package org.lan.iti.iha.simple.security;
 
 import cn.hutool.core.util.BooleanUtil;
 import org.lan.iti.iha.security.authentication.Authentication;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 import org.lan.iti.iha.security.processor.ProcessChain;
 import org.lan.iti.iha.simple.SimpleConfig;

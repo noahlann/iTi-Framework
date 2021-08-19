@@ -30,6 +30,6 @@ public abstract class AbstractSimpleAuthenticationProcessor implements Authentic
 
     @Override
     public boolean matches(String params) {
-        return ProcessorType.SIMPLE.equals(params);
+        return ProcessorType.SIMPLE.matches(params);
     }
 }

@@ -25,16 +25,16 @@ import org.lan.iti.iha.security.IhaSecurity;
 import org.lan.iti.iha.security.authentication.Authentication;
 import org.lan.iti.iha.security.context.IhaSecurityContext;
 import org.lan.iti.iha.security.context.SecurityContextHolder;
-import org.lan.iti.iha.security.mgt.RequestParameter;
 import org.lan.iti.iha.security.pipeline.AuthenticationFailureHandler;
 import org.lan.iti.iha.security.pipeline.AuthenticationSuccessHandler;
 import org.lan.iti.iha.security.pipeline.PreAuthenticationHandler;
-import org.lan.iti.iha.security.processor.ProcessorType;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.security.userdetails.UserDetailsService;
+import org.lan.iti.iha.simple.security.SimpleRequestParameter;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -65,7 +65,6 @@ public class SimpleTest {
                 (AuthenticationFailureHandler) (parameter, exception) -> System.out.println("AuthenticationFailureHandler")
         ));
         context.setUserDetailsService(service);
-        context.getAuthenticationManager().addProcessor(ProcessorType.SIMPLE, null);
 
         IhaSecurity.init(context);
     }
@@ -73,6 +72,7 @@ public class SimpleTest {
     @Test
     public void testLogin() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
         Map<String, String[]> map = new TreeMap<>();
         map.put("principal", new String[]{"test"});
@@ -82,8 +82,7 @@ public class SimpleTest {
 
         Mockito.when(request.getParameterMap()).thenReturn(map);
 
-        RequestParameter parameter = new RequestParameter(request);
-        parameter.setProcessorType(ProcessorType.SIMPLE);
+        SimpleRequestParameter parameter = new SimpleRequestParameter(request, response);
 
         Authentication authentication = IhaSecurity.getContext().getSecurityManager().authenticate(parameter);
         System.out.println(SecurityContextHolder.getContext().getAuthentication());

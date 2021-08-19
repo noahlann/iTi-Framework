@@ -40,4 +40,8 @@ public class IhaSimple {
     public IhaSimpleContext getContext() {
         return context;
     }
+
+    public SimpleConfig getConfig() {
+        return getContext().getConfig();
+    }
 }

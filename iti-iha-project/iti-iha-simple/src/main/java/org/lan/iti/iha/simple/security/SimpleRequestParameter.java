@@ -20,11 +20,13 @@ package org.lan.iti.iha.simple.security;
 
 import cn.hutool.core.lang.Assert;
 import org.lan.iti.iha.security.mgt.RequestParameter;
+import org.lan.iti.iha.security.processor.ProcessorType;
 import org.lan.iti.iha.simple.IhaSimple;
 import org.lan.iti.iha.simple.SimpleConfig;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * SimpleParameter
@@ -35,24 +37,37 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SimpleRequestParameter extends RequestParameter {
     private static final long serialVersionUID = -3270612820709182141L;
-    public static final String KEY_CONFIG = "$simpleConfig";
+    public static final String KEY_CONFIG = "$config.simple";
 
     public SimpleRequestParameter() {
+        initProcessorType();
     }
 
     public SimpleRequestParameter(HttpServletRequest request) {
         super(request);
+        initProcessorType();
     }
 
     public SimpleRequestParameter(RequestParameter parameter) {
         super(parameter);
+        initProcessorType();
     }
 
     public SimpleRequestParameter(HttpServletRequest request, HttpServletResponse response) {
         super(request, response);
+        initProcessorType();
     }
 
-    public SimpleRequestParameter setSimpleConfig(SimpleConfig config) {
+    public SimpleRequestParameter(Map<? extends String, ?> m) {
+        super(m);
+        initProcessorType();
+    }
+
+    private void initProcessorType() {
+        setProcessorType(ProcessorType.SIMPLE.getCode());
+    }
+
+    public SimpleRequestParameter setConfig(SimpleConfig config) {
         Assert.notNull(config, "config cannot null");
         put(KEY_CONFIG, config);
         return this;
