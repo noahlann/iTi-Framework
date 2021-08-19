@@ -18,12 +18,12 @@
 
 package org.lan.iti.iha.social;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import me.zhyd.oauth.config.AuthConfig;
-import org.lan.iti.iha.core.config.AuthenticateConfig;
 
 /**
  * Configuration file of third-party authorization login module
@@ -32,11 +32,12 @@ import org.lan.iti.iha.core.config.AuthenticateConfig;
  * @date 2021-07-15
  * @url https://noahlan.com
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-@Builder
-public class SocialConfig extends AuthenticateConfig {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+public class SocialConfig {
 
     /**
      * The name of a third-party platform regardless of case. For example: gitee、github、google

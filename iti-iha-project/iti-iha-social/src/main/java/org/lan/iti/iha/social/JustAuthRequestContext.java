@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthRequest;
-import org.lan.iti.iha.core.exception.IhaSocialException;
+import org.lan.iti.iha.social.exception.SocialAuthenticationException;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -182,19 +182,19 @@ public class JustAuthRequestContext {
      * @param stateCache   Custom state cache
      * @return AuthRequest
      */
-    public static AuthRequest getRequest(String source, SocialConfig socialConfig, AuthConfig authConfig, AuthStateCache stateCache) throws IhaSocialException {
+    public static AuthRequest getRequest(String source, SocialConfig socialConfig, AuthConfig authConfig, AuthStateCache stateCache) throws SocialAuthenticationException {
         if (StrUtil.isBlank(source)) {
-            throw new IhaSocialException("Social#Missing social source");
+            throw new SocialAuthenticationException("Social#Missing social source");
         }
 
         loadRequest(socialConfig.getScanPackages(), socialConfig.getExclusionClassNames());
 
         Class<?> clazz = AUTH_REQUEST_HOLDER.get(source.toUpperCase());
         if (ObjectUtil.isNull(clazz)) {
-            throw new IhaSocialException("Social#Current source is not supported. ".concat(source));
+            throw new SocialAuthenticationException("Social#Current source is not supported. ".concat(source));
         }
         if (ObjectUtil.isNull(authConfig)) {
-            throw new IhaSocialException("Social#Missing AuthConfig.");
+            throw new SocialAuthenticationException("Social#Missing AuthConfig.");
         }
         if (ObjectUtil.isNull(stateCache)) {
             return (AuthRequest) ReflectUtil.newInstance(clazz, authConfig);
