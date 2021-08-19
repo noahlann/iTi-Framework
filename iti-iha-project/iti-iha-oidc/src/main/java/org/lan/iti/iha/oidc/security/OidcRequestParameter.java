@@ -21,6 +21,7 @@ package org.lan.iti.iha.oidc.security;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
 import org.lan.iti.iha.oidc.OidcConfig;
 import org.lan.iti.iha.security.mgt.RequestParameter;
+import org.lan.iti.iha.security.processor.ProcessorType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,14 +33,20 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class OidcRequestParameter extends OAuth2RequestParameter {
     private static final long serialVersionUID = 1128492042840491394L;
-    public static final String KEY_CONFIG = "$oidcConfig";
+    public static final String KEY_CONFIG = "$config.oidc";
 
     public OidcRequestParameter(RequestParameter other) {
         super(other);
+        initProcessorType();
     }
 
     public OidcRequestParameter(HttpServletRequest request, HttpServletResponse response) {
         super(request, response);
+        initProcessorType();
+    }
+
+    private void initProcessorType() {
+        setProcessorType(ProcessorType.OIDC.getCode());
     }
 
     @Override

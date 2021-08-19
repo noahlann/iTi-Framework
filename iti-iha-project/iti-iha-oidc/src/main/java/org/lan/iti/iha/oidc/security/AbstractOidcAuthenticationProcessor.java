@@ -29,6 +29,6 @@ import org.lan.iti.iha.security.processor.ProcessorType;
 public abstract class AbstractOidcAuthenticationProcessor implements AuthenticationProcessor {
     @Override
     public boolean matches(String params) {
-        return ProcessorType.OIDC.equals(params);
+        return ProcessorType.OIDC.matches(params);
     }
 }

@@ -18,33 +18,19 @@
 
 package org.lan.iti.iha.oidc.security;
 
-import org.lan.iti.iha.oauth2.security.OAuth2AuthenticationToken;
-import org.lan.iti.iha.oauth2.token.AccessToken;
-
-import java.util.Collection;
+import org.lan.iti.iha.oauth2.security.OAuth2RevokeTokenAuthenticationProcessor;
+import org.lan.iti.iha.security.processor.ProcessorType;
 
 /**
- * Oidc 身份认证 Token
+ * Oidc流程的revoke，复用OAuth2流程
  *
  * @author NorthLan
- * @date 2021/8/4
+ * @date 2021/8/14
  * @url https://blog.noahlan.com
  */
-public class OidcAuthenticationToken extends OAuth2AuthenticationToken {
-    private static final long serialVersionUID = 4041689177352565202L;
-
-    public OidcAuthenticationToken() {
-    }
-
-    public OidcAuthenticationToken(Object principal) {
-        super(principal);
-    }
-
-    public OidcAuthenticationToken(AccessToken accessToken, Object principal, Collection<String> authorities) {
-        super(accessToken, principal, authorities);
-    }
-
-    public OidcAuthenticationToken(String redirectUri) {
-        super(redirectUri);
+public class OidcRevokeTokenAuthenticationProcessor extends OAuth2RevokeTokenAuthenticationProcessor {
+    @Override
+    public boolean matches(String params) {
+        return ProcessorType.OIDC_REVOKE.matches(params);
     }
 }

@@ -18,13 +18,17 @@
 
 package org.lan.iti.iha.oidc.security;
 
+import cn.hutool.core.bean.BeanUtil;
 import org.lan.iti.common.core.util.StringUtil;
+import org.lan.iti.iha.oauth2.OAuth2Config;
+import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
+import org.lan.iti.iha.oauth2.security.PreOAuth2AuthenticationProcessor;
 import org.lan.iti.iha.oauth2.util.OAuth2Util;
 import org.lan.iti.iha.oidc.OidcConfig;
 import org.lan.iti.iha.oidc.OidcDiscovery;
 import org.lan.iti.iha.oidc.OidcUtil;
 import org.lan.iti.iha.security.authentication.Authentication;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 import org.lan.iti.iha.security.processor.ProcessChain;
 
@@ -33,7 +37,7 @@ import org.lan.iti.iha.security.processor.ProcessChain;
  * @date 2021/8/4
  * @url https://blog.noahlan.com
  */
-public class PreOidcAuthenticationProcessor extends AbstractOidcAuthenticationProcessor {
+public class PreOidcAuthenticationProcessor extends PreOAuth2AuthenticationProcessor {
 
     @Override
     public int getOrder() {
@@ -53,7 +57,7 @@ public class PreOidcAuthenticationProcessor extends AbstractOidcAuthenticationPr
             throw new AuthenticationException("config must not be null");
         }
         // TODO check session
-        OAuth2Util.checkOauthConfig(oidcConfig);
+        OAuth2Util.checkOAuthConfig(oidcConfig);
         String issuer = oidcConfig.getIssuer();
 
         OidcDiscovery discovery = OidcUtil.getOidcDiscovery(issuer);
@@ -67,7 +71,12 @@ public class PreOidcAuthenticationProcessor extends AbstractOidcAuthenticationPr
         }
         oidcConfig.setAuthorizationUrl(discovery.getAuthorizationEndpoint())
                 .setTokenUrl(discovery.getTokenEndpoint())
-                .setUserinfoUrl(discovery.getUserinfoEndpoint());
-        return chain.process(oidcRequestParameter, new OidcAuthenticationToken());
+                .setUserInfoUrl(discovery.getUserinfoEndpoint());
+
+        OAuth2Config oAuth2Config = BeanUtil.copyProperties(oidcConfig, OAuth2Config.class);
+        OAuth2RequestParameter oAuth2RequestParameter = new OAuth2RequestParameter(parameter);
+        oAuth2RequestParameter.setConfig(oAuth2Config);
+
+        return super.process(oAuth2RequestParameter, null, chain);
     }
 }

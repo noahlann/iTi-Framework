@@ -21,10 +21,11 @@ package org.lan.iti.iha.oidc.security;
 import cn.hutool.core.bean.BeanUtil;
 import org.lan.iti.iha.oauth2.OAuth2Config;
 import org.lan.iti.iha.oauth2.security.OAuth2AuthenticationProcessor;
+import org.lan.iti.iha.oauth2.security.OAuth2AuthenticationToken;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
 import org.lan.iti.iha.oidc.OidcConfig;
 import org.lan.iti.iha.security.authentication.Authentication;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 import org.lan.iti.iha.security.processor.ProcessChain;
 import org.lan.iti.iha.security.processor.ProcessorType;
@@ -38,7 +39,7 @@ public class OidcAuthenticationProcessor extends OAuth2AuthenticationProcessor {
 
     @Override
     public boolean matches(String params) {
-        return ProcessorType.OIDC.equals(params);
+        return ProcessorType.OIDC.matches(params);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class OidcAuthenticationProcessor extends OAuth2AuthenticationProcessor {
 
     @Override
     public boolean support(RequestParameter parameter, Authentication authentication) {
-        return authentication instanceof OidcAuthenticationToken &&
+        return authentication instanceof OAuth2AuthenticationToken &&
                 parameter instanceof OidcRequestParameter;
     }
 
