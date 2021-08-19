@@ -19,7 +19,7 @@
 package org.lan.iti.iha.security.pipeline;
 
 import org.lan.iti.iha.security.authentication.Authentication;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 
 /**

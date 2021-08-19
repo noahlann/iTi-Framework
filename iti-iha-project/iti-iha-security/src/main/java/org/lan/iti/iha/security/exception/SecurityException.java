@@ -20,6 +20,7 @@ package org.lan.iti.iha.security.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.lan.iti.common.core.support.IEnum;
 
 /**
  * SecurityException
@@ -33,14 +34,18 @@ import lombok.EqualsAndHashCode;
 public class SecurityException extends RuntimeException {
     private static final long serialVersionUID = 9010068366546933858L;
 
-    private Integer code;
+    private String error;
 
     public SecurityException(String message) {
         super(message);
     }
 
-    public SecurityException(Integer code, String message) {
+    public SecurityException(IEnum<String> spec) {
+        this(spec.getCode(), spec.getMessage());
+    }
+
+    public SecurityException(String error, String message) {
         super(message);
-        this.code = code;
+        this.error = error;
     }
 }

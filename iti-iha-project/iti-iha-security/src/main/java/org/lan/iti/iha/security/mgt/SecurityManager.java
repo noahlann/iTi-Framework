@@ -19,7 +19,7 @@
 package org.lan.iti.iha.security.mgt;
 
 import org.lan.iti.iha.security.authentication.Authentication;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 
 import javax.annotation.Nonnull;
 

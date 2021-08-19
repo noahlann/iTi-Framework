@@ -23,11 +23,12 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.iha.security.authentication.Authentication;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,8 +41,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PipelineManager {
-
     private List<Pipeline> pipelines;
+
+    public void registerPipeline(Pipeline... pipelines) {
+        registerPipeline(Arrays.asList(pipelines));
+    }
 
     public void registerPipeline(List<Pipeline> pipelines) {
         if (this.pipelines == null) {

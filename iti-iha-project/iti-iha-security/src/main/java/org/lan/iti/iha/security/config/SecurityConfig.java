@@ -16,21 +16,24 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.config;
+
+import lombok.Data;
+import lombok.experimental.Accessors;
+import org.lan.iti.iha.security.jwt.JwtConfig;
 
 /**
- * Authentication exception: Unknown account exception
- * <p>
- * 身份验证异常：未知帐户异常
- *
  * @author NorthLan
- * @date 2021/7/29
+ * @date 2021/8/13
  * @url https://blog.noahlan.com
  */
-public class UnknownAccountException extends AuthenticationException {
-    private static final long serialVersionUID = 2661034392057809924L;
-
-    public UnknownAccountException(String message) {
-        super(message);
-    }
+@Data
+@Accessors(chain = true)
+public class SecurityConfig {
+    /**
+     * Generate/verify the global configuration of jwt token.
+     * If the caller needs to configure a set of jwt config for each client,
+     * you can specify jwt config when obtaining the token.
+     */
+    private JwtConfig jwtConfig = new JwtConfig();
 }

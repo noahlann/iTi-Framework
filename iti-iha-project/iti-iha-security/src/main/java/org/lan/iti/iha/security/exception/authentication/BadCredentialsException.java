@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.exception.authentication;
 
 /**
  * Authentication exception: Bad credentials

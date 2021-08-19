@@ -20,7 +20,7 @@ package org.lan.iti.iha.security.userdetails;
 
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
-import org.lan.iti.iha.security.exception.UnknownAccountException;
+import org.lan.iti.iha.security.exception.authentication.UnknownAccountException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 
 import java.util.Map;
@@ -73,12 +73,12 @@ public interface UserDetailsService extends IExtension<Object> {
      * Save the oauth login user information to the database and return UserDetails
      * It is suitable for the iti-iha-oauth2 module
      *
-     * @param type     类型 oauth2 / oidc
+     * @param type     类型 oauth2 / oidc / wx / weibo / qq
      * @param token    token信息
      * @param userInfo 用户信息
      * @return 用户信息
      */
-    default UserDetails fromToken(String type, Object token, Map<String, Object> userInfo) {
+    default UserDetails fromToken(String type, Object token, Map<String, Object> userInfo) throws UnknownAccountException {
         // TODO 异常类型
         throw new RuntimeException("Not Impl");
     }

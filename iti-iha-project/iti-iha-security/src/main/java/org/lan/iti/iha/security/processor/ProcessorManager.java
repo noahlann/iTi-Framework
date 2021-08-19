@@ -20,7 +20,7 @@ package org.lan.iti.iha.security.processor;
 
 import org.lan.iti.common.extension.ExtensionLoader;
 import org.lan.iti.iha.security.authentication.Authentication;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 
 import java.util.ArrayList;
@@ -93,6 +93,7 @@ public class ProcessorManager implements ProcessChain {
     }
 
     public Authentication process(RequestParameter parameter) throws AuthenticationException {
+        resetIndex();
         return this.process(parameter, null);
     }
 
@@ -100,19 +101,13 @@ public class ProcessorManager implements ProcessChain {
     public Authentication process(RequestParameter parameter, Authentication authentication) throws AuthenticationException {
         // 最后一个处理器已被处理，直接返回
         if (index >= getProcessors().size()) {
-            resetIndex();
             return authentication;
         }
         AuthenticationProcessor processor = getProcessors().get(index++);
-        try {
-            if (processor.support(parameter, authentication)) {
-                return processor.process(parameter, authentication, this);
-            } else {
-                return process(parameter, authentication);
-            }
-        } catch (AuthenticationException ex) {
-            resetIndex();
-            throw ex;
+        if (processor.support(parameter, authentication)) {
+            return processor.process(parameter, authentication, this);
+        } else {
+            return process(parameter, authentication);
         }
     }
 

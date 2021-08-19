@@ -22,12 +22,15 @@ import lombok.experimental.UtilityClass;
 import org.lan.iti.common.extension.ExtensionLoader;
 import org.lan.iti.iha.security.authentication.Authentication;
 import org.lan.iti.iha.security.clientdetails.ClientDetailsService;
+import org.lan.iti.iha.security.config.SecurityConfig;
 import org.lan.iti.iha.security.context.IhaSecurityContext;
 import org.lan.iti.iha.security.context.SecurityContextHolder;
 import org.lan.iti.iha.security.exception.SecurityException;
 import org.lan.iti.iha.security.mgt.SecurityManager;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.security.userdetails.UserDetailsService;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * IhaSecurity
@@ -62,20 +65,37 @@ public class IhaSecurity {
         }
     }
 
+    public SecurityConfig getConfig() {
+        return getContext().getConfig();
+    }
+
     public SecurityManager getSecurityManager() {
         return getContext().getSecurityManager();
     }
 
-    public boolean isAuthenticated() {
+    public boolean isAuthenticated(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null && authentication.isAuthenticated();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return true;
+        }
+        return getUser(request) != null;
     }
 
-    public UserDetails getUser() {
+    public UserDetails getUser(HttpServletRequest request) {
+        UserDetails result = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
+        if (authentication != null && authentication.isAuthenticated()) {
+            if (authentication.getPrincipal() instanceof UserDetails) {
+                result = (UserDetails) authentication.getPrincipal();
+            }
         }
-        return (UserDetails) authentication.getPrincipal();
+        // TODO 完善getUser，想迁移到SecurityManager中，通过Provider获取?
+//        if (result == null && request != null) {
+//            result = getContext().getUserStoreService().get(request);
+//            if (result != null) {
+//                SecurityContextHolder.getContext().setAuthentication(new CachingAuthenticationToken(request, result.getAuthorities()));
+//            }
+//        }
+        return result;
     }
 }

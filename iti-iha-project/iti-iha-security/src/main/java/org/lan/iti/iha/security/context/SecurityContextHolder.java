@@ -18,7 +18,7 @@
 
 package org.lan.iti.iha.security.context;
 
-import org.lan.iti.common.core.util.ReflectionUtils;
+import org.lan.iti.common.core.util.ReflectUtil;
 import org.lan.iti.common.core.util.StringUtil;
 
 import java.lang.reflect.Constructor;
@@ -67,7 +67,7 @@ public class SecurityContextHolder {
                 Constructor<?> customStrategy = clazz.getConstructor();
                 strategy = (SecurityContextHolderStrategy) customStrategy.newInstance();
             } catch (Exception ex) {
-                ReflectionUtils.handleReflectionException(ex);
+                ReflectUtil.handleReflectionException(ex);
             }
         }
         initializeCount++;

@@ -18,7 +18,7 @@
 
 package org.lan.iti.iha.security.authentication;
 
-import org.lan.iti.iha.security.exception.BadCredentialsException;
+import org.lan.iti.iha.security.exception.authentication.BadCredentialsException;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 
 /**

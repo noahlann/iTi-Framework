@@ -16,21 +16,21 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.exception.authentication;
 
 /**
- * Authentication exception: Too many attempts after regular authentication failure
+ * Authentication exception: Unknown account exception
  * <p>
- * 身份验证异常：常规身份验证失败后尝试次数过多
+ * 身份验证异常：未知帐户异常
  *
  * @author NorthLan
  * @date 2021/7/29
  * @url https://blog.noahlan.com
  */
-public class ExcessiveAttemptsException extends AuthenticationException {
-    private static final long serialVersionUID = -5475329955887846185L;
+public class UnknownAccountException extends AuthenticationException {
+    private static final long serialVersionUID = 2661034392057809924L;
 
-    public ExcessiveAttemptsException(String message) {
+    public UnknownAccountException(String message) {
         super(message);
     }
 }

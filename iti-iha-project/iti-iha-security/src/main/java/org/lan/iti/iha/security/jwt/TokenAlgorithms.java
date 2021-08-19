@@ -16,21 +16,31 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.jwt;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.jose4j.keys.EcKeyUtil;
+import org.jose4j.keys.RsaKeyUtil;
 
 /**
- * Authorization exception: No permission to access the resource
- * <p>
- * 授权异常：无权限访问资源
- *
  * @author NorthLan
- * @date 2021/7/29
- * @url https://blog.noahlan.com
+ * @date 2021-07-05
+ * @url https://noahlan.com
  */
-public class UnauthorizedException extends AuthorizationException {
-    private static final long serialVersionUID = 8837434783215960065L;
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public enum TokenAlgorithms {
+    NONE("none", "none"),
+    RS256("RS256", RsaKeyUtil.RSA),
+    RS384("RS384", RsaKeyUtil.RSA),
+    RS512("RS512", RsaKeyUtil.RSA),
+    ES256("ES256", EcKeyUtil.EC),
+    ES384("ES384", EcKeyUtil.EC),
+    ES512("ES512", EcKeyUtil.EC),
+    ;
 
-    public UnauthorizedException(String message) {
-        super(message);
-    }
+    private final String alg;
+    private final String keyType;
 }

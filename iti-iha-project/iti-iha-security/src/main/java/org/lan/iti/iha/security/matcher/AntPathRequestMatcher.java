@@ -18,7 +18,7 @@
 
 package org.lan.iti.iha.security.matcher;
 
-import io.jsonwebtoken.lang.Assert;
+import cn.hutool.core.lang.Assert;
 import lombok.Getter;
 import org.lan.iti.common.core.util.StringUtil;
 
@@ -79,7 +79,7 @@ public class AntPathRequestMatcher implements RequestMatcher {
      * @param caseSensitive true if the matcher should consider case, else false
      */
     public AntPathRequestMatcher(String pattern, String httpMethod, boolean caseSensitive) {
-        Assert.hasText(pattern, "Pattern cannot be null or empty");
+        Assert.notEmpty(pattern, "Pattern cannot be null or empty");
         this.caseSensitive = caseSensitive;
         if (pattern.equals(MATCH_ALL) || pattern.equals("**")) {
             pattern = MATCH_ALL;

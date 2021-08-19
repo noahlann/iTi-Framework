@@ -18,6 +18,12 @@
 
 package org.lan.iti.iha.security.processor;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.lan.iti.common.core.support.IEnum;
+import org.lan.iti.common.core.util.StringUtil;
+
 /**
  * 处理器类型
  *
@@ -25,11 +31,23 @@ package org.lan.iti.iha.security.processor;
  * @date 2021/8/4
  * @url https://blog.noahlan.com
  */
-public interface ProcessorType {
-    String KEY = "$processorType";
-    String SIMPLE = "simple";
-    String OAUTH2 = "oauth2";
-    String OIDC = "oidc";
-    String SAML2 = "saml2";
-    String LDAP = "ldap";
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public enum ProcessorType implements IEnum<String> {
+    SIMPLE("simple", "简单登录方式"),
+    OAUTH2("oauth2", "OAuth2登录方式"),
+    OAUTH2_REVOKE("oauth2-revoke", "OAuth2-回收token"),
+    OIDC("oidc", "OIDC登录方式"),
+    OIDC_REVOKE("oidc-revoke", "OIDC-回收token，复用OAuth2方法"),
+    SOCIAL("social", "社交登录"),
+    SAML2("saml2", "SAML2"),
+    LDAP("ldap", "LDAP"),
+    ;
+    public static final String KEY = "$processorType";
+    private final String code;
+    private final String message;
+
+    public boolean matches(String code) {
+        return StringUtil.equals(this.code, code);
+    }
 }

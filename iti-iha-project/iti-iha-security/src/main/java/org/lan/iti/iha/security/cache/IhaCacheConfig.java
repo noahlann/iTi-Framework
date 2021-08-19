@@ -16,21 +16,28 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.cache;
+
+import lombok.experimental.UtilityClass;
+
+import java.time.Duration;
 
 /**
- * Authentication exception: there is no processor support this subject
- * <p>
- * 身份验证异常：没有处理器支持此Subject
- *
  * @author NorthLan
- * @date 2021/7/29
- * @url https://blog.noahlan.com
+ * @date 2021-07-05
+ * @url https://noahlan.com
  */
-public class ProviderNotFoundException extends SecurityException {
-    private static final long serialVersionUID = 4098546591906723155L;
+@UtilityClass
+public class IhaCacheConfig {
+    /**
+     * The cache expiration time is 1 day by default
+     */
+    public static long expire = Duration.ofDays(1).toMillis();
 
-    public ProviderNotFoundException(String message) {
-        super(message);
-    }
+    /**
+     * Turn on the timed task of clearing the local memory cache.
+     * After it is turned on, the {@link LocalCache#pruneCache()} method will be called to automatically clear the cache.
+     * If you customize the implemented iha cache interface, you can ignore this config.
+     */
+    public static boolean schedulePrune = true;
 }

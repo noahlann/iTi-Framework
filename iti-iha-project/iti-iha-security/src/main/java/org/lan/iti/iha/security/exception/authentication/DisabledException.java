@@ -16,21 +16,21 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.exception.authentication;
 
 /**
- * Authentication exception: account locked
+ * Authentication exception: Disable lock account exception
  * <p>
- * 身份验证异常：帐户被锁定
+ * 身份验证异常：账户不可用
  *
  * @author NorthLan
  * @date 2021/7/29
  * @url https://blog.noahlan.com
  */
-public class LockedException extends AuthenticationException {
-    private static final long serialVersionUID = -479764130353328304L;
+public class DisabledException extends AuthenticationException {
+    private static final long serialVersionUID = -1697355844565959535L;
 
-    public LockedException(String message) {
+    public DisabledException(String message) {
         super(message);
     }
 }

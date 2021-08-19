@@ -37,6 +37,7 @@ import org.lan.iti.iha.security.authentication.AbstractAuthenticationToken;
 public class AnonymousAuthenticationToken extends AbstractAuthenticationToken {
     private static final long serialVersionUID = 2041265891936557075L;
 
+    // TODO AuthenticationDetailsSourceBuilder (request)
     private String remoteHost;
     private String userAgent;
     private String requestUri;
@@ -44,13 +45,13 @@ public class AnonymousAuthenticationToken extends AbstractAuthenticationToken {
 
     public AnonymousAuthenticationToken() {
         super(null);
-        setAuthenticated(true);
+        setAuthenticated(false);
     }
 
 
     @Override
     public Object getPrincipal() {
-        return "anonymous";
+        return "anonymousUser";
     }
 
     @Override

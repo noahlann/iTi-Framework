@@ -16,27 +16,28 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.exception.jwt;
+
+import org.lan.iti.common.core.support.IEnum;
+import org.lan.iti.iha.security.exception.SecurityException;
 
 /**
- * Authorization exception
- * Basic exceptions, exceptions related to custom authorization need to inherit
- * <p>
- * 授权异常
- * 基础异常，自定义授权相关异常需要继承
- *
  * @author NorthLan
- * @date 2021/7/29
+ * @date 2021/8/13
  * @url https://blog.noahlan.com
  */
-public class AuthorizationException extends SecurityException {
-    private static final long serialVersionUID = -839288489115123864L;
+public class JwtException extends SecurityException {
+    private static final long serialVersionUID = -9075721696391121684L;
 
-    public AuthorizationException(String message) {
+    public JwtException(String message) {
         super(message);
     }
 
-    public AuthorizationException(Integer code, String message) {
-        super(code, message);
+    public JwtException(IEnum<String> spec) {
+        super(spec);
+    }
+
+    public JwtException(String error, String message) {
+        super(error, message);
     }
 }

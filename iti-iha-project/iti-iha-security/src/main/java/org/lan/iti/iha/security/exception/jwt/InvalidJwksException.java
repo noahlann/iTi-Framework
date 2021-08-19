@@ -16,27 +16,27 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.exception.jwt;
+
+import org.lan.iti.iha.security.exception.ExceptionEnum;
 
 /**
- * Authentication exception
- * Basic exceptions, exceptions related to custom authentication need to inherit
- * <p>
- * 认证相关异常
- * 自定义认证异常需要继承此类
- *
  * @author NorthLan
- * @date 2021/7/28
- * @url https://blog.noahlan.com
+ * @date 2021-07-06
+ * @url https://noahlan.com
  */
-public class AuthenticationException extends SecurityException {
-    private static final long serialVersionUID = -38845565736355068L;
+public class InvalidJwksException extends JwtException {
+    private static final long serialVersionUID = -2865821140925306743L;
 
-    public AuthenticationException(String message) {
+    public InvalidJwksException() {
+        super(ExceptionEnum.INVALID_JWKS);
+    }
+
+    public InvalidJwksException(String message) {
         super(message);
     }
 
-    public AuthenticationException(Integer code, String message) {
-        super(code, message);
+    public InvalidJwksException(String errorCode, String message) {
+        super(errorCode, message);
     }
 }

@@ -25,8 +25,7 @@ package org.lan.iti.iha.security.exception;
  * @date 2021/7/29
  * @url https://blog.noahlan.com
  */
-public class NotInitializedException extends ExtSecurityException {
-
+public class NotInitializedException extends SecurityException {
     private static final long serialVersionUID = 3657707961773399083L;
 
     public NotInitializedException(String message) {

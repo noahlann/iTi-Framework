@@ -16,21 +16,23 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.jwt;
 
 /**
- * Authentication exception: Expired certificate
- * <p>
- * 身份验证异常：证书过期，密码过期等等
+ * The verification type when the user verifies the jwt token
  *
  * @author NorthLan
- * @date 2021/7/29
- * @url https://blog.noahlan.com
+ * @date 2021-07-05
+ * @url https://noahlan.com
  */
-public class CredentialsExpiredException extends AuthenticationException {
-    private static final long serialVersionUID = -6739770772868860418L;
+public enum JwtVerificationType {
+    /**
+     * Using an HTTPS JWKS endpoint
+     */
+    HTTPS_JWKS_ENDPOINT,
 
-    public CredentialsExpiredException(String message) {
-        super(message);
-    }
+    /**
+     * Using JWKs
+     */
+    JWKS
 }

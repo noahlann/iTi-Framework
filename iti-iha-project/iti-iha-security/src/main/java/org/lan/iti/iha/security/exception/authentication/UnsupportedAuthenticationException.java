@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.exception.authentication;
 
 /**
  * Authentication exception: Can not support this request
@@ -37,8 +37,8 @@ public class UnsupportedAuthenticationException extends AuthenticationException 
         super(message);
     }
 
-    public UnsupportedAuthenticationException(Integer code, String message) {
-        super(code, message);
+    public UnsupportedAuthenticationException(String error, String message) {
+        super(error, message);
     }
 
     public static UnsupportedAuthenticationException getDefaultInstance() {

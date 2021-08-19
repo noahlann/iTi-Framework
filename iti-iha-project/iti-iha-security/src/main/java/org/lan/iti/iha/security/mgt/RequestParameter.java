@@ -20,7 +20,8 @@ package org.lan.iti.iha.security.mgt;
 
 import cn.hutool.extra.servlet.ServletUtil;
 import lombok.*;
-import org.lan.iti.iha.core.model.Mapped;
+import org.lan.iti.common.core.support.Mapped;
+import org.lan.iti.iha.security.IhaSecurityConstants;
 import org.lan.iti.iha.security.processor.ProcessorType;
 
 import javax.servlet.http.HttpServletRequest;
@@ -110,6 +111,15 @@ public class RequestParameter extends Mapped<RequestParameter> {
     }
 
     public String getProcessorType() {
-        return getByKey(ProcessorType.KEY, ProcessorType.SIMPLE);
+        return getByKey(ProcessorType.KEY, ProcessorType.SIMPLE.getCode());
+    }
+
+    public RequestParameter setSessionId(String sessionId) {
+        put(IhaSecurityConstants.SESSION_ID_CACHE_KEY, sessionId);
+        return this;
+    }
+
+    public String getSessionId() {
+        return getByKey(IhaSecurityConstants.SESSION_ID_CACHE_KEY);
     }
 }

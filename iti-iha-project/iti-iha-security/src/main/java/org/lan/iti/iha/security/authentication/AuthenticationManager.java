@@ -19,7 +19,10 @@
 package org.lan.iti.iha.security.authentication;
 
 import org.jetbrains.annotations.NotNull;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.BadCredentialsException;
+import org.lan.iti.iha.security.exception.authentication.DisabledException;
+import org.lan.iti.iha.security.exception.authentication.LockedException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 import org.lan.iti.iha.security.processor.AuthenticationProcessor;
 
@@ -43,11 +46,11 @@ public interface AuthenticationManager {
      * An <code>AuthenticationManager</code> must honour the following contract concerning
      * exceptions:
      * <ul>
-     * <li>A {@link org.lan.iti.iha.security.exception.DisabledException} must be thrown if an account is disabled and the
+     * <li>A {@link DisabledException} must be thrown if an account is disabled and the
      * <code>AuthenticationManager</code> can test for this state.</li>
-     * <li>A {@link org.lan.iti.iha.security.exception.LockedException} must be thrown if an account is locked and the
+     * <li>A {@link LockedException} must be thrown if an account is locked and the
      * <code>AuthenticationManager</code> can test for account locking.</li>
-     * <li>A {@link org.lan.iti.iha.security.exception.BadCredentialsException} must be thrown if incorrect credentials are
+     * <li>A {@link BadCredentialsException} must be thrown if incorrect credentials are
      * presented. Whilst the above exceptions are optional, an
      * <code>AuthenticationManager</code> must <B>always</B> test credentials.</li>
      * </ul>

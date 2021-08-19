@@ -16,21 +16,34 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.exception.authorization;
+
+import org.lan.iti.common.core.support.IEnum;
+import org.lan.iti.iha.security.exception.SecurityException;
 
 /**
- * Authentication exception: Disable lock account exception
+ * Authorization exception
+ * Basic exceptions, exceptions related to custom authorization need to inherit
  * <p>
- * 身份验证异常：账户不可用
+ * 授权异常
+ * 基础异常，自定义授权相关异常需要继承
  *
  * @author NorthLan
  * @date 2021/7/29
  * @url https://blog.noahlan.com
  */
-public class DisabledException extends AuthenticationException {
-    private static final long serialVersionUID = -1697355844565959535L;
+public class AuthorizationException extends SecurityException {
+    private static final long serialVersionUID = -839288489115123864L;
 
-    public DisabledException(String message) {
+    public AuthorizationException(IEnum<String> spec) {
+        super(spec);
+    }
+
+    public AuthorizationException(String message) {
         super(message);
+    }
+
+    public AuthorizationException(String errorCode, String message) {
+        super(errorCode, message);
     }
 }

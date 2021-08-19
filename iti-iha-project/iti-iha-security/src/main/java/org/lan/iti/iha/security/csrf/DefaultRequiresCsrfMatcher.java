@@ -16,29 +16,26 @@
  *
  */
 
-package org.lan.iti.iha.security.exception;
+package org.lan.iti.iha.security.csrf;
 
-import lombok.Getter;
+import org.lan.iti.iha.security.matcher.RequestMatcher;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
- * exception for digest auth
- * means you should try once again by authenticate below with digest auth information
- * <p>
- * digest模式下身份验证异常
- * 意味着您应该通过在下面使用摘要身份验证信息进行身份验证再试一次
+ * csrf
  *
  * @author NorthLan
- * @date 2021/7/29
+ * @date 2021/8/13
  * @url https://blog.noahlan.com
  */
-@Getter
-public class NeedDigestInfoException extends AuthenticationException {
-    private static final long serialVersionUID = -52476370873528121L;
+public class DefaultRequiresCsrfMatcher implements RequestMatcher {
+    private final HashSet<String> allowedMethods = new HashSet<>(Arrays.asList("GET", "HEAD", "TRACE", "OPTIONS"));
 
-    private final String authenticate;
-
-    public NeedDigestInfoException(String message, String authenticate) {
-        super(message);
-        this.authenticate = authenticate;
+    @Override
+    public boolean matches(HttpServletRequest request) {
+        return !this.allowedMethods.contains(request.getMethod());
     }
 }

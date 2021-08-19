@@ -20,13 +20,15 @@ package org.lan.iti.iha.security.context;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.lan.iti.iha.core.cache.IhaCache;
-import org.lan.iti.iha.core.cache.IhaLocalCache;
+import org.lan.iti.iha.security.cache.Cache;
+import org.lan.iti.iha.security.cache.LocalCache;
 import org.lan.iti.iha.security.authentication.AuthenticationChecker;
 import org.lan.iti.iha.security.authentication.AuthenticationManager;
 import org.lan.iti.iha.security.authentication.DefaultAuthenticationChecker;
 import org.lan.iti.iha.security.authentication.DefaultAuthenticationManager;
 import org.lan.iti.iha.security.clientdetails.ClientDetailsService;
+import org.lan.iti.iha.security.config.SecurityConfig;
+import org.lan.iti.iha.security.jwt.JwtService;
 import org.lan.iti.iha.security.mgt.DefaultSecurityManager;
 import org.lan.iti.iha.security.mgt.SecurityManager;
 import org.lan.iti.iha.security.pipeline.PipelineManager;
@@ -46,13 +48,14 @@ public class IhaSecurityContext {
     private SecurityManager securityManager = new DefaultSecurityManager();
     private AuthenticationManager authenticationManager = new DefaultAuthenticationManager();
     private PipelineManager pipelineManager = new PipelineManager();
+    private SecurityConfig config = new SecurityConfig();
+
     // support service
+    private JwtService jwtService;
     private UserDetailsService userDetailsService;
     private AuthenticationChecker authenticationChecker = new DefaultAuthenticationChecker(); // for user
     private ClientDetailsService clientDetailsService;
 
-    /**
-     * cache
-     */
-    private IhaCache cache = new IhaLocalCache();
+    // caching
+    private Cache cache = new LocalCache();
 }

@@ -65,7 +65,6 @@ public class SecurityManagerTest {
                 (AuthenticationFailureHandler) (parameter, exception) -> System.out.println("AuthenticationFailureHandler")
         ));
         context.setUserDetailsService(service);
-        context.getAuthenticationManager().addProcessor(ProcessorType.SIMPLE, null);
         IhaSecurity.init(context);
 
         securityManager = new DefaultSecurityManager();
@@ -79,7 +78,7 @@ public class SecurityManagerTest {
         map.put("principal", new String[]{"test"});
         map.put("credentials", new String[]{"test"});
         map.put("type", new String[]{"username"});
-        map.put(ProcessorType.KEY, new String[]{ProcessorType.SIMPLE});
+        map.put(ProcessorType.KEY, new String[]{ProcessorType.SIMPLE.getCode()});
 
         Mockito.when(request.getParameterMap()).thenReturn(map);
 

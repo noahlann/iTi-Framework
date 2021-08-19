@@ -18,6 +18,7 @@
 
 package org.lan.iti.iha.security.clientdetails;
 
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
 
@@ -47,5 +48,19 @@ public interface ClientDetailsService extends IExtension<Object> {
      */
     default ClientDetails getByClientId(String clientId) {
         throw new RuntimeException("Not implemented `ClientDetailService.getByClientId(String)`");
+    }
+
+    /**
+     * Verify the encoded secret obtained from storage matches the submitted raw
+     * secret after it too is encoded. Returns true if the secret match, false if
+     * they do not. The stored secret itself is never decoded.
+     *
+     * @param rawSecret     the raw secret to encode and match
+     * @param encodedSecret the encoded secret from storage to compare with
+     * @return true if the raw secret, after encoding, matches the encoded secret from
+     * storage
+     */
+    default boolean matches(CharSequence rawSecret, String encodedSecret) {
+        return StringUtil.equals(rawSecret, encodedSecret);
     }
 }

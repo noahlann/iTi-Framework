@@ -23,7 +23,7 @@ import org.lan.iti.iha.security.IhaSecurity;
 import org.lan.iti.iha.security.authentication.Authentication;
 import org.lan.iti.iha.security.authentication.support.AnonymousAuthenticationToken;
 import org.lan.iti.iha.security.context.SecurityContextHolder;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.exception.NotInitializedException;
 import org.lan.iti.iha.security.pipeline.PipelineManager;
 

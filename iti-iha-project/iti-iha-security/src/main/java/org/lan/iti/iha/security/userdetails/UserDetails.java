@@ -73,9 +73,9 @@ public class UserDetails implements CredentialsContainer, Serializable {
     protected String zoneId;
 
     /**
-     * extId
+     * unionId
      */
-    protected String extId;
+    protected String unionId;
 
     /**
      * string Subject - Identifier for the End-User at the Issuer.
