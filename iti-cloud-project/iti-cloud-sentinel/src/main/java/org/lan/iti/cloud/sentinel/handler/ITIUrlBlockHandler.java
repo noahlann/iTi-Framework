@@ -19,7 +19,8 @@ package org.lan.iti.cloud.sentinel.handler;
 import cn.hutool.http.ContentType;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
-import com.xkcoding.json.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.api.ApiResult;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,9 @@ import javax.servlet.http.HttpServletResponse;
  * @url https://noahlan.com
  */
 @Slf4j
+@RequiredArgsConstructor
 public class ITIUrlBlockHandler implements BlockExceptionHandler {
+    private final ObjectMapper objectMapper;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, BlockException e) throws Exception {
@@ -43,7 +46,6 @@ public class ITIUrlBlockHandler implements BlockExceptionHandler {
 
         response.setContentType(ContentType.JSON.toString());
         response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-        response.getWriter().print(
-                JsonUtil.toJsonString(ApiResult.error(e.getMessage())));
+        response.getWriter().print(objectMapper.writeValueAsString(ApiResult.error(e.getMessage())));
     }
 }
