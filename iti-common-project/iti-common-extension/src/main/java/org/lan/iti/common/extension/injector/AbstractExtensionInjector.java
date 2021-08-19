@@ -30,7 +30,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author NorthLan
@@ -76,7 +75,7 @@ public abstract class AbstractExtensionInjector implements ExtensionInjector {
      * @param type 待加载类型
      * @return 实例列表
      */
-    protected abstract List<Object> loadListByType(Class type);
+    protected abstract Collection loadListByType(Class type);
 
     /**
      * 通过type和name加载列表
@@ -115,15 +114,20 @@ public abstract class AbstractExtensionInjector implements ExtensionInjector {
         } else {
             fieldClass = (Class) fieldType;
         }
-        if (isCollection) {
-            paramObj = this.loadListByType(fieldClass);
-        } else {
-            if (StringUtil.isNotEmpty(name)) {
-                paramObj = this.loadByName(fieldClass, name);
+        try {
+            if (isCollection) {
+                paramObj = this.loadListByType(fieldClass);
+            } else {
+                if (StringUtil.isNotEmpty(name)) {
+                    paramObj = this.loadByName(fieldClass, name);
+                }
+                if (paramObj == null) {
+                    paramObj = this.loadByType(fieldClass);
+                }
             }
-            if (paramObj == null) {
-                paramObj = this.loadByType(fieldClass);
-            }
+        } catch (Exception ex) {
+            log.warn("[{}] Cannot create parameter by type [{}] and name [{}]", LOG_PREFIX,
+                    fieldType.getTypeName(), name, ex);
         }
         return paramObj;
     }
@@ -134,9 +138,9 @@ public abstract class AbstractExtensionInjector implements ExtensionInjector {
         if (parameter != null) {
             try {
                 ReflectUtil.setFieldValue(instance, field, parameter);
-            } catch (UtilException ignore) {
+            } catch (UtilException ex) {
                 log.warn("[{}] Cannot inject {} by field at {}", LOG_PREFIX,
-                        fieldType.getTypeName(), instance.getClass().getName());
+                        fieldType.getTypeName(), instance.getClass().getName(), ex);
             }
         }
     }
@@ -150,9 +154,9 @@ public abstract class AbstractExtensionInjector implements ExtensionInjector {
         if (parameter != null) {
             try {
                 ReflectUtil.invoke(instance, setter, parameter);
-            } catch (UtilException ignore) {
+            } catch (UtilException ex) {
                 log.warn("[{}] Cannot inject {} by {} at {}", LOG_PREFIX,
-                        paramType.getTypeName(), setter.getName(), instance.getClass().getName());
+                        paramType.getTypeName(), setter.getName(), instance.getClass().getName(), ex);
             }
         }
     }

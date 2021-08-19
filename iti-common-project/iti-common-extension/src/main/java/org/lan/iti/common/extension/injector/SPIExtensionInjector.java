@@ -23,7 +23,7 @@ import org.lan.iti.common.extension.ExtensionLoader;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Field;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * SPI 注入器
@@ -54,7 +54,7 @@ public class SPIExtensionInjector extends AbstractExtensionInjector {
     }
 
     @Override
-    protected List<Object> loadListByType(Class type) {
+    protected Collection loadListByType(Class type) {
         return ExtensionLoader.getLoader(type).getList();
     }
 
