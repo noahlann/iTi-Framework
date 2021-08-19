@@ -18,8 +18,13 @@
 
 package org.lan.iti.iha.oauth2.token;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -33,14 +38,48 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccessToken implements Serializable {
     private static final long serialVersionUID = 5702257145706476772L;
 
     private String accessToken;
     private String refreshToken;
+    private String idToken;
+
     private String tokenType;
     private Long expiresIn;
+    private Long refreshTokenExpiresIn;
+    private Long idTokenExpiresIn;
     private String scope;
-    private String idToken;
+
+    // ids
+    private String uid; // 用户ID 框架自用
+    private String userId; // 用户ID（twitter附带）
+    private String openId;
+    private String accessCode;
+    private String unionId;
+
+
+    /**
+     * 小米附带属性
+     */
+    private String macAlgorithm;
+    private String macKey;
+
+    /**
+     * 企业微信附带属性
+     */
+    private String code;
+
+    /**
+     * Twitter附带属性
+     */
+    private String oauthToken;
+    private String oauthTokenSecret;
+    private String screenName;
+    private boolean oauthCallbackConfirmed;
 }

@@ -16,31 +16,26 @@
  *
  */
 
-package org.lan.iti.iha.oauth2;
+package org.lan.iti.iha.oauth2.exception;
+
+import org.lan.iti.iha.oauth2.enums.ErrorEnum;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 
 /**
+ * 授权异常：不支持的授权方式
+ *
  * @author NorthLan
- * @date 2021-07-05
+ * @date 2021-07-06
  * @url https://noahlan.com
  */
-public interface OAuth2ResponseType {
-    /**
-     * When authorization code mode or implicit authorization mode is not used, ResponseType needs to be set to {@code none}
-     */
-    String NONE = "none";
+public class UnsupportedGrantTypeException extends AuthenticationException {
+    private static final long serialVersionUID = 3913988281263085044L;
 
-    /**
-     * Authorization Code Grant
-     */
-    String CODE = "code";
+    public UnsupportedGrantTypeException() {
+        super(ErrorEnum.UNSUPPORTED_GRANT_TYPE);
+    }
 
-    /**
-     * Implicit Grant
-     */
-    String TOKEN = "token";
-
-    /**
-     * revoke (自定义回收token的responseType)
-     */
-    String REVOKE_TOKEN = "revoke";
+    public UnsupportedGrantTypeException(String code, String message) {
+        super(code, message);
+    }
 }

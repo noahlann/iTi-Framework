@@ -23,7 +23,7 @@ import org.lan.iti.iha.oauth2.OAuth2Config;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
 import org.lan.iti.iha.oauth2.token.AccessToken;
 import org.lan.iti.iha.oauth2.token.AccessTokenProvider;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 
 /**
  * 4.4.  Client Credentials Grant

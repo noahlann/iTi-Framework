@@ -20,8 +20,8 @@ package org.lan.iti.iha.oauth2.util;
 
 import lombok.experimental.UtilityClass;
 import org.lan.iti.common.core.util.StringUtil;
-import org.lan.iti.iha.core.model.BasicCredentials;
-import org.lan.iti.iha.core.util.RequestUtil;
+import org.lan.iti.iha.security.basic.BasicCredentials;
+import org.lan.iti.iha.security.util.RequestUtil;
 import org.lan.iti.iha.oauth2.ClientCertificate;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
 import org.lan.iti.iha.oauth2.enums.ClientAuthenticationMethod;

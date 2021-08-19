@@ -18,12 +18,15 @@
 
 package org.lan.iti.iha.oauth2;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.lan.iti.iha.core.config.AuthenticateConfig;
 import org.lan.iti.iha.oauth2.enums.OAuth2EndpointMethodType;
 import org.lan.iti.iha.oauth2.pkce.CodeChallengeMethod;
+
+import java.time.Duration;
 
 /**
  * Configuration file of oauth2 module
@@ -34,8 +37,10 @@ import org.lan.iti.iha.oauth2.pkce.CodeChallengeMethod;
  */
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-public class OAuth2Config extends AuthenticateConfig {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+public class OAuth2Config {
     /**
      * Name of OAuth platform
      */
@@ -67,9 +72,19 @@ public class OAuth2Config extends AuthenticateConfig {
     private String tokenUrl;
 
     /**
+     * URL used to refresh access_token
+     */
+    private String refreshTokenUrl;
+
+    /**
+     * URL used to revoke access_token
+     */
+    private String revokeTokenUrl;
+
+    /**
      * URL used to obtain an userinfo
      */
-    private String userinfoUrl;
+    private String userInfoUrl;
 
     /**
      * The value MUST be one of "code" for requesting an
@@ -77,11 +92,13 @@ public class OAuth2Config extends AuthenticateConfig {
      * "token" for requesting an access token (implicit grant) as described by Section 4.2.1 (<a href="https://tools.ietf.org/html/rfc6749#section-4.2.1" target="_blank">https://tools.ietf.org/html/rfc6749#section-4.2.1</a>),
      * or a registered extension value as described by Section 8.4 (<a href="https://tools.ietf.org/html/rfc6749#section-8.4" target="_blank">https://tools.ietf.org/html/rfc6749#section-8.4</a>).
      */
+    @Builder.Default
     private String responseType = OAuth2ResponseType.NONE;
 
     /**
      * The optional value is: {@code authorization_code}, {@code password}, {@code client_credentials}
      */
+    @Builder.Default
     private GrantType grantType = GrantType.AUTHORIZATION_CODE;
 
     /**
@@ -113,6 +130,7 @@ public class OAuth2Config extends AuthenticateConfig {
      *
      * @see <a href="https://tools.ietf.org/html/rfc7636#section-4.3" target="_blank"> Client Sends the Code Challenge with the Authorization Request</a>
      */
+    @Builder.Default
     private CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.S256;
 
     /**
@@ -132,11 +150,13 @@ public class OAuth2Config extends AuthenticateConfig {
     /**
      * In pkce mode, the expiration time of codeverifier, in milliseconds, default is 3 minutes
      */
-    private long codeVerifierTimeout = 180000;
+    @Builder.Default
+    private long codeVerifierTimeout = Duration.ofMinutes(3).toMillis();
 
     /**
      * When {@code verifyState} is true, it will check whether the state in authorization request is consistent with that in callback request
      */
+    @Builder.Default
     private boolean verifyState = true;
 
     /**
@@ -145,6 +165,7 @@ public class OAuth2Config extends AuthenticateConfig {
      * Different third-party platforms may use different request methods,
      * and some third-party platforms have limited request methods, such as post and get.
      */
+    @Builder.Default
     private OAuth2EndpointMethodType userInfoEndpointMethodType = OAuth2EndpointMethodType.POST;
 
     /**
@@ -153,5 +174,25 @@ public class OAuth2Config extends AuthenticateConfig {
      * Different third-party platforms may use different request methods,
      * and some third-party platforms have limited request methods, such as post and get.
      */
+    @Builder.Default
     private OAuth2EndpointMethodType accessTokenEndpointMethodType = OAuth2EndpointMethodType.POST;
+
+    /**
+     * method of refreshToken endpoint, default is POST
+     * <p>
+     * Different third-party platforms may use different request methods,
+     * and some third-party platforms have limited request methods, such as post and get.
+     */
+    @Builder.Default
+    private OAuth2EndpointMethodType refreshTokenEndpointMethodType = OAuth2EndpointMethodType.POST;
+
+    /**
+     * method of revokeToken endpoint, default is POST
+     * <p>
+     * Different third-party platforms may use different request methods,
+     * and some third-party platforms have limited request methods, such as post and get.
+     */
+    @Builder.Default
+    private OAuth2EndpointMethodType revokeTokenEndpointMethodType = OAuth2EndpointMethodType.POST;
+
 }

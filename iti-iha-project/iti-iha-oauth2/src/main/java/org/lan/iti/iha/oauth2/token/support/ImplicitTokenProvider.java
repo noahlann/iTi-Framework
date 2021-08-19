@@ -18,14 +18,12 @@
 
 package org.lan.iti.iha.oauth2.token.support;
 
-import cn.hutool.core.convert.Convert;
-import org.lan.iti.iha.core.exception.IhaOAuth2Exception;
 import org.lan.iti.iha.oauth2.OAuth2Config;
 import org.lan.iti.iha.oauth2.OAuth2ResponseType;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
 import org.lan.iti.iha.oauth2.token.AccessToken;
 import org.lan.iti.iha.oauth2.token.AccessTokenProvider;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 
 /**
  * 4.2.  Implicit Grant
@@ -44,15 +42,17 @@ public class ImplicitTokenProvider implements AccessTokenProvider {
     @Override
     public AccessToken getToken(OAuth2RequestParameter parameter, OAuth2Config oAuth2Config) throws AuthenticationException {
         if (null == parameter.getAccessToken()) {
-            throw new IhaOAuth2Exception("Oauth2Strategy failed to get AccessToken.");
+            throw new AuthenticationException("failed to get AccessToken.");
         }
         return AccessToken.builder()
                 .accessToken(parameter.getAccessToken())
                 .refreshToken(parameter.getRefreshToken())
                 .idToken(parameter.getIdToken())
                 .tokenType(parameter.getTokenType())
+                .expiresIn(parameter.getExpiresIn())
+                .refreshTokenExpiresIn(parameter.getRefreshTokenExpiresIn())
+                .idTokenExpiresIn(parameter.getIdTokenExpiresIn())
                 .scope(parameter.getScope())
-                .expiresIn(Convert.toLong(parameter.getExpiresIn()))
                 .build();
     }
 }

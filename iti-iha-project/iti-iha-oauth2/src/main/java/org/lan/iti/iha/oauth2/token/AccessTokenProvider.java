@@ -18,13 +18,11 @@
 
 package org.lan.iti.iha.oauth2.token;
 
-import com.xkcoding.json.util.Kv;
 import org.lan.iti.common.extension.IExtension;
 import org.lan.iti.common.extension.annotation.Extension;
 import org.lan.iti.iha.oauth2.OAuth2Config;
-import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 
 /**
  * AccessToken提供者
@@ -45,15 +43,4 @@ public interface AccessTokenProvider extends IExtension<String> {
      * @throws AuthenticationException 获取失败异常
      */
     AccessToken getToken(OAuth2RequestParameter parameter, OAuth2Config oAuth2Config) throws AuthenticationException;
-
-    default AccessToken mapToAccessToken(Kv tokenMap) {
-        return AccessToken.builder()
-                .accessToken(tokenMap.getString(OAuth2ParameterNames.ACCESS_TOKEN))
-                .refreshToken(tokenMap.getString(OAuth2ParameterNames.REFRESH_TOKEN))
-                .idToken(tokenMap.getString(OAuth2ParameterNames.ID_TOKEN))
-                .tokenType(tokenMap.getString(OAuth2ParameterNames.TOKEN_TYPE))
-                .scope(tokenMap.getString(OAuth2ParameterNames.SCOPE))
-                .expiresIn(tokenMap.getLong(OAuth2ParameterNames.EXPIRES_IN))
-                .build();
-    }
 }

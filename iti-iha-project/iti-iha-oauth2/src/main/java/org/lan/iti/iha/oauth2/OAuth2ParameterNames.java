@@ -112,6 +112,20 @@ public interface OAuth2ParameterNames {
     String EXPIRES_IN = "expires_in";
 
     /**
+     * Addon
+     * <p>
+     * {@code refresh_token_expires_in} - used in Authorization Response and Access Token Response.
+     */
+    String REFRESH_TOKEN_EXPIRES_IN = "refresh_token_expires_in";
+
+    /**
+     * Addon
+     * <p>
+     * {@code id_token_expires_in} - used in Authorization Response and Access Token Response.
+     */
+    String ID_TOKEN_EXPIRES_IN = "id_token_expires_in";
+
+    /**
      * {@code refresh_token} - used in Access Token Request and Access Token Response.
      */
     String REFRESH_TOKEN = "refresh_token";

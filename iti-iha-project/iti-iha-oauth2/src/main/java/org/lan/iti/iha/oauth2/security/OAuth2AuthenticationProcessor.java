@@ -22,9 +22,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
-import com.xkcoding.json.util.Kv;
 import org.lan.iti.common.extension.ExtensionLoader;
-import org.lan.iti.iha.core.exception.IhaOAuth2Exception;
 import org.lan.iti.iha.oauth2.*;
 import org.lan.iti.iha.oauth2.pkce.PkceHelper;
 import org.lan.iti.iha.oauth2.token.AccessToken;
@@ -32,7 +30,7 @@ import org.lan.iti.iha.oauth2.token.AccessTokenProvider;
 import org.lan.iti.iha.oauth2.util.OAuth2Util;
 import org.lan.iti.iha.security.IhaSecurity;
 import org.lan.iti.iha.security.authentication.Authentication;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 import org.lan.iti.iha.security.processor.ProcessChain;
 import org.lan.iti.iha.security.userdetails.UserDetails;
@@ -52,7 +50,7 @@ public class OAuth2AuthenticationProcessor extends AbstractOAuth2AuthenticationP
 
     @Override
     public int getOrder() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -72,21 +70,25 @@ public class OAuth2AuthenticationProcessor extends AbstractOAuth2AuthenticationP
         // If it is not a callback request, it must be a request to jump to the authorization link
         // If it is a password authorization request or a client authorization request, the token will be obtained directly
         if (!OAuth2Util.isCallback(oAuth2RequestParameter, oAuth2Config) && !isPasswordOrClientFlow) {
-            return chain.process(parameter, new OAuth2AuthenticationToken(getAuthorizationUrl(oAuth2Config)));
+            // 直接返回，中断责任链
+            return new OAuth2AuthenticationToken(getAuthorizationUrl(oAuth2Config));
         }
 
         AccessToken accessToken = getTokenProvider(oAuth2Config).getToken(oAuth2RequestParameter, oAuth2Config);
         UserDetails userDetails = getUserInfo(oAuth2Config, accessToken);
+        if (userDetails == null) {
+            throw new AuthenticationException("failed to load UserDetails from token");
+        }
         return chain.process(parameter, new OAuth2AuthenticationToken(accessToken, userDetails, userDetails.getAuthorities()));
     }
 
-    private UserDetails getUserInfo(OAuth2Config oAuthConfig, AccessToken accessToken) throws IhaOAuth2Exception {
+    private UserDetails getUserInfo(OAuth2Config oAuthConfig, AccessToken accessToken) throws AuthenticationException {
         Map<String, String> params = new HashMap<>(1);
         params.put(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getAccessToken());
 
-        Kv userInfo = OAuth2Util.request(oAuthConfig.getUserInfoEndpointMethodType(), oAuthConfig.getUserinfoUrl(), params);
+        Map<String, Object> userInfo = OAuth2Util.request(oAuthConfig.getUserInfoEndpointMethodType(), oAuthConfig.getUserInfoUrl(), params);
 
-        OAuth2Util.checkOauthResponse(userInfo, "OAuth2Strategy failed to get userInfo with accessToken.");
+        OAuth2Util.checkOAuthResponse(userInfo, "failed to get userInfo with accessToken.");
 
         return IhaSecurity.getContext().getUserDetailsService().fromToken(oAuthConfig.getPlatform(), accessToken, userInfo);
     }
@@ -142,7 +144,7 @@ public class OAuth2AuthenticationProcessor extends AbstractOAuth2AuthenticationP
         params.put(OAuth2ParameterNames.AUTOAPPROVE, oAuthConfig.isAutoapprove() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
         params.put(OAuth2ParameterNames.STATE, oAuthConfig.getState());
 
-        IhaSecurity.getContext().getCache().set(OAuth2Constants.STATE_CACHE_KEY.concat(oAuthConfig.getClientId()), state);
+        IhaSecurity.getContext().getCache().put(OAuth2Constants.STATE_CACHE_KEY.concat(oAuthConfig.getClientId()), state);
         // Pkce is only applicable to authorization code mode
         if (StrUtil.equals(oAuthConfig.getResponseType(), OAuth2ResponseType.CODE) && oAuthConfig.isRequireProofKey()) {
             params.putAll(PkceHelper.generatePkceParameters(oAuthConfig));

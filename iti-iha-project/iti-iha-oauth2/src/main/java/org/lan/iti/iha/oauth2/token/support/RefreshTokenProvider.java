@@ -19,10 +19,12 @@
 package org.lan.iti.iha.oauth2.token.support;
 
 import cn.hutool.core.util.ArrayUtil;
+import org.lan.iti.common.core.util.StringPool;
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.oauth2.GrantType;
 import org.lan.iti.iha.oauth2.OAuth2Config;
-import org.lan.iti.iha.oauth2.OAuth2Constants;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
+import org.lan.iti.iha.oauth2.exception.InvalidTokenException;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
 import org.lan.iti.iha.oauth2.token.AccessToken;
 import org.lan.iti.iha.oauth2.token.AccessTokenHelper;
@@ -34,35 +36,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 4.3.  Resource Owner Password Credentials Grant
- *
  * @author NorthLan
- * @date 2021/8/4
+ * @date 2021/8/14
  * @url https://blog.noahlan.com
- * @see <a href="https://tools.ietf.org/html/rfc6749#section-4.3" target="_blank">4.3.  Resource Owner Password Credentials Grant</a>
  */
-public class PasswordTokenProvider implements AccessTokenProvider {
+public class RefreshTokenProvider implements AccessTokenProvider {
     @Override
     public boolean matches(String params) {
-        return GrantType.PASSWORD.getType().equals(params);
+        return GrantType.REFRESH_TOKEN.getType().equals(params);
     }
 
     @Override
     public AccessToken getToken(OAuth2RequestParameter parameter, OAuth2Config oAuth2Config) throws AuthenticationException {
-        Map<String, String> params = new HashMap<>(6);
-        params.put(OAuth2ParameterNames.GRANT_TYPE, GrantType.PASSWORD.getType());
-        params.put(OAuth2ParameterNames.USERNAME, oAuth2Config.getUsername());
-        params.put(OAuth2ParameterNames.PASSWORD, oAuth2Config.getPassword());
-        params.put(OAuth2ParameterNames.CLIENT_ID, oAuth2Config.getClientId());
-        params.put(OAuth2ParameterNames.CLIENT_SECRET, oAuth2Config.getClientSecret());
-        if (ArrayUtil.isNotEmpty(oAuth2Config.getScopes())) {
-            params.put(OAuth2ParameterNames.SCOPE, String.join(OAuth2Constants.SCOPE_SEPARATOR, oAuth2Config.getScopes()));
+        if (StringUtil.isEmpty(parameter.getRefreshToken())) {
+            throw new InvalidTokenException();
         }
-        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getTokenUrl(), params);
-        OAuth2Util.checkOAuthResponse(tokenInfo, "Oauth2Strategy failed to get AccessToken.");
+        Map<String, String> params = new HashMap<>(6);
+        params.put("grant_type", oAuth2Config.getGrantType().name());
+        params.put("refresh_token", parameter.getRefreshToken());
 
+        if (ArrayUtil.isNotEmpty(oAuth2Config.getScopes())) {
+            params.put("scope", String.join(StringPool.SPACE, oAuth2Config.getScopes()));
+        }
+
+        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getRefreshTokenUrl(), params);
+
+        OAuth2Util.checkOAuthResponse(tokenInfo, "failed to refresh access_token.");
         if (!tokenInfo.containsKey(OAuth2ParameterNames.ACCESS_TOKEN)) {
-            throw new AuthenticationException("failed to get AccessToken. response: " + tokenInfo);
+            throw new AuthenticationException("failed to refresh access_token." + tokenInfo);
         }
         return AccessTokenHelper.toAccessToken(tokenInfo);
     }

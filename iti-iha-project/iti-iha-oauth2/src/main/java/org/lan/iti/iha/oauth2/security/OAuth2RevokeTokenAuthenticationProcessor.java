@@ -18,54 +18,54 @@
 
 package org.lan.iti.iha.oauth2.security;
 
-import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.oauth2.OAuth2Config;
-import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
-import org.lan.iti.iha.oauth2.OAuth2ResponseType;
 import org.lan.iti.iha.oauth2.util.OAuth2Util;
 import org.lan.iti.iha.security.authentication.Authentication;
 import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
-import org.lan.iti.iha.security.exception.authentication.UnsupportedAuthenticationException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
+import org.lan.iti.iha.security.processor.AuthenticationProcessor;
 import org.lan.iti.iha.security.processor.ProcessChain;
+import org.lan.iti.iha.security.processor.ProcessorType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * AccessToken Grant - Pre process
+ * 回收 Token
  *
  * @author NorthLan
- * @date 2021/8/3
+ * @date 2021/8/14
  * @url https://blog.noahlan.com
  */
-public class PreOAuth2AuthenticationProcessor extends AbstractOAuth2AuthenticationProcessor {
+public class OAuth2RevokeTokenAuthenticationProcessor implements AuthenticationProcessor {
+
+    @Override
+    public boolean matches(String params) {
+        return ProcessorType.OAUTH2_REVOKE.matches(params);
+    }
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE + 1000;
+        return 0;
     }
 
     @Override
     public boolean support(RequestParameter parameter, Authentication authentication) throws AuthenticationException {
-        return authentication == null;
+        return parameter instanceof OAuth2RequestParameter &&
+                authentication instanceof OAuth2AuthenticationToken &&
+                ((OAuth2AuthenticationToken) authentication).isNeedRevoke();
     }
 
     @Override
     public Authentication process(RequestParameter parameter, Authentication authentication, ProcessChain chain) throws AuthenticationException {
-        OAuth2RequestParameter oAuth2RequestParameter = new OAuth2RequestParameter(parameter);
-        OAuth2Config oAuth2Config = oAuth2RequestParameter.getConfig();
+        OAuth2RequestParameter oAuth2RequestParameter = (OAuth2RequestParameter) parameter;
+        OAuth2Config config = oAuth2RequestParameter.getConfig();
+        Map<String, String> params = new HashMap<>(6);
+        params.put("access_token", oAuth2RequestParameter.getAccessToken());
 
-        if (oAuth2Config == null) {
-            throw new AuthenticationException("config must not be null");
-        }
-        // TODO check session ?
+        Map<String, Object> tokenInfo = OAuth2Util.request(config.getRevokeTokenEndpointMethodType(), config.getRevokeTokenUrl(), params);
 
-        OAuth2Util.checkOAuthConfig(oAuth2Config);
-
-        if (StringUtil.isEmpty(oAuth2Config.getResponseType())) {
-            // TODO 异常类型：401
-            throw new UnsupportedAuthenticationException(String.format("%s is not provided", OAuth2ParameterNames.RESPONSE_TYPE));
-        }
-        return chain.process(oAuth2RequestParameter,
-                new OAuth2AuthenticationToken()
-                        .setNeedRevoke(OAuth2ResponseType.REVOKE_TOKEN.equalsIgnoreCase(oAuth2Config.getResponseType())));
+        OAuth2Util.checkOAuthResponse(tokenInfo, "failed to revoke access_token. " + oAuth2RequestParameter.getAccessToken());
+        return new OAuth2AuthenticationToken(true);
     }
 }

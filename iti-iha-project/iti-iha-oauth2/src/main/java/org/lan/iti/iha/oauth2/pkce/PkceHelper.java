@@ -19,13 +19,14 @@
 package org.lan.iti.iha.oauth2.pkce;
 
 import lombok.experimental.UtilityClass;
-import org.lan.iti.iha.core.context.IhaAuthentication;
-import org.lan.iti.iha.oauth2.util.OAuth2Util;
 import org.lan.iti.iha.oauth2.OAuth2Config;
+import org.lan.iti.iha.oauth2.util.OAuth2Util;
+import org.lan.iti.iha.security.IhaSecurity;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author NorthLan
@@ -58,7 +59,7 @@ public class PkceHelper {
         params.put(PkceParams.CODE_CHALLENGE, codeChallenge);
         params.put(PkceParams.CODE_CHALLENGE_METHOD, codeChallengeMethod);
         // The default cache is local map.
-        IhaAuthentication.getContext().getCache().set(oAuth2Config.getClientId(), codeVerifier, oAuth2Config.getCodeVerifierTimeout());
+        IhaSecurity.getContext().getCache().put(oAuth2Config.getClientId(), codeVerifier, oAuth2Config.getCodeVerifierTimeout(), TimeUnit.MILLISECONDS);
         return params;
     }
 
@@ -69,6 +70,6 @@ public class PkceHelper {
      * @return {@code code_verifier}
      */
     public static String getCacheCodeVerifier(String clientId) {
-        return (String) IhaAuthentication.getContext().getCache().get(clientId);
+        return (String) IhaSecurity.getContext().getCache().get(clientId);
     }
 }

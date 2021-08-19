@@ -20,7 +20,9 @@ package org.lan.iti.iha.oauth2.security;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.lan.iti.iha.oauth2.token.AccessToken;
 import org.lan.iti.iha.security.authentication.AbstractAuthenticationToken;
 
@@ -34,6 +36,7 @@ import java.util.Collection;
  * @url https://blog.noahlan.com
  */
 @Getter
+@Accessors(chain = true)
 @ToString
 @EqualsAndHashCode(callSuper = true)
 public class OAuth2AuthenticationToken extends AbstractAuthenticationToken {
@@ -43,13 +46,12 @@ public class OAuth2AuthenticationToken extends AbstractAuthenticationToken {
     protected Object principal;
     protected String redirectUri;
 
-    public OAuth2AuthenticationToken() {
-        super(null);
-    }
+    @Setter
+    protected boolean needRevoke;
+    protected boolean isRevoked;
 
-    public OAuth2AuthenticationToken(Object principal) {
-        super(null);
-        this.principal = principal;
+    public OAuth2AuthenticationToken() {
+        this(false);
     }
 
     public OAuth2AuthenticationToken(AccessToken accessToken, Object principal, Collection<String> authorities) {
@@ -57,6 +59,11 @@ public class OAuth2AuthenticationToken extends AbstractAuthenticationToken {
         this.principal = principal;
         this.accessToken = accessToken;
         setAuthenticated(true);
+    }
+
+    public OAuth2AuthenticationToken(boolean isRevoked) {
+        super(null);
+        this.isRevoked = isRevoked;
     }
 
     public OAuth2AuthenticationToken(String redirectUri) {

@@ -23,6 +23,7 @@ import org.lan.iti.iha.oauth2.ClientCertificate;
 import org.lan.iti.iha.oauth2.OAuth2Config;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
 import org.lan.iti.iha.security.mgt.RequestParameter;
+import org.lan.iti.iha.security.processor.ProcessorType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,14 +35,20 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class OAuth2RequestParameter extends RequestParameter {
     private static final long serialVersionUID = -4653455213727626913L;
-    public static final String KEY_CONFIG = "$oauth2Config";
+    public static final String KEY_CONFIG = "$config.oauth2";
 
     public OAuth2RequestParameter(RequestParameter other) {
         super(other);
+        initProcessorType();
     }
 
     public OAuth2RequestParameter(HttpServletRequest request, HttpServletResponse response) {
         super(request, response);
+        initProcessorType();
+    }
+
+    private void initProcessorType() {
+        setProcessorType(ProcessorType.OAUTH2.getCode());
     }
 
     public OAuth2Config getConfig() {
@@ -109,7 +116,15 @@ public class OAuth2RequestParameter extends RequestParameter {
         return getByKey(OAuth2ParameterNames.TOKEN_TYPE);
     }
 
-    public String getExpiresIn() {
+    public Long getExpiresIn() {
         return getByKey(OAuth2ParameterNames.EXPIRES_IN);
+    }
+
+    public Long getRefreshTokenExpiresIn() {
+        return getByKey(OAuth2ParameterNames.REFRESH_TOKEN_EXPIRES_IN);
+    }
+
+    public Long getIdTokenExpiresIn() {
+        return getByKey(OAuth2ParameterNames.ID_TOKEN_EXPIRES_IN);
     }
 }

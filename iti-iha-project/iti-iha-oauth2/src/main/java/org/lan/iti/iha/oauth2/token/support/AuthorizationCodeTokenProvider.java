@@ -19,7 +19,6 @@
 package org.lan.iti.iha.oauth2.token.support;
 
 import cn.hutool.core.util.StrUtil;
-import com.xkcoding.json.util.Kv;
 import org.lan.iti.iha.oauth2.GrantType;
 import org.lan.iti.iha.oauth2.OAuth2Config;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
@@ -28,9 +27,10 @@ import org.lan.iti.iha.oauth2.pkce.PkceHelper;
 import org.lan.iti.iha.oauth2.pkce.PkceParams;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
 import org.lan.iti.iha.oauth2.token.AccessToken;
+import org.lan.iti.iha.oauth2.token.AccessTokenHelper;
 import org.lan.iti.iha.oauth2.token.AccessTokenProvider;
 import org.lan.iti.iha.oauth2.util.OAuth2Util;
-import org.lan.iti.iha.security.exception.AuthenticationException;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,13 +68,13 @@ public class AuthorizationCodeTokenProvider implements AccessTokenProvider {
             params.put(PkceParams.CODE_VERIFIER, PkceHelper.getCacheCodeVerifier(oAuth2Config.getClientId()));
         }
 
-        Kv tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getTokenUrl(), params);
-        OAuth2Util.checkOauthResponse(tokenInfo, "failed to get AccessToken.");
+        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getTokenUrl(), params);
+        OAuth2Util.checkOAuthResponse(tokenInfo, "failed to get AccessToken.");
 
         if (!tokenInfo.containsKey(OAuth2ParameterNames.ACCESS_TOKEN)) {
             throw new AuthenticationException("failed to get AccessToken." + tokenInfo);
         }
 
-        return mapToAccessToken(tokenInfo);
+        return AccessTokenHelper.toAccessToken(tokenInfo);
     }
 }

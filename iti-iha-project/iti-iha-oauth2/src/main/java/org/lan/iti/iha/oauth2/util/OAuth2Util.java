@@ -19,16 +19,15 @@
 package org.lan.iti.iha.oauth2.util;
 
 import cn.hutool.core.codec.Base64;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xkcoding.http.HttpUtil;
-import com.xkcoding.json.JsonUtil;
-import com.xkcoding.json.util.Kv;
 import lombok.experimental.UtilityClass;
-import org.lan.iti.iha.core.context.IhaAuthentication;
-import org.lan.iti.iha.core.exception.IhaOAuth2Exception;
 import org.lan.iti.iha.oauth2.GrantType;
 import org.lan.iti.iha.oauth2.OAuth2Config;
 import org.lan.iti.iha.oauth2.OAuth2Constants;
@@ -36,10 +35,11 @@ import org.lan.iti.iha.oauth2.OAuth2ResponseType;
 import org.lan.iti.iha.oauth2.enums.OAuth2EndpointMethodType;
 import org.lan.iti.iha.oauth2.pkce.CodeChallengeMethod;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
+import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 
-import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * OAuth Strategy Util
@@ -81,19 +81,9 @@ public class OAuth2Util {
         }
     }
 
-    public static void checkOauthResponse(Kv responseKv, String errorMsg) {
+    public static void checkOAuthResponse(Map<String, Object> responseKv, String errorMsg) {
         if (null == responseKv || responseKv.isEmpty()) {
-            throw new IhaOAuth2Exception(errorMsg);
-        }
-        if (responseKv.containsKey("error") && ObjectUtil.isNotEmpty(responseKv.get("error"))) {
-            throw new IhaOAuth2Exception(Optional.ofNullable(errorMsg).orElse("") +
-                    responseKv.get("error_description") + " " + responseKv.toString());
-        }
-    }
-
-    public static void checkOauthCallbackRequest(String requestErrorParam, String requestErrorDescParam, String bizErrorMsg) {
-        if (StrUtil.isNotEmpty(requestErrorParam)) {
-            throw new IhaOAuth2Exception(Optional.ofNullable(bizErrorMsg).orElse("") + requestErrorDescParam);
+            throw new AuthenticationException(errorMsg);
         }
     }
 
@@ -102,14 +92,13 @@ public class OAuth2Util {
             return;
         }
         if (StrUtil.isEmpty(state) || StrUtil.isEmpty(clientId)) {
-            throw new IhaOAuth2Exception("Illegal state.");
+            throw new AuthenticationException("Illegal state.");
 
         }
-        Serializable cacheState = IhaAuthentication.getContext().getCache().get(OAuth2Constants.STATE_CACHE_KEY.concat(clientId));
+        Object cacheState = IhaSecurity.getContext().getCache().get(OAuth2Constants.STATE_CACHE_KEY.concat(clientId));
         if (null == cacheState || !cacheState.equals(state)) {
-            throw new IhaOAuth2Exception("Illegal state.");
+            throw new AuthenticationException("Illegal state.");
         }
-
     }
 
     /**
@@ -129,9 +118,9 @@ public class OAuth2Util {
      *
      * @param oAuth2Config oauth config
      */
-    public static void checkOauthConfig(OAuth2Config oAuth2Config) {
+    public static void checkOAuthConfig(OAuth2Config oAuth2Config) throws AuthenticationException {
         if (StrUtil.isEmpty(oAuth2Config.getTokenUrl())) {
-            throw new IhaOAuth2Exception("Oauth2Strategy requires a tokenUrl");
+            throw new AuthenticationException("requires a tokenUrl");
         }
         // For authorization code mode and implicit authorization mode
         // refer to: https://tools.ietf.org/html/rfc6749#section-4.1
@@ -140,41 +129,42 @@ public class OAuth2Util {
 
             if (StrUtil.equals(oAuth2Config.getResponseType(), OAuth2ResponseType.CODE)) {
                 if (oAuth2Config.getGrantType() != GrantType.AUTHORIZATION_CODE) {
-                    throw new IhaOAuth2Exception("Invalid grantType `" + oAuth2Config.getGrantType() + "`. " +
-                            "When using authorization code mode, grantType must be `authorization_code`");
+                    throw new AuthenticationException(
+                            String.format("Invalid grantType [%s]. When using authorization code mode, grantType must be `authorization_code`",
+                                    oAuth2Config.getGrantType()));
                 }
 
                 if (!oAuth2Config.isRequireProofKey() && StrUtil.isEmpty(oAuth2Config.getClientSecret())) {
-                    throw new IhaOAuth2Exception("Oauth2Strategy requires a clientSecret when PKCE is not enabled.");
+                    throw new AuthenticationException("requires a clientSecret when PKCE is not enabled.");
                 }
             } else {
                 if (StrUtil.isEmpty(oAuth2Config.getClientSecret())) {
-                    throw new IhaOAuth2Exception("Oauth2Strategy requires a clientSecret");
+                    throw new AuthenticationException("requires a clientSecret");
                 }
 
             }
             if (StrUtil.isEmpty(oAuth2Config.getClientId())) {
-                throw new IhaOAuth2Exception("Oauth2Strategy requires a clientId");
+                throw new AuthenticationException("requires a clientId");
             }
 
             if (StrUtil.isEmpty(oAuth2Config.getAuthorizationUrl())) {
-                throw new IhaOAuth2Exception("Oauth2Strategy requires a authorizationUrl");
+                throw new AuthenticationException("requires a authorizationUrl");
             }
 
-            if (StrUtil.isEmpty(oAuth2Config.getUserinfoUrl())) {
-                throw new IhaOAuth2Exception("Oauth2Strategy requires a userinfoUrl");
+            if (StrUtil.isEmpty(oAuth2Config.getUserInfoUrl())) {
+                throw new AuthenticationException("requires a userinfoUrl");
             }
         }
         // For password mode
         // refer to: https://tools.ietf.org/html/rfc6749#section-4.3
         else {
             if (oAuth2Config.getGrantType() != GrantType.PASSWORD && oAuth2Config.getGrantType() != GrantType.CLIENT_CREDENTIALS) {
-                throw new IhaOAuth2Exception("When the response type is none in the oauth2 strategy, a grant type other " +
+                throw new AuthenticationException("When the response type is none in the oauth2 strategy, a grant type other " +
                         "than the authorization code must be used: " + oAuth2Config.getGrantType());
             }
             if (oAuth2Config.getGrantType() != GrantType.PASSWORD) {
                 if (!StrUtil.isAllNotEmpty(oAuth2Config.getUsername(), oAuth2Config.getPassword())) {
-                    throw new IhaOAuth2Exception("OAuth2Strategy requires username and password in password certificate grant");
+                    throw new AuthenticationException("OAuth2Strategy requires username and password in password certificate grant");
                 }
             }
         }
@@ -214,13 +204,22 @@ public class OAuth2Util {
      * @param params             Request parameters
      * @return Kv
      */
-    public static Kv request(OAuth2EndpointMethodType endpointMethodType, String url, Map<String, String> params) {
+    public static Map<String, Object> request(OAuth2EndpointMethodType endpointMethodType, String url, Map<String, String> params) {
         String res;
         if (null == endpointMethodType || OAuth2EndpointMethodType.GET == endpointMethodType) {
             res = HttpUtil.get(url, params, false);
         } else {
             res = HttpUtil.post(url, params, false);
         }
-        return JsonUtil.parseKv(res);
+        Map<String, Object> result;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            result = objectMapper.readValue(res, new TypeReference<Map<String, Object>>() {
+            });
+        } catch (JsonProcessingException e) {
+            result = new HashMap<>();
+        }
+        return result;
     }
 }

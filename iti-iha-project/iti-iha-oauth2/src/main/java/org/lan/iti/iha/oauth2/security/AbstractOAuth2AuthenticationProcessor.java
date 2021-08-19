@@ -29,6 +29,6 @@ import org.lan.iti.iha.security.processor.ProcessorType;
 public abstract class AbstractOAuth2AuthenticationProcessor implements AuthenticationProcessor {
     @Override
     public boolean matches(String params) {
-        return ProcessorType.OAUTH2.equals(params);
+        return ProcessorType.OAUTH2.matches(params);
     }
 }
