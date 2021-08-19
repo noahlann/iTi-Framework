@@ -35,9 +35,6 @@ import javax.lang.model.SourceVersion;
 //@AutoService(Processor.class)
 public class NLDDDProcessor extends AbstractCodeGenProcessor {
     public final ProcessorPlugin[] PLUGINS = new ProcessorPlugin[]{
-//            new GenCreatorPlugin(),
-//            new GenDomainRepositoryPlugin(),
-//            new GenJpaRepositoryPlugin(),
             new GenJpaEnumConverterPlugin()};
 
     @Override
