@@ -80,12 +80,12 @@ public class SecurityContextFilterHelper {
             } else {
                 log.debug(String.format("Set SecurityContextHolder to %s", contextBeforeChainExecution));
             }
-            chain.doFilter(request, response);
+            chain.doFilter(holder.getRequest(), holder.getResponse());
         } finally {
             SecurityContext contextAfterChainExecution = SecurityContextHolder.getContext();
             // Crucial removal of SecurityContextHolder contents before anything else.
             SecurityContextHolder.clearContext();
-            this.repository.saveContext(contextAfterChainExecution, request, response);
+            this.repository.saveContext(contextAfterChainExecution, holder.getRequest(), holder.getResponse());
             request.removeAttribute(FILTER_APPLIED);
             log.debug("Cleared SecurityContextHolder to complete request");
         }

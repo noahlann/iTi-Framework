@@ -40,41 +40,49 @@ public class SimpleConfig {
     /**
      * Get the user principal(username/mobile/email) from request through {@code request.getParameter(`principalField`)}, which defaults to "username"
      */
+    @Builder.Default
     private String principalField = "principal";
 
     /**
      * Get the password from request through {@code request.getParameter(`credentialsField`)}, which defaults to "password"
      */
+    @Builder.Default
     private String credentialsField = "credentials";
 
     /**
      * Get the validation code from request through {@code request.getParameter(`codeField`)}, which defaults to "code"
      */
+    @Builder.Default
     private String codeField = "code";
 
     /**
      * Get the login type from request through {@code request.getParameter(`typeField`)}, which defaults to "type"
      */
+    @Builder.Default
     private String typeField = "type";
 
     /**
      * Get the extra data from request through {@code request.getParameter(`extra`)}, which defaults to "extra"
      */
+    @Builder.Default
     private String extraField = "extra";
 
     /**
      * Get the remember-me from request through {@code request.getParameter(`rememberMeField`)}, which defaults to "rememberMe"
      */
+    @Builder.Default
     private String rememberMeField = "rememberMe";
 
     /**
      * Default remember me cookie key
      */
+    @Builder.Default
     private String rememberMeCookieKey = "_iha_remember_me";
 
     /**
      * Remember me cookie expire, unit: second, default 60*60*24[24 hours]
      */
+    @Builder.Default
     private long rememberMeCookieMaxAge = Duration.ofHours(24).toMillis();
 
     /**
@@ -85,5 +93,6 @@ public class SimpleConfig {
     /**
      * Credential Encrypt Salt
      */
+    @Builder.Default
     private String credentialEncryptSalt = "_iha:rememberMe";
 }

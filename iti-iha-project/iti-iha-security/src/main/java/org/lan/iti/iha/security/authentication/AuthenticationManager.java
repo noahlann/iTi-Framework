@@ -25,6 +25,7 @@ import org.lan.iti.iha.security.exception.authentication.DisabledException;
 import org.lan.iti.iha.security.exception.authentication.LockedException;
 import org.lan.iti.iha.security.mgt.RequestParameter;
 import org.lan.iti.iha.security.processor.AuthenticationProcessor;
+import org.lan.iti.iha.security.processor.ProcessorManager;
 
 /**
  * Processes an {@link Authentication} request.
@@ -36,7 +37,10 @@ import org.lan.iti.iha.security.processor.AuthenticationProcessor;
 public interface AuthenticationManager {
 
     AuthenticationManager addProcessor(String type, AuthenticationProcessor processor);
+
     AuthenticationManager addProcessors(String type, AuthenticationProcessor... processors);
+
+    ProcessorManager getProcessorManager(String type);
 
     /**
      * Attempts to authenticate the passed {@link Authentication} object, returning a

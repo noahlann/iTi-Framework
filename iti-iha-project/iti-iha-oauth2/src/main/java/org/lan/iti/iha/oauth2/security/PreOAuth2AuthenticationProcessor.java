@@ -50,7 +50,13 @@ public class PreOAuth2AuthenticationProcessor extends AbstractOAuth2Authenticati
 
     @Override
     public Authentication process(RequestParameter parameter, Authentication authentication, ProcessChain chain) throws AuthenticationException {
-        OAuth2RequestParameter oAuth2RequestParameter = new OAuth2RequestParameter(parameter);
+        // compatible oidc
+        OAuth2RequestParameter oAuth2RequestParameter;
+        if (parameter instanceof OAuth2RequestParameter) {
+            oAuth2RequestParameter = (OAuth2RequestParameter) parameter;
+        } else {
+            oAuth2RequestParameter = new OAuth2RequestParameter(parameter);
+        }
         OAuth2Config oAuth2Config = oAuth2RequestParameter.getConfig();
 
         if (oAuth2Config == null) {

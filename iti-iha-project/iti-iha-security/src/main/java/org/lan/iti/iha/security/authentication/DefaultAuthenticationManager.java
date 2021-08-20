@@ -65,7 +65,8 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
         return this;
     }
 
-    private ProcessorManager getProcessorManager(String type) {
+    @Override
+    public ProcessorManager getProcessorManager(String type) {
         return managerMap.computeIfAbsent(type, t -> new ProcessorManager(type, true));
     }
 
