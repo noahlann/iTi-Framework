@@ -38,6 +38,12 @@
 
     <dependencies>
         <!-- Compile -->
+        <!--        TODO 移除-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--            <optional>true</optional>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.lan</groupId>
             <artifactId>iti-cloud</artifactId>
