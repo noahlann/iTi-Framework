@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.core.util.ReflectUtil;
 import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.common.extension.ExtensionInjector;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -101,8 +100,8 @@ public abstract class AbstractExtensionInjector implements ExtensionInjector {
         boolean isCollection = false;
         // TODO map
 
-        if (fieldType instanceof ParameterizedTypeImpl) {
-            ParameterizedType parameterizedType = (ParameterizedTypeImpl) fieldType;
+        if (fieldType instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) fieldType;
             Class<?> rawType = (Class<?>) parameterizedType.getRawType();
             if (Collection.class.isAssignableFrom(rawType)) {
                 isCollection = true;
