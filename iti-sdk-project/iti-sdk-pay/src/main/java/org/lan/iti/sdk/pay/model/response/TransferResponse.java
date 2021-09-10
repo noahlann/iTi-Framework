@@ -1,6 +1,8 @@
 package org.lan.iti.sdk.pay.model.response;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.lan.iti.sdk.pay.model.IResponse;
 
 import java.time.LocalDateTime;
@@ -11,7 +13,9 @@ import java.util.Map;
  * @since 2021/3/27
  * description 转账业务统一响应参数
  */
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransferResponse implements IResponse {
 
     /**
@@ -32,12 +36,12 @@ public class TransferResponse implements IResponse {
     /**
      * 商户转账单号
      */
-    private String outFundNo;
+    private String outTransferNo;
 
     /**
      * 平台转账单号
      */
-    private String fundNo;
+    private String transferNo;
 
     /**
      * 渠道转账单号
@@ -47,7 +51,7 @@ public class TransferResponse implements IResponse {
     /**
      * 转账金额
      */
-    private String fundAmount;
+    private String transferAmount;
 
     /**
      * 转账开始时间
@@ -57,12 +61,12 @@ public class TransferResponse implements IResponse {
     /**
      * 转账成功时间
      */
-    private LocalDateTime fundTime;
+    private LocalDateTime transferTime;
 
     /**
-     * 转账状态（转账中:funding 转账成功:funded 转账失败:failed 退票:refund 状态未知:unknown）
+     * 转账状态（转账中:transfering 转账成功:transfered 转账失败:failed 退票:retransfer 状态未知:unknown）
      */
-    private String fundStatus;
+    private String transferStatus;
 
     /**
      * 错误码
@@ -85,6 +89,11 @@ public class TransferResponse implements IResponse {
     private LocalDateTime currentQueryApiTime;
 
     /**
+     * 转账标题
+     */
+    public String subject;
+
+    /**
      * 转账描述
      */
     private String description;
@@ -105,9 +114,14 @@ public class TransferResponse implements IResponse {
     private String accountName;
 
     /**
-     * 转账渠道：alipay:支付宝 wx:微信支付 upacp:银联支付
+     * 付款渠道：alipay:支付宝 wx:微信支付 upacp:银联支付
      */
-    private String fundChannel;
+    private String channel;
+
+    /**
+     * 付款渠道版本
+     */
+    private String channelVersion;
 
     /**
      * 银行编号
@@ -117,6 +131,11 @@ public class TransferResponse implements IResponse {
     /**
      * 是否转账到银行卡
      */
-    private String toBank;
+    private Boolean toBank;
+
+    /**
+     * 渠道响应信息
+     */
+    private Map<String, Object> response;
 
 }

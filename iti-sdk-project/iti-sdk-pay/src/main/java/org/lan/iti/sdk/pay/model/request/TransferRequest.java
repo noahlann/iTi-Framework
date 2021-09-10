@@ -31,22 +31,22 @@ public class TransferRequest implements IRequest {
     /**
      * 转账单号
      */
-    private String outFundNo;
+    private String outTransferNo;
 
     /**
-     * 转账渠道
+     * 付款渠道：alipay:支付宝 wx:微信支付 upacp:银联支付
      */
-    private String fundChannel;
+    private String channel;
 
     /**
      * 转账金额
      */
-    private Float fundAmount;
+    private String transferAmount;
 
     /**
      * 是否转账到银行卡
      */
-    private String toBank;
+    private Boolean toBank;
 
     /**
      * 转账到账用户标识
@@ -64,9 +64,14 @@ public class TransferRequest implements IRequest {
     public String accountName;
 
     /**
+     * 转账标题
+     */
+    public String subject;
+
+    /**
      * 转账描述
      */
-    public String fundDescription;
+    public String description;
 
     /**
      * 转账额外字段

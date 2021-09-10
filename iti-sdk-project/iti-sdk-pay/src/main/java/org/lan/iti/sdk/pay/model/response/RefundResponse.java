@@ -71,12 +71,12 @@ public class RefundResponse implements IResponse {
     /**
      * 错误码
      */
-    private String errorCode;
+    private String errCode;
 
     /**
      * 错误信息
      */
-    private String errorMsg;
+    private String errMsg;
 
     /**
      * 退款额外字段
@@ -84,8 +84,8 @@ public class RefundResponse implements IResponse {
     private Map<String, Object> extra;
 
     /**
-     * 退款额外信息(渠道退款通知信息)
+     * 渠道响应信息
      */
-    private Map<String, Object> refundExtra;
+    private Map<String, Object> response;
 
 }

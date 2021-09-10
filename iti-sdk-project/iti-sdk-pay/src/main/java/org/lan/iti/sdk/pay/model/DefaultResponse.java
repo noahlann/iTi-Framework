@@ -23,6 +23,11 @@ public class DefaultResponse<R extends IResponse> {
 
     private Map<String, Object> extra;
 
+    public DefaultResponse(String code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
     public DefaultResponse(String code, String message, R response) {
         this.code = code;
         this.message = message;

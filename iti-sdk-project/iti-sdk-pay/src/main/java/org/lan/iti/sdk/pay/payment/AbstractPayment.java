@@ -68,13 +68,15 @@ public abstract class AbstractPayment<T extends IRequest> {
         String code = Convert.toStr(jsonObject.get(PayConstants.HTTP_ENTITY_CODE));
         String message = Convert.toStr(jsonObject.get(PayConstants.HTTP_ENTITY_MESSAGE));
         Object data = jsonObject.get(PayConstants.HTTP_ENTITY_DATA);
-        DefaultResponse<R> defaultResponse = null;
+        DefaultResponse<R> defaultResponse;
         if (data instanceof JSONObject) {
             R response = ((JSONObject) data).toJavaObject(clazz);
             defaultResponse = new DefaultResponse<>(code, message, response);
         } else if (data instanceof JSONArray) {
             List<R> rList = ((JSONArray) data).toJavaList(clazz);
             defaultResponse = new DefaultResponse<>(code, message, rList);
+        } else {
+            defaultResponse = new DefaultResponse<>(code, message);
         }
         return defaultResponse;
     }

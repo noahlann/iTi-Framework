@@ -73,9 +73,9 @@ public class OrderResponse implements IResponse {
     private Map<String, Object> extra;
 
     /**
-     * 支付额外信息(渠道异步通知信息)
+     * 渠道响应信息
      */
-    private Map<String, Object> paymentExtra;
+    private Map<String, Object> response;
 
     /**
      * 退款金额
@@ -95,12 +95,12 @@ public class OrderResponse implements IResponse {
     /**
      * 错误码
      */
-    private String errorCode;
+    private String errCode;
 
     /**
      * 错误信息
      */
-    private String errorMsg;
+    private String errMsg;
 
     /**
      * 描述

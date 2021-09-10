@@ -19,11 +19,11 @@ public class TransferRequestBuilder extends AbstractRequestBuilder<TransferReque
     /**
      * 设置转账单号
      *
-     * @param outFundNo 转账单号
+     * @param outTransferNo 转账单号
      * @return 转账参数配置器
      */
-    public TransferRequestBuilder outFundNo(String outFundNo) {
-        request.setOutFundNo(outFundNo);
+    public TransferRequestBuilder outTransferNo(String outTransferNo) {
+        request.setOutTransferNo(outTransferNo);
         return this;
     }
 
@@ -33,19 +33,19 @@ public class TransferRequestBuilder extends AbstractRequestBuilder<TransferReque
      * @param transferAmount 转账金额
      * @return 转账参数配置器
      */
-    public TransferRequestBuilder fundAmount(Float transferAmount) {
-        request.setFundAmount(transferAmount);
+    public TransferRequestBuilder transferAmount(String transferAmount) {
+        request.setTransferAmount(transferAmount);
         return this;
     }
 
     /**
      * 设置转账渠道
      *
-     * @param transferChannel 转账渠道
+     * @param channel 转账渠道
      * @return 转账参数配置器
      */
-    public TransferRequestBuilder fundChannel(String transferChannel) {
-        request.setFundChannel(transferChannel);
+    public TransferRequestBuilder channel(String channel) {
+        request.setChannel(channel);
         return this;
     }
 
@@ -55,7 +55,7 @@ public class TransferRequestBuilder extends AbstractRequestBuilder<TransferReque
      * @param toBank 是否转账到银行卡
      * @return 转账参数配置器
      */
-    public TransferRequestBuilder toBank(String toBank) {
+    public TransferRequestBuilder toBank(Boolean toBank) {
         request.setToBank(toBank);
         return this;
     }
@@ -94,13 +94,24 @@ public class TransferRequestBuilder extends AbstractRequestBuilder<TransferReque
     }
 
     /**
+     * 设置转账标题
+     *
+     * @param subject 转账标题
+     * @return 转账参数配置器
+     */
+    public TransferRequestBuilder subject(String subject) {
+        request.setSubject(subject);
+        return this;
+    }
+
+    /**
      * 设置转账描述
      *
      * @param transferDescription 转账描述
      * @return 转账参数配置器
      */
-    public TransferRequestBuilder fundDescription(String transferDescription) {
-        request.setFundDescription(transferDescription);
+    public TransferRequestBuilder transferDescription(String transferDescription) {
+        request.setDescription(transferDescription);
         return this;
     }
 
