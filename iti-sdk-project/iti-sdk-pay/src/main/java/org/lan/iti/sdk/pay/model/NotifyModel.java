@@ -17,9 +17,9 @@ import lombok.experimental.SuperBuilder;
 public class NotifyModel {
 
     /**
-     * 通知签名
+     * app id
      */
-    protected String signature;
+    protected String appId;
 
     /**
      * 异步通知地址

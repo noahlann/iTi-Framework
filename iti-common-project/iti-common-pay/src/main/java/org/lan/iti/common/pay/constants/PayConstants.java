@@ -58,11 +58,6 @@ public interface PayConstants {
     String CONTENT_TYPE = "Content-Type";
 
     /**
-     * http请求异常!
-     */
-    String HTTP_ERROR = "http请求异常!";
-
-    /**
      * HttpEntity code
      */
     String HTTP_ENTITY_CODE = "code";
@@ -87,6 +82,12 @@ public interface PayConstants {
      */
     String SIGN_TIMESTAMP = "timestamp";
 
+
+    /**
+     * 签名信息 私钥
+     */
+    String SIGN_PRIMARY_KEY = "primaryKey";
+
     /**
      * 符号 =
      */
@@ -97,6 +98,39 @@ public interface PayConstants {
      */
     String SYMBOL_WRAP = "\n";
 
+    /**
+     * 符号 ,
+     */
+    String SYMBOL_COMMA = ",";
+
+    /**
+     * 符号 "
+     */
+    String SYMBOL_QUOTES = "\"";
+
+    /**
+     * 符号 "
+     */
+    String SYMBOL_QUESTION = "?";
+
+    /**
+     * http 超时时间
+     */
     int HTTP_TIMEOUT = 5000;
+
+    /**
+     * http header Authorization
+     */
+    String HTTP_HEADER_AUTHORIZATION = "Authorization";
+
+    /**
+     * one pay schema code
+     */
+    String ONE_PAY_SCHEMA_CODE = "schema";
+
+    /**
+     * one pay schema code
+     */
+    String ONE_PAY_SCHEMA_VALUE = "ONEPAY-SHA256-RSA2048";
 
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.PatternPool;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.lan.iti.common.pay.constants.PayConstants;
@@ -11,6 +12,7 @@ import org.lan.iti.common.pay.constants.PayConstants;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -156,6 +158,47 @@ public class PayCommonUtil {
             return compareAmountBigDecimal.compareTo(toBeComparedAmountBigDecimal) == 0;
         } else {
             return false;
+        }
+    }
+
+    public String buildSignMessage(String method, URL url, String timestamp, String nonceStr, String body) {
+        String canonicalUrl = URLUtil.encode(url.getPath());
+        if (url.getQuery() != null) {
+            canonicalUrl += PayConstants.SYMBOL_QUESTION + URLUtil.encode(url.getQuery());
+        }
+        return buildMessage(method, canonicalUrl, timestamp, nonceStr, body);
+    }
+
+    /**
+     * 构造签名串
+     *
+     * @param signMessage 待签名的参数
+     * @return 构造后带待签名串
+     */
+    public String buildMessage(String... signMessage) {
+        if (signMessage == null || signMessage.length <= 0) {
+            return null;
+        }
+        StringBuilder sbf = new StringBuilder();
+        for (String str : signMessage) {
+            sbf.append(str).append(PayConstants.SYMBOL_WRAP);
+        }
+        return sbf.toString();
+    }
+
+    public Map<String,Object> sortMapByKey(Map<String,Object> map){
+        if (map == null || map.isEmpty()){
+            return null;
+        }
+        Map<String,Object> sortedMap = new TreeMap<>(new MapKeyComparator());
+        sortedMap.putAll(map);
+        return sortedMap;
+    }
+
+    class MapKeyComparator implements Comparator<String>{
+        @Override
+        public int compare(String o1, String o2) {
+            return o1.compareTo(o2);
         }
     }
 

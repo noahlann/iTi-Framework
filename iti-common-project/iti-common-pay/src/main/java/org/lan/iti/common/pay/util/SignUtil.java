@@ -1,14 +1,15 @@
 package org.lan.iti.common.pay.util;
 
 import cn.hutool.core.codec.Base64;
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.Sign;
 import cn.hutool.crypto.asymmetric.SignAlgorithm;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.lan.iti.common.pay.constants.PayConstants;
+import org.lan.iti.common.core.exception.BusinessException;
+import org.lan.iti.common.pay.reason.SignExceptionReason;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class SignUtil {
         } catch (Exception var7) {
             String errorMessage = "签名遭遇异常，content=" + content + " privateKeySize=" + privateKeyPem.length() + " reason=" + var7.getMessage();
             log.error(errorMessage, var7);
-            return "签名异常,请检查私钥是否配置正确!";
+            throw BusinessException.withReason(SignExceptionReason.Configure.SIGN_FAIL);
 //            throw new RuntimeException(errorMessage, var7);
         }
     }
@@ -58,41 +59,40 @@ public class SignUtil {
      * 验签
      *
      * @param content      验证签名的参数 形为 a=x&b=y
-     * @param sign         content使用私钥签名的签名串
+     * @param signature    content使用私钥签名的签名串
      * @param publicKeyPem 公钥验签
      * @return 验签结果
      */
-    public boolean verifySign(String content, String sign, String publicKeyPem) {
+    public boolean verifySign(String publicKeyPem, String content, String signature) {
         try {
-            if (StrUtil.isBlank(sign)) {
+            if (StrUtil.isBlank(signature)) {
                 return false;
             }
             byte[] data = content.getBytes(StandardCharsets.UTF_8);
             Sign sha256WithRsaSign = SecureUtil.sign(SignAlgorithm.SHA256withRSA, null, publicKeyPem);
-            return sha256WithRsaSign.verify(data, Base64.decode(sign.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception var7) {
-            String errorMessage = "验签遭遇异常，content=" + content + " sign=" + sign + " publicKey=" + publicKeyPem + " reason=" + var7.getMessage();
-            log.error(errorMessage, var7);
-            return false;
-//            throw new RuntimeException(errorMessage, var7);
+            return sha256WithRsaSign.verify(data, Base64.decode(signature.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            String errorMessage = "验签遭遇异常，content=" + content + " sign=" + signature + " publicKey=" + publicKeyPem + " reason=" + e.getMessage();
+            log.error(errorMessage, e);
+            throw BusinessException.withReason(SignExceptionReason.Configure.SIGN_VERIFY_FAIL);
         }
     }
 
     /**
      * 应用调用api验签方法
      *
-     * @param parameters 请求参数
-     * @param publicKey  验签公钥
+     * @param publicKey 验签公钥
+     * @param method    请求方法
+     * @param url       请求url
+     * @param timestamp 请求的时间戳
+     * @param nonceStr  随机串
+     * @param body      请求数据内容
+     * @param signature 请求签名
      * @return 验签结果
      */
-    public boolean verify(Map<String, Object> parameters, String publicKey) {
-        if (parameters == null || parameters.isEmpty() || !parameters.containsKey(PayConstants.SIGN_SIGNATURE)) {
-            return false;
-        }
-        String signature = Convert.toStr(parameters.get(PayConstants.SIGN_SIGNATURE));
-        parameters.remove(PayConstants.SIGN_SIGNATURE);
-        String content = PayCommonUtil.getSignContent(parameters);
-        return verifySign(content, signature, publicKey);
+    public boolean verify(String publicKey, String method, String url, String timestamp, String nonceStr, String signature, String body) {
+        String message = PayCommonUtil.buildSignMessage(method, URLUtil.url(url), timestamp, nonceStr, body);
+        return verifySign(publicKey, message, signature);
     }
 
 }

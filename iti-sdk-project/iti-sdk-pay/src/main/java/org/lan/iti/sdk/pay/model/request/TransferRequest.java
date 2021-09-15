@@ -14,14 +14,14 @@ import java.util.Map;
 public class TransferRequest implements IRequest {
 
     /**
-     * 转账接口网关
-     */
-    private String gatewayHost;
-
-    /**
      * 平台 app id
      */
     private String appId;
+
+    /**
+     * 转账接口网关
+     */
+    private String gatewayHost;
 
     /**
      * 接口请求私钥

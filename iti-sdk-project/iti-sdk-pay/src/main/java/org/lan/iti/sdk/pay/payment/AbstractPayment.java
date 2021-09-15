@@ -2,19 +2,16 @@ package org.lan.iti.sdk.pay.payment;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.lan.iti.common.pay.constants.PayConstants;
 import org.lan.iti.common.pay.constants.PayFieldKeyConstants;
 import org.lan.iti.common.pay.util.PayCommonUtil;
-import org.lan.iti.common.pay.util.SignUtil;
 import org.lan.iti.sdk.pay.model.DefaultResponse;
 import org.lan.iti.sdk.pay.model.IRequest;
 import org.lan.iti.sdk.pay.model.IResponse;
-import org.lan.iti.sdk.pay.net.HttpUtil;
+import org.lan.iti.sdk.pay.util.HttpUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -43,27 +40,22 @@ public abstract class AbstractPayment<T extends IRequest> {
      */
     protected void enhance(Map<String, Object> params) {
         // 构造签名
-        params.put(PayConstants.SIGN_NONCE_STR, RandomUtil.randomString(32));
-        params.put(PayConstants.SIGN_TIMESTAMP, DateUtil.now());
-        String privateKey = Convert.toStr(params.get(PayFieldKeyConstants.PRIVATE_KEY));
         params.remove(PayFieldKeyConstants.PRIVATE_KEY);
-        String sign = SignUtil.sign(PayCommonUtil.getSignContent(params), privateKey);
-        params.put(PayFieldKeyConstants.SIGNATURE, sign);
     }
 
     /**
      * 默认处理逻辑
      */
-    public <R extends IResponse> DefaultResponse<R> execute(Class<R> clazz) {
-
+    public <R extends IResponse> DefaultResponse<R> execute(String method, Class<R> clazz) {
         // 默认逻辑
         // request -> map
-
         Map<String, Object> params = toMap(request);
-
+        String privateKey = Convert.toStr(params.get(PayFieldKeyConstants.PRIVATE_KEY));
+        String appId = Convert.toStr(params.get(PayFieldKeyConstants.APP_ID));
         enhance(params);
+        String body = JSON.toJSONString(PayCommonUtil.sortMapByKey(params));
         // http -> request
-        String entityString = HttpUtil.request(Convert.toStr(params.get(PayFieldKeyConstants.GATEWAY_HOST)), params);
+        String entityString = HttpUtil.request(method, Convert.toStr(params.get(PayFieldKeyConstants.GATEWAY_HOST)), appId, privateKey, body);
         JSONObject jsonObject = JSON.parseObject(entityString);
         String code = Convert.toStr(jsonObject.get(PayConstants.HTTP_ENTITY_CODE));
         String message = Convert.toStr(jsonObject.get(PayConstants.HTTP_ENTITY_MESSAGE));

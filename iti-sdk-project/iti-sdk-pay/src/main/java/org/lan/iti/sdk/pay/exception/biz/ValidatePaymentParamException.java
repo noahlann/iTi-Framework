@@ -3,7 +3,7 @@ package org.lan.iti.sdk.pay.exception.biz;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.lan.iti.sdk.pay.exception.IExceptionSpec;
+import org.lan.iti.common.core.exception.IExceptionSpec;
 
 /**
  * @author I'm

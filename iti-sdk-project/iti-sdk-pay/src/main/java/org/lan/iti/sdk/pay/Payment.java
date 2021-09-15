@@ -1,14 +1,13 @@
 package org.lan.iti.sdk.pay;
 
+import cn.hutool.http.Method;
 import lombok.experimental.UtilityClass;
-import org.lan.iti.common.pay.constants.PayFieldKeyConstants;
 import org.lan.iti.common.pay.util.SignUtil;
 import org.lan.iti.sdk.pay.configurer.AbstractRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.payment.OrderRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.refund.RefundRequestBuilder;
 import org.lan.iti.sdk.pay.configurer.transfer.TransferRequestBuilder;
 import org.lan.iti.sdk.pay.model.DefaultResponse;
-import org.lan.iti.sdk.pay.model.INotifyModel;
 import org.lan.iti.sdk.pay.model.IRequest;
 import org.lan.iti.sdk.pay.model.request.OrderRequest;
 import org.lan.iti.sdk.pay.model.request.RefundRequest;
@@ -122,7 +121,7 @@ public class Payment {
     public static DefaultResponse<OrderResponse> createOrder(OrderRequestBuilder orderRequestBuilder) {
         orderRequestBuilder.validate();
         OrderRequest orderRequest = orderRequestBuilder.build();
-        return new DefaultPayment<>(orderRequest).execute(OrderResponse.class);
+        return new DefaultPayment<>(orderRequest).execute(Method.POST.name(), OrderResponse.class);
     }
 
     /**
@@ -133,7 +132,7 @@ public class Payment {
      */
     public static DefaultResponse<OrderResponse> orderBatch(OrderRequestBuilder orderRequestBuilder) {
         OrderRequest orderRequest = orderRequestBuilder.build();
-        return new DefaultPayment<>(orderRequest).execute(OrderResponse.class);
+        return new DefaultPayment<>(orderRequest).execute(Method.POST.name(), OrderResponse.class);
     }
 
     /**
@@ -144,7 +143,7 @@ public class Payment {
      */
     public static DefaultResponse<OrderResponse> orderQuery(OrderRequestBuilder orderRequestBuilder) {
         OrderRequest orderRequest = orderRequestBuilder.build();
-        return new DefaultPayment<>(orderRequest).execute(OrderResponse.class);
+        return new DefaultPayment<>(orderRequest).execute(Method.GET.name(), OrderResponse.class);
     }
 
     /**
@@ -156,7 +155,7 @@ public class Payment {
     public static DefaultResponse<OrderResponse> orderList(OrderRequestBuilder orderRequestBuilder) {
         OrderRequest orderRequest = orderRequestBuilder.build();
         OrderResponse orderResponse = new OrderResponse();
-        return new DefaultPayment<>(orderRequest).execute(OrderResponse.class);
+        return new DefaultPayment<>(orderRequest).execute(Method.GET.name(), OrderResponse.class);
     }
 
     /**
@@ -167,7 +166,7 @@ public class Payment {
      */
     public static DefaultResponse<RefundResponse> refund(RefundRequestBuilder refundRequestBuilder) {
         RefundRequest refundRequest = refundRequestBuilder.build();
-        return new DefaultPayment<>(refundRequest).execute(RefundResponse.class);
+        return new DefaultPayment<>(refundRequest).execute(Method.POST.name(), RefundResponse.class);
     }
 
     /**
@@ -178,7 +177,7 @@ public class Payment {
      */
     public static DefaultResponse<RefundResponse> refundBatch(RefundRequestBuilder refundRequestBuilder) {
         RefundRequest refundRequest = refundRequestBuilder.build();
-        return new DefaultPayment<>(refundRequest).execute(RefundResponse.class);
+        return new DefaultPayment<>(refundRequest).execute(Method.POST.name(), RefundResponse.class);
     }
 
     /**
@@ -189,7 +188,7 @@ public class Payment {
      */
     public static DefaultResponse<RefundResponse> refundQuery(RefundRequestBuilder refundRequestBuilder) {
         RefundRequest refundRequest = refundRequestBuilder.build();
-        return new DefaultPayment<>(refundRequest).execute(RefundResponse.class);
+        return new DefaultPayment<>(refundRequest).execute(Method.GET.name(), RefundResponse.class);
     }
 
     /**
@@ -200,7 +199,7 @@ public class Payment {
      */
     public static DefaultResponse<RefundResponse> refundList(RefundRequestBuilder refundRequestBuilder) {
         RefundRequest refundRequest = refundRequestBuilder.build();
-        return new DefaultPayment<>(refundRequest).execute(RefundResponse.class);
+        return new DefaultPayment<>(refundRequest).execute(Method.GET.name(), RefundResponse.class);
     }
 
     /**
@@ -211,7 +210,7 @@ public class Payment {
      */
     public static DefaultResponse<TransferResponse> transfer(TransferRequestBuilder transferRequestBuilder) {
         TransferRequest transferRequest = transferRequestBuilder.build();
-        return new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
+        return new DefaultPayment<>(transferRequest).execute(Method.POST.name(), TransferResponse.class);
     }
 
     /**
@@ -222,7 +221,7 @@ public class Payment {
      */
     public static DefaultResponse<TransferResponse> transferBatch(TransferRequestBuilder transferRequestBuilder) {
         TransferRequest transferRequest = transferRequestBuilder.build();
-        return new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
+        return new DefaultPayment<>(transferRequest).execute(Method.POST.name(), TransferResponse.class);
     }
 
     /**
@@ -231,9 +230,9 @@ public class Payment {
      * @param transferRequestBuilder 转账参数配置器
      * @return 转账业务响应统一结构
      */
-    public static DefaultResponse<TransferResponse> fundQuery(TransferRequestBuilder transferRequestBuilder) {
+    public static DefaultResponse<TransferResponse> transferQuery(TransferRequestBuilder transferRequestBuilder) {
         TransferRequest transferRequest = transferRequestBuilder.build();
-        return new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
+        return new DefaultPayment<>(transferRequest).execute(Method.GET.name(), TransferResponse.class);
     }
 
     /**
@@ -242,22 +241,28 @@ public class Payment {
      * @param transferRequestBuilder 转账参数配置器
      * @return 转账业务响应统一结构
      */
-    public static DefaultResponse<TransferResponse> fundList(TransferRequestBuilder transferRequestBuilder) {
+    public static DefaultResponse<TransferResponse> transferList(TransferRequestBuilder transferRequestBuilder) {
         TransferRequest transferRequest = transferRequestBuilder.build();
-        return new DefaultPayment<>(transferRequest).execute(TransferResponse.class);
+        return new DefaultPayment<>(transferRequest).execute(Method.GET.name(), TransferResponse.class);
     }
 
-    public static boolean verifyNotify(INotifyModel notifyModel, String publicKey) {
-
-        Map<String, Object> map = notifyModel.getSignMap();
-
-        map.put(PayFieldKeyConstants.SIGNATURE, notifyModel.getSignature());
-
-        return SignUtil.verify(map, publicKey);
+    /**
+     * 异步通知验证
+     *
+     * @param publicKey 公钥
+     * @param method    请求方法
+     * @param url       请求地址
+     * @param timestamp 请求时间戳
+     * @param nonceStr  随机串
+     * @param signature 签名
+     * @param body      请求参数
+     * @return 验证结果
+     */
+    public static boolean verifyNotify(String publicKey, String method, String url, String timestamp, String nonceStr, String signature, String body) {
+        return SignUtil.verify(publicKey, method, url, timestamp, nonceStr, signature, body);
     }
 
-    public static boolean verifyNotify(Map<String, Object> map, String publicKey) {
-        return SignUtil.verify(map, publicKey);
-    }
+
+
 
 }

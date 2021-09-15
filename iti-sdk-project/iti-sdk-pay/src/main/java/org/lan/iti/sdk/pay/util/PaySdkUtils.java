@@ -1,6 +1,10 @@
 package org.lan.iti.sdk.pay.util;
 
 import lombok.experimental.UtilityClass;
+import org.lan.iti.common.pay.constants.PayConstants;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * @author I'm
@@ -10,5 +14,13 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class PaySdkUtils {
 
+    public String getHeaderByName(ArrayList<String> list, String name){
+        Optional<String> optional = list.stream().filter(it->it.contains(name + PayConstants.SYMBOL_EQUAL + PayConstants.SYMBOL_QUOTES)).findFirst();
+        if(optional.isPresent()){
+            String str = optional.get();
+            return str.substring(str.indexOf(PayConstants.SYMBOL_QUOTES) + 1,str.lastIndexOf(PayConstants.SYMBOL_QUOTES));
+        }
+        return null;
+    }
 
 }

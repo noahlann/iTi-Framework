@@ -28,7 +28,7 @@ public class DefaultPayment<T extends IRequest> extends AbstractPayment<T> {
     }
 
     @Override
-    public <R extends IResponse> DefaultResponse<R> execute(Class<R> clazz) {
-        return super.execute(clazz);
+    public <R extends IResponse> DefaultResponse<R> execute(String method, Class<R> clazz) {
+        return super.execute(method, clazz);
     }
 }

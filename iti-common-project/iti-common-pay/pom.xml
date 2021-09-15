@@ -27,6 +27,10 @@
 <!--            <artifactId>iti-common-core</artifactId>-->
 <!--        </dependency>-->
         <!-- Provided -->
+        <dependency>
+            <groupId>org.lan</groupId>
+            <artifactId>iti-common-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
