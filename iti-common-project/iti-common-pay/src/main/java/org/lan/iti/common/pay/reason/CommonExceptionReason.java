@@ -18,6 +18,7 @@ public interface CommonExceptionReason {
     enum SYSTEM implements IExceptionSpec {
 
         PARAM_PARSE_FAIL("PARAM_PARSE_FAIL", "参数解析失败"),
+        INVALID_GATEWAY_HOST("INVALID_GATEWAY_HOST", "请求地址不可用"),
         ;
 
         private final String code;

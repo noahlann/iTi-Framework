@@ -125,8 +125,8 @@ public class PayCommonUtil {
      * @param httpUrl Http URL
      * @return 检查结果
      */
-    public boolean isHttpUrlPatternCorrect(String httpUrl) {
-        return ReUtil.isMatch(PatternPool.URL_HTTP, httpUrl);
+    public boolean httpUrlPatternCorrect(String httpUrl) {
+        return StrUtil.isNotBlank(httpUrl) && ReUtil.isMatch(PatternPool.URL_HTTP, httpUrl);
     }
 
     /**
@@ -186,16 +186,16 @@ public class PayCommonUtil {
         return sbf.toString();
     }
 
-    public Map<String,Object> sortMapByKey(Map<String,Object> map){
-        if (map == null || map.isEmpty()){
+    public Map<String, Object> sortMapByKey(Map<String, Object> map) {
+        if (map == null || map.isEmpty()) {
             return null;
         }
-        Map<String,Object> sortedMap = new TreeMap<>(new MapKeyComparator());
+        Map<String, Object> sortedMap = new TreeMap<>(new MapKeyComparator());
         sortedMap.putAll(map);
         return sortedMap;
     }
 
-    class MapKeyComparator implements Comparator<String>{
+    class MapKeyComparator implements Comparator<String> {
         @Override
         public int compare(String o1, String o2) {
             return o1.compareTo(o2);

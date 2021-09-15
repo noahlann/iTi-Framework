@@ -5,8 +5,10 @@ import cn.hutool.core.convert.Convert;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.lan.iti.common.core.exception.BusinessException;
 import org.lan.iti.common.pay.constants.PayConstants;
 import org.lan.iti.common.pay.constants.PayFieldKeyConstants;
+import org.lan.iti.common.pay.reason.CommonExceptionReason;
 import org.lan.iti.common.pay.util.PayCommonUtil;
 import org.lan.iti.sdk.pay.model.DefaultResponse;
 import org.lan.iti.sdk.pay.model.IRequest;
@@ -40,6 +42,10 @@ public abstract class AbstractPayment<T extends IRequest> {
      */
     protected void enhance(Map<String, Object> params) {
         // 构造签名
+        String gateWayHost = Convert.toStr(params.get(PayFieldKeyConstants.GATEWAY_HOST));
+        if (!PayCommonUtil.httpUrlPatternCorrect(gateWayHost)) {
+            throw BusinessException.withReason(CommonExceptionReason.SYSTEM.INVALID_GATEWAY_HOST);
+        }
         params.remove(PayFieldKeyConstants.PRIVATE_KEY);
     }
 
