@@ -29,7 +29,7 @@ public class HttpRequestHelper {
         httpRequestMap.put(Method.GET.name(), new HttpGet());
     }
 
-    public String request(String method, String url, String appId, String primaryKey, String body) {
+    public HttpResult request(String method, String url, String appId, String primaryKey, String body) {
         if (StrUtil.equals(method, Method.GET.name())) {
             body = "";
         }

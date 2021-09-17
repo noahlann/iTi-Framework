@@ -13,6 +13,7 @@ import org.lan.iti.common.pay.util.PayCommonUtil;
 import org.lan.iti.sdk.pay.model.DefaultResponse;
 import org.lan.iti.sdk.pay.model.IRequest;
 import org.lan.iti.sdk.pay.model.IResponse;
+import org.lan.iti.sdk.pay.net.HttpResult;
 import org.lan.iti.sdk.pay.util.HttpUtil;
 
 import java.util.List;
@@ -61,12 +62,18 @@ public abstract class AbstractPayment<T extends IRequest> {
         enhance(params);
         String body = JSON.toJSONString(PayCommonUtil.sortMapByKey(params));
         // http -> request
-        String entityString = HttpUtil.request(method, Convert.toStr(params.get(PayFieldKeyConstants.GATEWAY_HOST)), appId, privateKey, body);
-        JSONObject jsonObject = JSON.parseObject(entityString);
+        DefaultResponse<R> defaultResponse;
+        HttpResult httpResult = HttpUtil.request(method, Convert.toStr(params.get(PayFieldKeyConstants.GATEWAY_HOST)), appId, privateKey, body);
+        int httpCode = httpResult.getCode();
+        String httpData = httpResult.getData();
+        JSONObject jsonObject = JSON.parseObject(httpData);
         String code = Convert.toStr(jsonObject.get(PayConstants.HTTP_ENTITY_CODE));
         String message = Convert.toStr(jsonObject.get(PayConstants.HTTP_ENTITY_MESSAGE));
         Object data = jsonObject.get(PayConstants.HTTP_ENTITY_DATA);
-        DefaultResponse<R> defaultResponse;
+        if (httpCode != 200) {
+            defaultResponse = new DefaultResponse<>(httpCode, message,data);
+            return defaultResponse;
+        }
         if (data instanceof JSONObject) {
             R response = ((JSONObject) data).toJavaObject(clazz);
             defaultResponse = new DefaultResponse<>(code, message, response);

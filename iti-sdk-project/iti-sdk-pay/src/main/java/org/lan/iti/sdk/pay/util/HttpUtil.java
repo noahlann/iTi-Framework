@@ -2,6 +2,7 @@ package org.lan.iti.sdk.pay.util;
 
 import lombok.experimental.UtilityClass;
 import org.lan.iti.sdk.pay.net.HttpRequestHelper;
+import org.lan.iti.sdk.pay.net.HttpResult;
 
 /**
  * @author I'm
@@ -11,7 +12,7 @@ import org.lan.iti.sdk.pay.net.HttpRequestHelper;
 @UtilityClass
 public class HttpUtil {
 
-    public String request(String method, String url, String appId, String primaryKey, String body) {
+    public HttpResult request(String method, String url, String appId, String primaryKey, String body) {
         return HttpRequestHelper.request(method, url, appId, primaryKey, body);
     }
 

@@ -119,7 +119,6 @@ public class Payment {
      * @return 支付业务响应统一结构
      */
     public static DefaultResponse<OrderResponse> createOrder(OrderRequestBuilder orderRequestBuilder) {
-        orderRequestBuilder.validate();
         OrderRequest orderRequest = orderRequestBuilder.build();
         return new DefaultPayment<>(orderRequest).execute(Method.POST.name(), OrderResponse.class);
     }
@@ -261,8 +260,6 @@ public class Payment {
     public static boolean verifyNotify(String publicKey, String method, String url, String timestamp, String nonceStr, String signature, String body) {
         return SignUtil.verify(publicKey, method, url, timestamp, nonceStr, signature, body);
     }
-
-
 
 
 }

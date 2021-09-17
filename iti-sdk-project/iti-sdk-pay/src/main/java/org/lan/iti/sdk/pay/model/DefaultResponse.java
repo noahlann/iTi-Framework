@@ -1,5 +1,6 @@
 package org.lan.iti.sdk.pay.model;
 
+import cn.hutool.core.convert.Convert;
 import lombok.Data;
 
 import java.util.List;
@@ -21,7 +22,15 @@ public class DefaultResponse<R extends IResponse> {
 
     private List<R> responseList;
 
+    private Object error;
+
     private Map<String, Object> extra;
+
+    public DefaultResponse(int code, String message, Object error) {
+        this.code = Convert.toStr(code);
+        this.message = message;
+        this.error = error;
+    }
 
     public DefaultResponse(String code, String message) {
         this.code = code;
