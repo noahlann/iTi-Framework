@@ -51,15 +51,15 @@ public class PasswordTokenProvider implements AccessTokenProvider {
     public AccessToken getToken(OAuth2RequestParameter parameter, OAuth2Config oAuth2Config) throws AuthenticationException {
         Map<String, String> params = new HashMap<>(6);
         params.put(OAuth2ParameterNames.GRANT_TYPE, GrantType.PASSWORD.getType());
-        params.put(OAuth2ParameterNames.USERNAME, oAuth2Config.getUsername());
-        params.put(OAuth2ParameterNames.PASSWORD, oAuth2Config.getPassword());
+        params.put(OAuth2ParameterNames.USERNAME, parameter.getUsername());
+        params.put(OAuth2ParameterNames.PASSWORD, parameter.getPassword());
         params.put(OAuth2ParameterNames.CLIENT_ID, oAuth2Config.getClientId());
         params.put(OAuth2ParameterNames.CLIENT_SECRET, oAuth2Config.getClientSecret());
-        if (ArrayUtil.isNotEmpty(oAuth2Config.getScopes())) {
-            params.put(OAuth2ParameterNames.SCOPE, String.join(OAuth2Constants.SCOPE_SEPARATOR, oAuth2Config.getScopes()));
+        if (ArrayUtil.isNotEmpty(oAuth2Config.getScope())) {
+            params.put(OAuth2ParameterNames.SCOPE, String.join(OAuth2Constants.SCOPE_SEPARATOR, oAuth2Config.getScope()));
         }
-        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getTokenUrl(), params);
-        OAuth2Util.checkOAuthResponse(tokenInfo, "Oauth2Strategy failed to get AccessToken.");
+        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getTokenUri(), params);
+        OAuth2Util.checkOAuthResponse(tokenInfo, "failed to get AccessToken.");
 
         if (!tokenInfo.containsKey(OAuth2ParameterNames.ACCESS_TOKEN)) {
             throw new AuthenticationException("failed to get AccessToken. response: " + tokenInfo);

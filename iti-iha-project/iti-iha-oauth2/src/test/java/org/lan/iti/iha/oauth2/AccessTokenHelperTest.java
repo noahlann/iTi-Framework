@@ -47,7 +47,6 @@ public class AccessTokenHelperTest {
                 .refreshTokenExpiresIn(12L)
                 .idTokenExpiresIn(12L)
                 .scope("openid")
-                .uid("123123")
                 .build();
         accessTokenMap = new HashMap<>();
         accessTokenMap.put("access_token", "accessToken");

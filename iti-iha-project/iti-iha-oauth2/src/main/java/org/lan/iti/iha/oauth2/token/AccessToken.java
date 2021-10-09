@@ -46,6 +46,11 @@ import java.io.Serializable;
 public class AccessToken implements Serializable {
     private static final long serialVersionUID = 5702257145706476772L;
 
+    /**
+     * Token唯一ID
+     */
+    private String id;
+
     private String accessToken;
     private String refreshToken;
     private String idToken;
@@ -57,8 +62,7 @@ public class AccessToken implements Serializable {
     private String scope;
 
     // ids
-    private String uid; // 用户ID 框架自用
-    private String userId; // 用户ID（twitter附带）
+    private String userId; // 用户ID（框架自用|twitter附带）
     private String openId;
     private String accessCode;
     private String unionId;

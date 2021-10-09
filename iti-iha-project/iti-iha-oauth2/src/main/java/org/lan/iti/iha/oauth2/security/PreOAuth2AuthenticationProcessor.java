@@ -64,7 +64,7 @@ public class PreOAuth2AuthenticationProcessor extends AbstractOAuth2Authenticati
         }
         // TODO check session ?
 
-        OAuth2Util.checkOAuthConfig(oAuth2Config);
+        OAuth2Util.checkOAuthConfig(oAuth2Config, oAuth2RequestParameter);
 
         if (StringUtil.isEmpty(oAuth2Config.getResponseType())) {
             // TODO 异常类型：401

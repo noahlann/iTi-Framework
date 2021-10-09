@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.lan.iti.common.core.util.StringUtil;
 import org.lan.iti.iha.oauth2.token.AccessToken;
 import org.lan.iti.iha.security.authentication.AbstractAuthenticationToken;
 
@@ -69,6 +70,10 @@ public class OAuth2AuthenticationToken extends AbstractAuthenticationToken {
     public OAuth2AuthenticationToken(String redirectUri) {
         super(null);
         this.redirectUri = redirectUri;
+    }
+
+    public boolean isRedirect() {
+        return StringUtil.isNotEmpty(this.redirectUri);
     }
 
     @Override

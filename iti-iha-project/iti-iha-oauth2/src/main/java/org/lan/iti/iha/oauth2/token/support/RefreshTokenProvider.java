@@ -55,11 +55,11 @@ public class RefreshTokenProvider implements AccessTokenProvider {
         params.put("grant_type", oAuth2Config.getGrantType().name());
         params.put("refresh_token", parameter.getRefreshToken());
 
-        if (ArrayUtil.isNotEmpty(oAuth2Config.getScopes())) {
-            params.put("scope", String.join(StringPool.SPACE, oAuth2Config.getScopes()));
+        if (ArrayUtil.isNotEmpty(oAuth2Config.getScope())) {
+            params.put("scope", String.join(StringPool.SPACE, oAuth2Config.getScope()));
         }
 
-        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getRefreshTokenUrl(), params);
+        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getRefreshTokenUri(), params);
 
         OAuth2Util.checkOAuthResponse(tokenInfo, "failed to refresh access_token.");
         if (!tokenInfo.containsKey(OAuth2ParameterNames.ACCESS_TOKEN)) {

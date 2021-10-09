@@ -22,6 +22,7 @@ import org.lan.iti.iha.oauth2.OAuth2Config;
 import org.lan.iti.iha.oauth2.OAuth2ResponseType;
 import org.lan.iti.iha.oauth2.security.OAuth2RequestParameter;
 import org.lan.iti.iha.oauth2.token.AccessToken;
+import org.lan.iti.iha.oauth2.token.AccessTokenHelper;
 import org.lan.iti.iha.oauth2.token.AccessTokenProvider;
 import org.lan.iti.iha.security.exception.authentication.AuthenticationException;
 
@@ -44,15 +45,6 @@ public class ImplicitTokenProvider implements AccessTokenProvider {
         if (null == parameter.getAccessToken()) {
             throw new AuthenticationException("failed to get AccessToken.");
         }
-        return AccessToken.builder()
-                .accessToken(parameter.getAccessToken())
-                .refreshToken(parameter.getRefreshToken())
-                .idToken(parameter.getIdToken())
-                .tokenType(parameter.getTokenType())
-                .expiresIn(parameter.getExpiresIn())
-                .refreshTokenExpiresIn(parameter.getRefreshTokenExpiresIn())
-                .idTokenExpiresIn(parameter.getIdTokenExpiresIn())
-                .scope(parameter.getScope())
-                .build();
+        return AccessTokenHelper.toAccessToken(parameter);
     }
 }

@@ -267,11 +267,13 @@
     <distributionManagement>
         <repository>
             <id>gxzc-release</id>
-            <url>https://repo.gygxzc.cn/repository/gxzc/</url>
+            <name>gxzc-release</name>
+            <url>http://repo.proxy.gygxzc.cn/repository/gxzc/</url>
         </repository>
         <snapshotRepository>
             <id>gxzc-snapshot</id>
-            <url>https://repo.gygxzc.cn/repository/gxzc-snapshot/</url>
+            <name>gxzc-snapshot</name>
+            <url>http://repo.proxy.gygxzc.cn/repository/gxzc-snapshot/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>

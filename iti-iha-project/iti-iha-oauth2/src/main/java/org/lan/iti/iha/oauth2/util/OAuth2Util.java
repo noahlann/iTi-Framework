@@ -118,22 +118,20 @@ public class OAuth2Util {
      *
      * @param oAuth2Config oauth config
      */
-    public static void checkOAuthConfig(OAuth2Config oAuth2Config) throws AuthenticationException {
-        if (StrUtil.isEmpty(oAuth2Config.getTokenUrl())) {
+    public static void checkOAuthConfig(OAuth2Config oAuth2Config, OAuth2RequestParameter parameter) throws AuthenticationException {
+        if (StrUtil.isEmpty(oAuth2Config.getTokenUri())) {
             throw new AuthenticationException("requires a tokenUrl");
         }
         // For authorization code mode and implicit authorization mode
         // refer to: https://tools.ietf.org/html/rfc6749#section-4.1
         // refer to: https://tools.ietf.org/html/rfc6749#section-4.2
         if (StrUtil.equalsAny(oAuth2Config.getResponseType(), OAuth2ResponseType.CODE, OAuth2ResponseType.TOKEN)) {
-
             if (StrUtil.equals(oAuth2Config.getResponseType(), OAuth2ResponseType.CODE)) {
                 if (oAuth2Config.getGrantType() != GrantType.AUTHORIZATION_CODE) {
                     throw new AuthenticationException(
                             String.format("Invalid grantType [%s]. When using authorization code mode, grantType must be `authorization_code`",
                                     oAuth2Config.getGrantType()));
                 }
-
                 if (!oAuth2Config.isRequireProofKey() && StrUtil.isEmpty(oAuth2Config.getClientSecret())) {
                     throw new AuthenticationException("requires a clientSecret when PKCE is not enabled.");
                 }
@@ -141,17 +139,14 @@ public class OAuth2Util {
                 if (StrUtil.isEmpty(oAuth2Config.getClientSecret())) {
                     throw new AuthenticationException("requires a clientSecret");
                 }
-
             }
             if (StrUtil.isEmpty(oAuth2Config.getClientId())) {
                 throw new AuthenticationException("requires a clientId");
             }
-
-            if (StrUtil.isEmpty(oAuth2Config.getAuthorizationUrl())) {
+            if (StrUtil.isEmpty(oAuth2Config.getAuthorizationUri())) {
                 throw new AuthenticationException("requires a authorizationUrl");
             }
-
-            if (StrUtil.isEmpty(oAuth2Config.getUserInfoUrl())) {
+            if (StrUtil.isEmpty(oAuth2Config.getUserInfoUri())) {
                 throw new AuthenticationException("requires a userinfoUrl");
             }
         }
@@ -163,8 +158,8 @@ public class OAuth2Util {
                         "than the authorization code must be used: " + oAuth2Config.getGrantType());
             }
             if (oAuth2Config.getGrantType() != GrantType.PASSWORD) {
-                if (!StrUtil.isAllNotEmpty(oAuth2Config.getUsername(), oAuth2Config.getPassword())) {
-                    throw new AuthenticationException("OAuth2Strategy requires username and password in password certificate grant");
+                if (!StrUtil.isAllNotEmpty(parameter.getUsername(), parameter.getPassword())) {
+                    throw new AuthenticationException("requires username and password in password certificate grant");
                 }
             }
         }

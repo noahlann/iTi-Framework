@@ -63,7 +63,7 @@ public class OAuth2RevokeTokenAuthenticationProcessor implements AuthenticationP
         Map<String, String> params = new HashMap<>(6);
         params.put("access_token", oAuth2RequestParameter.getAccessToken());
 
-        Map<String, Object> tokenInfo = OAuth2Util.request(config.getRevokeTokenEndpointMethodType(), config.getRevokeTokenUrl(), params);
+        Map<String, Object> tokenInfo = OAuth2Util.request(config.getRevokeTokenEndpointMethodType(), config.getRevokeTokenUri(), params);
 
         OAuth2Util.checkOAuthResponse(tokenInfo, "failed to revoke access_token. " + oAuth2RequestParameter.getAccessToken());
         return new OAuth2AuthenticationToken(true);

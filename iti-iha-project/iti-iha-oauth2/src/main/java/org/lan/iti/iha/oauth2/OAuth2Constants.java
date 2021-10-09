@@ -18,12 +18,14 @@
 
 package org.lan.iti.iha.oauth2;
 
+import org.lan.iti.common.core.util.StringPool;
+
 /**
  * @author NorthLan
  * @date 2021-07-05
  * @url https://noahlan.com
  */
 public interface OAuth2Constants {
-    String SCOPE_SEPARATOR = " ";
+    String SCOPE_SEPARATOR = StringPool.SPACE;
     String STATE_CACHE_KEY = "_iha:state:";
 }

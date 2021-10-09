@@ -60,15 +60,15 @@ public class AuthorizationCodeTokenProvider implements AccessTokenProvider {
         params.put(OAuth2ParameterNames.CODE, code);
         params.put(OAuth2ParameterNames.CLIENT_ID, oAuth2Config.getClientId());
         params.put(OAuth2ParameterNames.CLIENT_SECRET, oAuth2Config.getClientSecret());
-        if (StrUtil.isNotBlank(oAuth2Config.getCallbackUrl())) {
-            params.put(OAuth2ParameterNames.REDIRECT_URI, oAuth2Config.getCallbackUrl());
+        if (StrUtil.isNotBlank(oAuth2Config.getRedirectUri())) {
+            params.put(OAuth2ParameterNames.REDIRECT_URI, oAuth2Config.getRedirectUri());
         }
         // PKCE is only applicable to authorization code mode
         if (StrUtil.equals(oAuth2Config.getResponseType(), OAuth2ResponseType.CODE) && oAuth2Config.isRequireProofKey()) {
             params.put(PkceParams.CODE_VERIFIER, PkceHelper.getCacheCodeVerifier(oAuth2Config.getClientId()));
         }
 
-        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getTokenUrl(), params);
+        Map<String, Object> tokenInfo = OAuth2Util.request(oAuth2Config.getAccessTokenEndpointMethodType(), oAuth2Config.getTokenUri(), params);
         OAuth2Util.checkOAuthResponse(tokenInfo, "failed to get AccessToken.");
 
         if (!tokenInfo.containsKey(OAuth2ParameterNames.ACCESS_TOKEN)) {

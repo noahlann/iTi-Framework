@@ -86,7 +86,7 @@ public class OAuth2AuthenticationProcessor extends AbstractOAuth2AuthenticationP
         Map<String, String> params = new HashMap<>(1);
         params.put(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getAccessToken());
 
-        Map<String, Object> userInfo = OAuth2Util.request(oAuthConfig.getUserInfoEndpointMethodType(), oAuthConfig.getUserInfoUrl(), params);
+        Map<String, Object> userInfo = OAuth2Util.request(oAuthConfig.getUserInfoEndpointMethodType(), oAuthConfig.getUserInfoUri(), params);
 
         OAuth2Util.checkOAuthResponse(userInfo, "failed to get userInfo with accessToken.");
 
@@ -130,19 +130,16 @@ public class OAuth2AuthenticationProcessor extends AbstractOAuth2AuthenticationP
         Map<String, Object> params = new HashMap<>(7);
         params.put(OAuth2ParameterNames.RESPONSE_TYPE, oAuthConfig.getResponseType());
         params.put(OAuth2ParameterNames.CLIENT_ID, oAuthConfig.getClientId());
-        if (StrUtil.isNotBlank(oAuthConfig.getCallbackUrl())) {
-            params.put(OAuth2ParameterNames.REDIRECT_URI, oAuthConfig.getCallbackUrl());
+        if (StrUtil.isNotBlank(oAuthConfig.getRedirectUri())) {
+            params.put(OAuth2ParameterNames.REDIRECT_URI, oAuthConfig.getRedirectUri());
         }
-        if (ArrayUtil.isNotEmpty(oAuthConfig.getScopes())) {
-            params.put(OAuth2ParameterNames.SCOPE, String.join(OAuth2Constants.SCOPE_SEPARATOR, oAuthConfig.getScopes()));
+        if (ArrayUtil.isNotEmpty(oAuthConfig.getScope())) {
+            params.put(OAuth2ParameterNames.SCOPE, String.join(OAuth2Constants.SCOPE_SEPARATOR, oAuthConfig.getScope()));
         }
-        String state = oAuthConfig.getState();
-        if (StrUtil.isBlank(state)) {
-            state = RandomUtil.randomString(6);
-        }
+        String state = RandomUtil.randomString(6);
         // autoapprove
         params.put(OAuth2ParameterNames.AUTOAPPROVE, oAuthConfig.isAutoapprove() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-        params.put(OAuth2ParameterNames.STATE, oAuthConfig.getState());
+        params.put(OAuth2ParameterNames.STATE, state);
 
         IhaSecurity.getContext().getCache().put(OAuth2Constants.STATE_CACHE_KEY.concat(oAuthConfig.getClientId()), state);
         // Pkce is only applicable to authorization code mode
@@ -150,6 +147,6 @@ public class OAuth2AuthenticationProcessor extends AbstractOAuth2AuthenticationP
             params.putAll(PkceHelper.generatePkceParameters(oAuthConfig));
         }
         String query = URLUtil.buildQuery(params, StandardCharsets.UTF_8);
-        return oAuthConfig.getAuthorizationUrl().concat("?").concat(query);
+        return oAuthConfig.getAuthorizationUri().concat("?").concat(query);
     }
 }
