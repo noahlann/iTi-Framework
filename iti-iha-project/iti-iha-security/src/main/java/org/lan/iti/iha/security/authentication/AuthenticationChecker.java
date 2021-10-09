@@ -22,13 +22,12 @@ import org.lan.iti.iha.security.exception.authentication.BadCredentialsException
 import org.lan.iti.iha.security.userdetails.UserDetails;
 
 /**
+ * 登录验证
+ *
  * @author NorthLan
  * @date 2021/7/30
  * @url https://blog.noahlan.com
  */
 public interface AuthenticationChecker {
     void check(UserDetails userDetails, Authentication authentication) throws BadCredentialsException;
-
-    default void checkByCredentials(UserDetails userDetails, Object credentials) throws BadCredentialsException {
-    }
 }

@@ -72,6 +72,16 @@ public interface UserDetailsService extends IExtension<Object> {
     /**
      * Save the oauth login user information to the database and return UserDetails
      * It is suitable for the iti-iha-oauth2 module
+     * <p>
+     * token 实际类型为 AccessToken (依赖关系，此处Object)
+     * <p>
+     * 兼容标准协议
+     * 1. 标准协议
+     * 从 userInfo 中取出身份端的唯一用户id
+     * 通过 getByPlatformAndUid 查询绑定情况，获取本系统用户信息（未绑定的在此进行绑定）
+     * 构建 UserDetails，将多余的用户信息放置于 additionalInformation 中即可
+     * 2. 统一身份平台
+     * 直接使用 userInfo 转换为 UserDetails 即可
      *
      * @param type     类型 oauth2 / oidc / wx / weibo / qq
      * @param token    token信息

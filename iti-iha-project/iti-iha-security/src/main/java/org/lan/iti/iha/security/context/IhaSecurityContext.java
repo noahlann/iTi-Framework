@@ -20,14 +20,15 @@ package org.lan.iti.iha.security.context;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.lan.iti.iha.security.cache.Cache;
-import org.lan.iti.iha.security.cache.LocalCache;
 import org.lan.iti.iha.security.authentication.AuthenticationChecker;
 import org.lan.iti.iha.security.authentication.AuthenticationManager;
 import org.lan.iti.iha.security.authentication.DefaultAuthenticationChecker;
 import org.lan.iti.iha.security.authentication.DefaultAuthenticationManager;
+import org.lan.iti.iha.security.cache.Cache;
+import org.lan.iti.iha.security.cache.LocalCache;
 import org.lan.iti.iha.security.clientdetails.ClientDetailsService;
 import org.lan.iti.iha.security.config.SecurityConfig;
+import org.lan.iti.iha.security.jwt.DefaultJwtServiceImpl;
 import org.lan.iti.iha.security.jwt.JwtService;
 import org.lan.iti.iha.security.mgt.DefaultSecurityManager;
 import org.lan.iti.iha.security.mgt.SecurityManager;
@@ -51,9 +52,9 @@ public class IhaSecurityContext {
     private SecurityConfig config = new SecurityConfig();
 
     // support service
-    private JwtService jwtService;
-    private UserDetailsService userDetailsService;
+    private JwtService jwtService = new DefaultJwtServiceImpl();
     private AuthenticationChecker authenticationChecker = new DefaultAuthenticationChecker(); // for user
+    private UserDetailsService userDetailsService;
     private ClientDetailsService clientDetailsService;
 
     // caching

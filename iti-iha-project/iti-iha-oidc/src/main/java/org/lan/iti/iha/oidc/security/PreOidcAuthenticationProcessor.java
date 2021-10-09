@@ -56,7 +56,7 @@ public class PreOidcAuthenticationProcessor extends AbstractOidcAuthenticationPr
             throw new AuthenticationException("config must not be null");
         }
         // TODO check session
-        OAuth2Util.checkOAuthConfig(oidcConfig);
+        OAuth2Util.checkOAuthConfig(oidcConfig, oidcRequestParameter);
         String issuer = oidcConfig.getIssuer();
 
         OidcDiscovery discovery = OidcUtil.getOidcDiscovery(issuer);
@@ -68,9 +68,9 @@ public class PreOidcAuthenticationProcessor extends AbstractOidcAuthenticationPr
                 discovery.getUserinfoEndpoint())) {
             throw new AuthenticationException("Unable to parse IAM service discovery configuration information.");
         }
-        oidcConfig.setAuthorizationUrl(discovery.getAuthorizationEndpoint())
-                .setTokenUrl(discovery.getTokenEndpoint())
-                .setUserInfoUrl(discovery.getUserinfoEndpoint());
+        oidcConfig.setAuthorizationUri(discovery.getAuthorizationEndpoint())
+                .setTokenUri(discovery.getTokenEndpoint())
+                .setUserInfoUri(discovery.getUserinfoEndpoint());
 
         OAuth2Config oAuth2Config = BeanUtil.copyProperties(oidcConfig, OAuth2Config.class);
         OAuth2RequestParameter oAuth2RequestParameter = new OAuth2RequestParameter(parameter);

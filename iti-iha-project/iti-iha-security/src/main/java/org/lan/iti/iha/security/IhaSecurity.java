@@ -30,8 +30,6 @@ import org.lan.iti.iha.security.mgt.SecurityManager;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.security.userdetails.UserDetailsService;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * IhaSecurity
  *
@@ -73,15 +71,15 @@ public class IhaSecurity {
         return getContext().getSecurityManager();
     }
 
-    public boolean isAuthenticated(HttpServletRequest request) {
+    public boolean isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             return true;
         }
-        return getUser(request) != null;
+        return getUser() != null;
     }
 
-    public UserDetails getUser(HttpServletRequest request) {
+    public UserDetails getUser() {
         UserDetails result = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -89,13 +87,6 @@ public class IhaSecurity {
                 result = (UserDetails) authentication.getPrincipal();
             }
         }
-        // TODO 完善getUser，想迁移到SecurityManager中，通过Provider获取?
-//        if (result == null && request != null) {
-//            result = getContext().getUserStoreService().get(request);
-//            if (result != null) {
-//                SecurityContextHolder.getContext().setAuthentication(new CachingAuthenticationToken(request, result.getAuthorities()));
-//            }
-//        }
         return result;
     }
 }

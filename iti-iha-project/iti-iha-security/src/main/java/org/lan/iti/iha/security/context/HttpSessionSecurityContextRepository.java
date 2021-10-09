@@ -82,6 +82,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
     }
 
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void saveContext(SecurityContext context, HttpServletRequest request, HttpServletResponse response) {
         SaveContextOnUpdateOrErrorResponseWrapper responseWrapper = getNativeResponse(response, SaveContextOnUpdateOrErrorResponseWrapper.class);
