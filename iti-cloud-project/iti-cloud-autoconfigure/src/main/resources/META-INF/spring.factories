@@ -20,6 +20,9 @@ org.lan.iti.cloud.autoconfigure.loadbalancer.GrayLoadBalancerClientConfiguration
 org.lan.iti.cloud.autoconfigure.loadbalancer.GrayLoadBalancerAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.multipart.ITIMultipartAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.oss.OssAutoConfiguration,\
+org.lan.iti.cloud.autoconfigure.security.SecurityAutoConfiguration,\
+org.lan.iti.cloud.autoconfigure.security.IhaSecurityAutoConfiguration,\
+org.lan.iti.cloud.autoconfigure.security.SecurityEndpointAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.sentinel.SentinelAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.sentinel.SentinelFeignAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.sequence.SequenceAutoConfiguration,\
