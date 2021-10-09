@@ -68,7 +68,7 @@ public class AuthorizationEndpoint extends AbstractEndpoint {
         OAuth2Util.validateRedirectUri(param.getRedirectUri(), clientDetail);
         OAuth2Util.validateScope(param.getScope(), clientDetail.getScopes());
 
-        UserDetails userDetails = IhaSecurity.getUser(request);
+        UserDetails userDetails = IhaSecurity.getUser();
         if (userDetails != null) {
             return generateResponseUrl(param, param.getResponseType(), clientDetail, userDetails, EndpointUtil.getIssuer(request));
         }
@@ -103,7 +103,7 @@ public class AuthorizationEndpoint extends AbstractEndpoint {
         OAuth2Util.validClientDetails(clientDetail);
 
         String responseType = param.getResponseType();
-        UserDetails userDetails = IhaSecurity.getUser(request);
+        UserDetails userDetails = IhaSecurity.getUser();
         return generateResponseUrl(param, responseType, clientDetail, userDetails, EndpointUtil.getIssuer(request));
     }
 

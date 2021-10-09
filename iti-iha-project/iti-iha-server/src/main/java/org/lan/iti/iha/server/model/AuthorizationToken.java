@@ -48,6 +48,11 @@ import java.time.LocalDateTime;
 public class AuthorizationToken implements Serializable {
     private static final long serialVersionUID = 4062691954040845906L;
 
+    /**
+     * Token唯一ID
+     */
+    private String id;
+
     private String accessToken;
     private String refreshToken;
     private String idToken;

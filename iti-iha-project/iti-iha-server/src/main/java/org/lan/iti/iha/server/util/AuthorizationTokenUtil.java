@@ -22,12 +22,13 @@ import cn.hutool.crypto.SecureUtil;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.lan.iti.common.core.util.StringUtil;
-import org.lan.iti.iha.security.cache.Cache;
+import org.lan.iti.common.core.util.idgen.IdGenerator;
 import org.lan.iti.iha.oauth2.OAuth2ParameterNames;
 import org.lan.iti.iha.oauth2.exception.ExpiredTokenException;
 import org.lan.iti.iha.oauth2.exception.InvalidTokenException;
 import org.lan.iti.iha.oauth2.token.BearerToken;
 import org.lan.iti.iha.security.IhaSecurity;
+import org.lan.iti.iha.security.cache.Cache;
 import org.lan.iti.iha.security.clientdetails.ClientDetails;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.lan.iti.iha.security.util.RequestUtil;
@@ -111,6 +112,7 @@ public class AuthorizationTokenUtil {
         String refreshTokenStr = SecureUtil.sha256(clientId.concat(scope).concat(System.currentTimeMillis() + ""));
 
         val builder = AuthorizationToken.builder()
+                .id(IdGenerator.nextStr())
                 .accessToken(accessTokenStr)
                 .refreshToken(refreshTokenStr)
                 .grantType(grantType)

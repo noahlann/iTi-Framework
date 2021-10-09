@@ -71,7 +71,7 @@ public class ResourceOwnerPasswordProcessor extends AbstractAuthorizationTokenPr
         if (!authentication.isAuthenticated()) {
             throw new AuthenticationException("error");
         }
-        UserDetails userDetails = IhaSecurity.getUser(null);
+        UserDetails userDetails = IhaSecurity.getUser();
         IhaServer.getContext().getUserStoreService().save(userDetails, request, response);
 
         ClientDetails clientDetails = IhaSecurity.getContext().getClientDetailsService().getByClientId(param.getClientId());
