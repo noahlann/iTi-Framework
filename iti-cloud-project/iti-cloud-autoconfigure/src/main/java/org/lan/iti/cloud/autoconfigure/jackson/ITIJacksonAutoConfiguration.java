@@ -24,8 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterMixin;
-import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterProvider;
 import org.lan.iti.cloud.jackson.module.ITILongModule;
 import org.lan.iti.common.core.util.ReflectUtil;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -60,9 +58,6 @@ public class ITIJacksonAutoConfiguration {
             builder.locale(Locale.CHINA);
             builder.timeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
             builder.simpleDateFormat(DatePattern.NORM_DATETIME_PATTERN);
-            // jackson-dynamic-filter
-            builder.mixIn(Object.class, DynamicFilterMixin.class);
-            builder.filters(new DynamicFilterProvider(null));
 
             // 由于builder.modules会覆盖原设置,通过反射获取builder原先modules值
             Object originalModulesObj = ReflectUtil.getFieldValue(builder, "modules");

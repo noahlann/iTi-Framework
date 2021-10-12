@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import org.lan.iti.cloud.api.ApiResultWrapperAdvice;
 import org.lan.iti.cloud.api.ApiResultWrapperProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,6 +41,7 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(ApiResultWrapperProperties.class)
 @ConditionalOnWebApplication
 @ConditionalOnClass(ApiResultWrapperAdvice.class)
+@ConditionalOnProperty(value = "iti.web.response.wrapper.enabled", havingValue = "true", matchIfMissing = true)
 @AllArgsConstructor
 public class ApiResultWrapperAdviceAutoConfiguration {
     private final ApiResultWrapperProperties properties;

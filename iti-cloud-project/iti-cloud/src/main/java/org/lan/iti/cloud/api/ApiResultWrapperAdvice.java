@@ -63,7 +63,7 @@ public class ApiResultWrapperAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(@NonNull MethodParameter returnType,
                             @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
-        return filter(returnType);
+        return properties.isEnabled() && filter(returnType);
     }
 
     @SuppressWarnings("rawtypes")

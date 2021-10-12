@@ -60,12 +60,13 @@ public interface AopConstants {
     int AXON_EXCEPTION_HANDLER = GLOBAL_EXCEPTION_HANDLER - 5;
 
     /**
-     * 动态过滤顺序
-     */
-    int DYNAMIC_FILTER_ADVICE = GLOBAL_EXCEPTION_HANDLER + 100;
-
-    /**
      * 返回值包装顺序
      */
-    int API_RESULT_WRAPPER_ADVICE = GLOBAL_EXCEPTION_HANDLER + 101;
+    int API_RESULT_WRAPPER_ADVICE = GLOBAL_EXCEPTION_HANDLER + 100;
+
+    /**
+     * 动态过滤顺序
+     */
+    int DYNAMIC_FILTER_ADVICE = GLOBAL_EXCEPTION_HANDLER + 101;
+
 }
