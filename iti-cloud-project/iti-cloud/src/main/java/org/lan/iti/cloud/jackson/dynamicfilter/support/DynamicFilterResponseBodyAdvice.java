@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import org.lan.iti.cloud.constants.AopConstants;
 import org.lan.iti.cloud.jackson.dynamicfilter.resolver.DynamicFilterResolver;
 import org.lan.iti.cloud.jackson.dynamicfilter.resolver.ITIFilterResolver;
+import org.lan.iti.cloud.jackson.dynamicfilter.resolver.ITIFiltersResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
@@ -47,7 +48,7 @@ public class DynamicFilterResponseBodyAdvice extends AbstractMappingJacksonRespo
     private final Map<Class<Annotation>, DynamicFilterResolver<?>> resolvers = new HashMap<>();
 
     public DynamicFilterResponseBodyAdvice() {
-        addResolvers(new ITIFilterResolver());
+        addResolvers(new ITIFiltersResolver(), new ITIFilterResolver());
     }
 
     @Override

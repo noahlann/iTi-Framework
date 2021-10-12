@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.lan.iti.cloud.jackson.dynamicfilter.properties.JacksonDynamicFilterProperties;
 import org.lan.iti.cloud.jackson.dynamicfilter.resolver.DynamicFilterResolver;
+import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterMixin;
+import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterProvider;
 import org.lan.iti.cloud.jackson.dynamicfilter.support.DynamicFilterResponseBodyAdvice;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -62,9 +64,8 @@ public class JacksonDynamicFilterAutoConfiguration implements WebMvcConfigurer {
     }
 
     private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-//        objectMapper.addMixIn(Object.class, DynamicFilterMixin.class);
-//        objectMapper.setFilterProvider(new DynamicFilterProvider(null));
-//        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.addMixIn(Object.class, DynamicFilterMixin.class);
+        objectMapper.setFilterProvider(new DynamicFilterProvider(null));
         return new MappingJackson2HttpMessageConverter(objectMapper);
     }
 
@@ -85,7 +86,7 @@ public class JacksonDynamicFilterAutoConfiguration implements WebMvcConfigurer {
             }
         }
         val resolvers = factory.getBeansOfType(DynamicFilterResolver.class);
-        resolvers.values().forEach(it -> advice.addResolvers(it));
+        resolvers.values().forEach(advice::addResolvers);
         return advice;
     }
 }

@@ -17,8 +17,6 @@
 package org.lan.iti.cloud.jackson.dynamicfilter.annotation;
 
 
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.*;
 
 /**
@@ -42,13 +40,6 @@ import java.lang.annotation.*;
 public @interface ITIFilter {
 
     /**
-     * 过滤指定类
-     * 默认: {@link Object} 过滤所有类,可不指定
-     */
-    @AliasFor("type")
-    Class<?> value() default Object.class;
-
-    /**
      * 仅排除字段列表
      * 与 {@link ITIFilter#includes()} 冲突,默认选取 excludes
      */
@@ -64,6 +55,5 @@ public @interface ITIFilter {
      * 过滤指定类
      * 默认: {@link Object} 过滤所有类,可不指定
      */
-    @AliasFor("value")
     Class<?> type() default Object.class;
 }
