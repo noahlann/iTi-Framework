@@ -410,7 +410,7 @@
     <distributionManagement>
         <repository>
             <id>gxzc-release</id>
-            <url>https://repo.gygxzc.cn/repository/gxzc/</url>
+            <url>http://repo.proxy.gygxzc.cn/repository/gxzc/</url>
         </repository>
     </distributionManagement>
 </project>
