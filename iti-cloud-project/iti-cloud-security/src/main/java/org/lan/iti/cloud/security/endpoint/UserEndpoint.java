@@ -19,6 +19,7 @@
 package org.lan.iti.cloud.security.endpoint;
 
 import lombok.RequiredArgsConstructor;
+import org.lan.iti.common.core.api.ApiResult;
 import org.lan.iti.iha.security.IhaSecurity;
 import org.lan.iti.iha.security.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,12 +39,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserEndpoint {
 
     @GetMapping
-    public UserDetails fetchUser() {
-        return IhaSecurity.getUser();
+    public ApiResult<UserDetails> fetchUser() {
+        return ApiResult.ok(IhaSecurity.getUser());
     }
 
     @GetMapping("/check")
-    public Boolean check() {
-        return IhaSecurity.isAuthenticated();
+    public ApiResult<Boolean> check() {
+        return ApiResult.ok(IhaSecurity.isAuthenticated());
     }
 }

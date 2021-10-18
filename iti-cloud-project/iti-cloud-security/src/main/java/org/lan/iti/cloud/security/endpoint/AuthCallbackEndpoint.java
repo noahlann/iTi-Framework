@@ -22,7 +22,6 @@ package org.lan.iti.cloud.security.endpoint;
 import cn.hutool.core.util.URLUtil;
 import lombok.RequiredArgsConstructor;
 import org.jose4j.jwt.JwtClaims;
-import org.lan.iti.cloud.api.IgnoreResponseBodyWrapper;
 import org.lan.iti.cloud.security.properties.CacheConfig;
 import org.lan.iti.cloud.security.properties.SecurityProperties;
 import org.lan.iti.common.core.api.ApiResult;
@@ -63,7 +62,6 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping(value = {"/auth/callback", "/auth/redirect"})
-@IgnoreResponseBodyWrapper
 @RequiredArgsConstructor
 public class AuthCallbackEndpoint {
     private final SecurityProperties properties;
