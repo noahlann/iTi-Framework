@@ -18,7 +18,9 @@
 
 package org.lan.iti.cloud.security.context;
 
+import org.lan.iti.iha.security.context.HttpSessionSecurityContextRepository;
 import org.lan.iti.iha.security.context.SecurityContextFilterHelper;
+import org.lan.iti.iha.security.context.SecurityContextRepository;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -38,15 +40,19 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
     private final SecurityContextFilterHelper contextFilterHelper;
 
     public SecurityContextPersistenceFilter() {
-        this(new SecurityContextFilterHelper());
+        this(new HttpSessionSecurityContextRepository());
     }
 
-    public SecurityContextPersistenceFilter(SecurityContextFilterHelper helper) {
-        this.contextFilterHelper = helper;
+    public SecurityContextPersistenceFilter(SecurityContextRepository repository) {
+        this.contextFilterHelper = new SecurityContextFilterHelper(repository);
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         contextFilterHelper.doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
+    }
+
+    public void setForceEagerSessionCreation(boolean val) {
+        contextFilterHelper.setForceEagerSessionCreation(val);
     }
 }

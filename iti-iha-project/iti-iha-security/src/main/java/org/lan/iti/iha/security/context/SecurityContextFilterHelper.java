@@ -49,10 +49,6 @@ public class SecurityContextFilterHelper {
     @Setter
     private boolean forceEagerSessionCreation = false;
 
-    public SecurityContextFilterHelper() {
-        this.repository = new HttpSessionSecurityContextRepository();
-    }
-
     public SecurityContextFilterHelper(SecurityContextRepository repository) {
         this.repository = repository;
     }

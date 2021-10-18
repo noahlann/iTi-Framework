@@ -16,39 +16,32 @@
  *
  */
 
-package org.lan.iti.cloud.autoconfigure.security;
+package org.lan.iti.cloud.autoconfigure.security.servlet;
 
-import lombok.AllArgsConstructor;
-import org.lan.iti.cloud.autoconfigure.web.HttpAutoConfiguration;
-import org.lan.iti.cloud.security.endpoint.AuthCallbackEndpoint;
-import org.lan.iti.cloud.security.endpoint.UserEndpoint;
+import org.lan.iti.cloud.autoconfigure.security.ConditionalOnDefaultWebSecurity;
+import org.lan.iti.cloud.security.config.annotation.web.builders.HttpSecurity;
 import org.lan.iti.cloud.security.properties.SecurityProperties;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.lan.iti.iha.security.web.SecurityFilterChain;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 /**
- * Security Endpoint 自动装配
+ * WebSecurity默认配置
  *
  * @author NorthLan
- * @date 2021/9/28
+ * @date 2021/10/16
  * @url https://blog.noahlan.com
  */
-@Configuration
-@ConditionalOnClass({AuthCallbackEndpoint.class, UserEndpoint.class})
-@AutoConfigureAfter(HttpAutoConfiguration.class)
-@AllArgsConstructor
-public class SecurityEndpointAutoConfiguration {
-    private final SecurityProperties properties;
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnDefaultWebSecurity
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+public class SpringBootWebSecurityConfiguration {
 
     @Bean
-    public AuthCallbackEndpoint authCallbackEndpoint() {
-        return new AuthCallbackEndpoint(properties);
-    }
-
-    @Bean
-    public UserEndpoint userEndpoint() {
-        return new UserEndpoint();
+    @Order(SecurityProperties.BASIC_AUTH_ORDER)
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        return http.build();
     }
 }

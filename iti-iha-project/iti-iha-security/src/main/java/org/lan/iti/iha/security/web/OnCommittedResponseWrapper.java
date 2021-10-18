@@ -265,8 +265,6 @@ public abstract class OnCommittedResponseWrapper extends HttpServletResponseWrap
      * calling the prior to methods that commit the response. We delegate all methods to
      * the original {@link java.io.PrintWriter} to ensure that the behavior is as close to
      * the original {@link java.io.PrintWriter} as possible. See SEC-2039
-     *
-     * @author Rob Winch
      */
     private class SaveContextPrintWriter extends PrintWriter {
 
@@ -507,8 +505,6 @@ public abstract class OnCommittedResponseWrapper extends HttpServletResponseWrap
      * calling methods that commit the response. We delegate all methods to the original
      * {@link javax.servlet.ServletOutputStream} to ensure that the behavior is as close
      * to the original {@link javax.servlet.ServletOutputStream} as possible. See SEC-2039
-     *
-     * @author Rob Winch
      */
     private class SaveContextServletOutputStream extends ServletOutputStream {
 

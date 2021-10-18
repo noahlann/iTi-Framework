@@ -16,33 +16,23 @@
  *
  */
 
-package org.lan.iti.cloud.autoconfigure.security;
+package org.lan.iti.cloud.autoconfigure.security.servlet;
 
-import org.lan.iti.cloud.autoconfigure.web.HttpAutoConfiguration;
-import org.lan.iti.cloud.security.service.DefaultUserDetailsServiceImpl;
-import org.lan.iti.iha.security.IhaSecurity;
-import org.lan.iti.iha.security.context.IhaSecurityContext;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.lan.iti.cloud.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Iha-Security自动装配
- *
  * @author NorthLan
- * @date 2021/9/28
+ * @date 2021/10/16
  * @url https://blog.noahlan.com
  */
-@Configuration
-@ConditionalOnClass(IhaSecurity.class)
-@AutoConfigureAfter(HttpAutoConfiguration.class)
-public class IhaSecurityAutoConfiguration implements InitializingBean {
-
-    @Override
-    public void afterPropertiesSet() {
-        // default user details
-        IhaSecurity.init(new IhaSecurityContext()
-                .setUserDetailsService(new DefaultUserDetailsServiceImpl()));
-    }
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnMissingBean(name = "itiSecurityFilterChain")
+@ConditionalOnClass(EnableWebSecurity.class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@EnableWebSecurity
+class WebSecurityEnablerConfiguration {
 }
