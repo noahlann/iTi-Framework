@@ -18,6 +18,7 @@ org.lan.iti.cloud.autoconfigure.jackson.JacksonHibernateModuleAutoConfiguration,
 org.lan.iti.cloud.autoconfigure.querydsl.QueryDSLAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.loadbalancer.GrayLoadBalancerClientConfiguration,\
 org.lan.iti.cloud.autoconfigure.loadbalancer.GrayLoadBalancerAutoConfiguration,\
+org.lan.iti.cloud.autoconfigure.message.LocaleAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.multipart.ITIMultipartAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.oss.OssAutoConfiguration,\
 org.lan.iti.cloud.autoconfigure.web.HttpAutoConfiguration,\

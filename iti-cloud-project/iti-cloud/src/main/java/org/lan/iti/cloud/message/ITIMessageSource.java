@@ -16,7 +16,7 @@
  *
  */
 
-package org.lan.iti.cloud.support;
+package org.lan.iti.cloud.message;
 
 import org.lan.iti.common.core.constants.CommonConstants;
 import org.springframework.context.support.MessageSourceAccessor;
