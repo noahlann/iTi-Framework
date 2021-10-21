@@ -83,7 +83,7 @@ public class SimpleConfig {
      * Remember me cookie expire, unit: second, default 60*60*24[24 hours]
      */
     @Builder.Default
-    private long rememberMeCookieMaxAge = Duration.ofHours(24).toMillis();
+    private long rememberMeCookieMaxAge = Duration.ofHours(24).getSeconds();
 
     /**
      * Remember me cookie domain
