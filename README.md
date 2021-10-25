@@ -34,12 +34,58 @@
 ## 模块说明
 
 ```lua
-iti
+.
+├── iti-cloud-project # Cloud项目，依赖SpringCloud相关包
+│   ├── iti-cloud # cloud主体模块
+│   ├── iti-cloud-autoconfigure # 自动装配模块
+│   ├── iti-cloud-axon # axon依赖与基础模型模块
+│   ├── iti-cloud-codegen # 代码生成模块
+│   ├── iti-cloud-dependencies # iti-cloud-project 项目公共依赖管理
+│   ├── iti-cloud-parent # iti-cloud-project 内所有项目的父级项目
+│   ├── iti-cloud-security # 安全模块
+│   ├── iti-cloud-sentinel # Sentinel支持模块
+│   ├── iti-cloud-starters # 各类starters
+│   │   ├── iti-cloud-starter
+│   │   ├── iti-cloud-starter-axon
+│   │   ├── iti-cloud-starter-data-jpa
+│   │   ├── iti-cloud-starter-data-redis
+│   │   ├── iti-cloud-starter-extension
+│   │   ├── iti-cloud-starter-loadbalancer
+│   │   ├── iti-cloud-starter-openfeign
+│   │   ├── iti-cloud-starter-oss
+│   │   ├── iti-cloud-starter-security
+│   │   ├── iti-cloud-starter-sentinel
+│   │   └── iti-cloud-starter-swagger
+│   ├── iti-cloud-strategy # 策略模块，提供方便的策略模式使用
+│   └── iti-cloud-test # 单元测试专有模块
+├── iti-common-project # 底层依赖，iti-cloud-project依赖此模块
+│   ├── iti-codegen # 代码生成器
+│   ├── iti-common-core # 核心依赖模块
+│   ├── iti-common-dependencies # iti-common-project 公共依赖管理
+│   ├── iti-common-extension # 扩展Java-SPI机制，添加诸多特性
+│   ├── iti-common-parent # iti-common-project 内所有项目的父级项目
+│   └── iti-common-pay # 聚合支付底层依赖
+├── iti-dependencies # iTi 框架的所有公共依赖管理
+├── iti-iha-project # iHA 授权相关项目
+│   ├── iti-iha-dependencies # iti-iha-project 公共依赖管理模块
+│   ├── iti-iha-mfa # 多因素认证模块
+│   ├── iti-iha-oauth2 # oauth2协议模块
+│   ├── iti-iha-oidc # oidc协议模块，依赖oauth2
+│   ├── iti-iha-parent # iti-iha-project 内所有项目的父级项目
+│   ├── iti-iha-security # 安全模块，作为iha底包使用，提供通用功能
+│   ├── iti-iha-server # 授权服务器模块
+│   ├── iti-iha-simple # 简单登录模块
+│   ├── iti-iha-social # 社交登录模块
+│   └── iti-iha-sso # 单点登录模块，暂时使用baomidou的kisso
+└── iti-sdk-project # SDK项目
+    ├── iti-sdk-dependencies # iti-sdk-project 项目公共依赖管理模块 
+    ├── iti-sdk-parent # iti-sdk-project 内所有项目父级项目
+    └── iti-sdk-pay # 聚合支付SDK（java）
 ```
 
 # 详细文档
 
-> 敬请期待
+> 攥写中，敬请期待……
 
 # 开源协议
 
